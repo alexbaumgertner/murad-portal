@@ -14,14 +14,22 @@ const validateDay: CollectionBeforeValidateHook = async ({ data, originalDoc, re
   const { dayNumber } = merged
   if (challengeId == null || typeof dayNumber !== 'number') return data
 
-  const challenge = await req.payload.findByID({
+  const { docs } = await req.payload.find({
     collection: 'challenges',
-    id: challengeId,
+    where: { id: { equals: challengeId } },
+    limit: 1,
     depth: 0,
     select: { durationDays: true },
     overrideAccess: true,
     req,
   })
+  const challenge = docs[0]
+  if (!challenge) {
+    throw new ValidationError({
+      collection: 'challenge-days',
+      errors: [{ path: 'challenge', message: 'This challenge does not exist.' }],
+    })
+  }
   if (dayNumber > challenge.durationDays) {
     throw new ValidationError({
       collection: 'challenge-days',

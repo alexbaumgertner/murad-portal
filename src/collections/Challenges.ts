@@ -1,4 +1,10 @@
-import { ValidationError, type CollectionBeforeValidateHook, type CollectionConfig } from 'payload'
+import {
+  APIError,
+  ValidationError,
+  type CollectionBeforeDeleteHook,
+  type CollectionBeforeValidateHook,
+  type CollectionConfig,
+} from 'payload'
 
 import { authenticated, publicChallengeOrAuthenticated } from '@/access'
 import {
@@ -14,7 +20,7 @@ type ShapeData = { durationDays?: number; blockDays?: number; videos?: unknown[]
 
 // Cross-field rule: duration, block length and the number of videos must add up. Runs on the
 // stored values merged with the incoming ones, so a partial update cannot slip past it.
-const validateShape: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
+const validateShape: CollectionBeforeValidateHook = async ({ data, originalDoc, req }) => {
   const merged: ShapeData = { ...(originalDoc as ShapeData | undefined), ...(data as ShapeData) }
   const durationDays = merged.durationDays ?? DEFAULT_DURATION_DAYS
   const blockDays = merged.blockDays ?? DEFAULT_BLOCK_DAYS
@@ -28,7 +34,48 @@ const validateShape: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
       errors: [{ path: divisible ? 'videos' : 'blockDays', message }],
     })
   }
+
+  // Shrinking the duration must not strand days that are already logged beyond the new end.
+  const id = (originalDoc as { id?: number } | undefined)?.id
+  if (id != null) {
+    const { totalDocs } = await req.payload.count({
+      collection: 'challenge-days',
+      where: { challenge: { equals: id }, dayNumber: { greater_than: durationDays } },
+      overrideAccess: true, // integrity check, not a visitor read
+      req,
+    })
+    if (totalDocs > 0) {
+      throw new ValidationError({
+        collection: 'challenges',
+        errors: [
+          {
+            path: 'durationDays',
+            message: `${totalDocs} logged day(s) are numbered beyond day ${durationDays}. Delete them first.`,
+          },
+        ],
+      })
+    }
+  }
   return data
+}
+
+// challenge-days.challenge is NOT NULL, so the database would refuse the delete with an opaque
+// error. Refuse it ourselves and never destroy logged days silently.
+const blockDeleteWithDays: CollectionBeforeDeleteHook = async ({ id, req }) => {
+  const { totalDocs } = await req.payload.count({
+    collection: 'challenge-days',
+    where: { challenge: { equals: id } },
+    overrideAccess: true,
+    req,
+  })
+  if (totalDocs > 0) {
+    throw new APIError(
+      `This challenge has ${totalDocs} logged day(s). Delete them before deleting the challenge.`,
+      400,
+      undefined,
+      true,
+    )
+  }
 }
 
 const wholeNumber = (min: number, max: number, label: string) => (value: unknown) =>
@@ -52,6 +99,7 @@ export const Challenges: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [validateShape],
+    beforeDelete: [blockDeleteWithDays],
   },
   fields: [
     { name: 'title', type: 'text', required: true, localized: true },
@@ -71,6 +119,16 @@ export const Challenges: CollectionConfig = {
       name: 'startDate',
       type: 'date',
       required: true,
+      hooks: {
+        // A calendar date, stored at noon UTC like the admin picker does, so an offset in a
+        // Local API value (…T23:00-05:00) cannot move it to another day.
+        beforeValidate: [
+          ({ value }) =>
+            typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)
+              ? `${value.slice(0, 10)}T12:00:00.000Z`
+              : value,
+        ],
+      },
       admin: {
         date: { pickerAppearance: 'dayOnly' },
         description: 'Day 1 of the challenge, in the time zone below.',

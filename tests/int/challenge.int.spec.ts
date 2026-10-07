@@ -103,6 +103,33 @@ describe('challenges', () => {
       await expect(update({ title: 'Renamed' })).resolves.toMatchObject({ title: 'Renamed' })
     })
 
+    it('refuses to delete a challenge that has logged days, and to shrink it below them', async () => {
+      const challenge = await createChallenge('with-days')
+      await payload.create({
+        collection: 'challenge-days',
+        context,
+        data: { challenge: challenge.id, dayNumber: 80, minutes: 90 },
+      })
+      await expect(
+        payload.delete({ collection: 'challenges', id: challenge.id, context }),
+      ).rejects.toThrow(/logged day/i)
+      await expectInvalid(
+        payload.update({
+          collection: 'challenges',
+          id: challenge.id,
+          context,
+          data: { durationDays: 60, videos: videos(4), blockDays: 15 },
+        }),
+        'durationDays',
+        /beyond day 60/i,
+      )
+    })
+
+    it('stores the start date as a calendar date regardless of the offset given', async () => {
+      const created = await createChallenge('offset', { startDate: '2026-10-07T23:00:00-05:00' })
+      expect(created.startDate).toBe('2026-10-07T12:00:00.000Z')
+    })
+
     it('rejects an unknown time zone and a duplicate slug', async () => {
       await expect(createChallenge('bad-zone', { timeZone: 'Mars/Olympus' })).rejects.toThrow()
       await createChallenge('dup')
@@ -177,6 +204,7 @@ describe('challenges', () => {
         collection: 'challenge-days',
         overrideAccess: false,
         user: admin,
+        where: { challenge: { in: [publicChallenge.id, privateChallenge.id] } },
         depth: 0,
       })
       expect(days.totalDocs).toBe(2)
@@ -253,6 +281,18 @@ describe('challenges', () => {
         context,
         data: { ...data, challenge: other.id },
       })
+    })
+
+    it('rejects a day for a challenge that does not exist', async () => {
+      await expectInvalid(
+        payload.create({
+          collection: 'challenge-days',
+          context,
+          data: { challenge: 999_999, dayNumber: 1, minutes: 90 },
+        }),
+        'challenge',
+        /does not exist/i,
+      )
     })
 
     it('keeps dayNumber within 1…durationDays and minutes within 1…600', async () => {
