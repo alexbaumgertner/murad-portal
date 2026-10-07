@@ -23,7 +23,7 @@ bulk code. Work must not depend on one laptop.
 environments hold no production secrets, and CI enforces `pnpm check` + tests on every PR.
 Revisit if: limits change, or Codex gains a hooks mechanism we can share.
 
-## 2026-10-07 — PROPOSED: Russian as the default locale
+## 2026-10-07 — ACCEPTED: Russian as the default locale
 
 **Context.** The audience is Russian-speaking learners of English; the template defaults to English unprefixed.
 
