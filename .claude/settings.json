@@ -23,12 +23,12 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "startup",
+        "matcher": "startup|resume",
         "hooks": [
           {
             "type": "command",
-            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] && bash \"$CLAUDE_PROJECT_DIR/scripts/cloud-setup.sh\" >/dev/null 2>&1 || true",
-            "timeout": 600
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] && bash \"$CLAUDE_PROJECT_DIR/scripts/cloud-pg-start.sh\" >>/tmp/cloud-setup.log 2>&1 || true",
+            "timeout": 120
           }
         ]
       }
