@@ -1,7 +1,7 @@
 ---
 id: 005
 title: Murad sets up his 90-day challenge in the admin
-status: draft
+status: approved
 ---
 
 # 005 — Challenge data model, admin and progress maths
