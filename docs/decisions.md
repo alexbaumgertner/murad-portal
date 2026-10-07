@@ -23,6 +23,13 @@ bulk code. Work must not depend on one laptop.
 environments hold no production secrets, and CI enforces `pnpm check` + tests on every PR.
 Revisit if: limits change, or Codex gains a hooks mechanism we can share.
 
+## 2026-10-07 — PROPOSED: Russian as the default locale
+
+**Context.** The audience is Russian-speaking learners of English; the template defaults to English unprefixed.
+
+**Proposal.** `defaultLocale = 'ru'` (unprefixed `/`), English under `/en`, `x-default` → Russian. Story 004.
+Approve or reject before story 004 starts.
+
 ## 2026-10-01 — Agent rules as nested AGENTS.md; Node 24 and Postgres 18 everywhere
 
 **Rules.** Cursor-only `.cursor/rules/*.mdc` became nested `AGENTS.md` files (`src/collections`, `src/features`,

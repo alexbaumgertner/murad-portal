@@ -1,7 +1,9 @@
 # AGENTS.md
 
-Indie SaaS starter: landing page + waitlist + changelog, with Payload CMS admin at `/admin`.
-Solo-founder project — optimize for shipping small, correct, reversible changes.
+murad-portal — site of Murad, an English teacher (YouTube @muraduzhakhov66): landing, listening tools that train
+learners to *hear* familiar words in live speech, and a public 90-90-1 challenge tracker. Payload admin at `/admin`.
+Built from `payload-vercel-template`. Solo project — optimize for shipping small, correct, reversible changes.
+Read `docs/product.md` before any user-facing work.
 
 Folder-specific rules live in nested `AGENTS.md` files — read the one for the area you touch:
 `src/collections/` (collections, access, payload.config) · `src/features/` (actions, services, Zod) ·
