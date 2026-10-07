@@ -1,7 +1,7 @@
 ---
 id: 004
 title: Visitors land on Murad's site in Russian
-status: draft # blocked by the PROPOSED locale decision in docs/decisions.md
+status: approved
 ---
 
 # 004 — Russian-first site shell for Murad
