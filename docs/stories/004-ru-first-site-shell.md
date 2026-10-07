@@ -1,7 +1,7 @@
 ---
 id: 004
 title: Visitors land on Murad's site in Russian
-status: draft # blocked by the PROPOSED locale decision in docs/decisions.md
+status: done
 ---
 
 # 004 — Russian-first site shell for Murad
@@ -23,6 +23,7 @@ status: draft # blocked by the PROPOSED locale decision in docs/decisions.md
 
 - Final visual design from `docs/reference/landing.html` (separate story once the reference is in the repo).
 - Removing the waitlist and changelog code.
+- Building the challenge tracker (story 006). The shell links to `/challenge`; it remains a 404 until the tracker route is implemented, with the final challenge slug wired then.
 
 ## Notes
 
@@ -31,6 +32,13 @@ status: draft # blocked by the PROPOSED locale decision in docs/decisions.md
 
 ## Verification
 
-| #   | Test (file › name)                  | Layer |
-| --- | ----------------------------------- | ----- |
-|     | filled in during step 3 of /feature |       |
+| #   | Test (file › name)                                                                                                                                 | Layer      |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| 1   | `i18n.e2e.spec.ts` › a {ru-RU,en-US,de-DE} browser without a locale cookie lands in Russian at /                                                   | e2e        |
+| 2   | `i18n.e2e.spec.ts` › switches {/,/changelog} in both directions and remembers the choice                                                           | e2e        |
+| 3   | `landing.e2e.spec.ts` › {/,/en} shows Murad, the challenge and four upcoming tools                                                                 | e2e        |
+| 4   | `landing.e2e.spec.ts` › {/,/en} hides the waitlist form                                                                                            | e2e        |
+| 5   | `i18n.unit.spec.ts` › localized paths; `i18n.e2e.spec.ts` › {/,/en,/changelog,/en/changelog} has canonical and Russian-default hreflang alternates | unit + e2e |
+| 6   | `landing.e2e.spec.ts` › {/,/en} fits a 360px viewport                                                                                              | e2e        |
+
+Verification completed: `pnpm check` (180 unit tests), `pnpm test:int` (41 tests), and the full desktop/mobile e2e suite (69 passed initially; all 11 failed/skipped checks passed on rerun after fixes). Desktop and 360px browser inspection: no horizontal overflow or console errors. Reviewer: no P0/P1 findings.

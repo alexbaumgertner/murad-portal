@@ -8,6 +8,7 @@ import type { ReactNode } from 'react'
 import { PageViews } from '@/components/PageViews/PageViews'
 import { SiteFooter } from '@/components/SiteFooter/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader/SiteHeader'
+import { siteConfig } from '@/config/site'
 import { routing } from '@/i18n/routing'
 import { analyticsProvider } from '@/lib/analytics'
 
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
   const t = await getTranslations({ locale, namespace: 'Metadata' })
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
-    title: { default: t('siteName'), template: `%s · ${t('siteName')}` },
+    title: { default: siteConfig.name, template: `%s · ${siteConfig.name}` },
     description: t('description'),
   }
 }

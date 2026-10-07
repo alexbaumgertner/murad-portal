@@ -49,9 +49,6 @@ test('landing stays usable on a throttled phone connection', async ({ page }, te
 
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-  await page.getByPlaceholder('you@company.com').fill('not-an-email')
-  await page.getByRole('button', { name: 'Join the waitlist' }).click()
-  await expect(page.getByRole('main').getByRole('alert')).toHaveText('Enter a valid email address.')
 
   const cls = await page.evaluate(
     () => (window as unknown as { __vitals: { cls: number } }).__vitals.cls,

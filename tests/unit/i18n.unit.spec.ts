@@ -33,21 +33,21 @@ describe('message catalogs', () => {
 })
 
 describe('localized paths', () => {
-  it('uses English as the unprefixed default', () => {
-    expect(routing.defaultLocale).toBe('en')
-    expect(localizedPath('/', 'en')).toBe('/')
-    expect(localizedPath('/changelog', 'en')).toBe('/changelog')
+  it('uses Russian as the unprefixed default', () => {
+    expect(routing.defaultLocale).toBe('ru')
+    expect(localizedPath('/', 'ru')).toBe('/')
+    expect(localizedPath('/changelog', 'ru')).toBe('/changelog')
   })
 
   it('prefixes other locales', () => {
-    expect(localizedPath('/', 'ru')).toBe('/ru')
-    expect(localizedPath('/changelog', 'ru')).toBe('/ru/changelog')
+    expect(localizedPath('/', 'en')).toBe('/en')
+    expect(localizedPath('/changelog', 'en')).toBe('/en/changelog')
   })
 
   it('advertises every locale plus x-default, with a self-referencing canonical', () => {
     expect(alternatesFor('/changelog', 'ru')).toEqual({
-      canonical: '/ru/changelog',
-      languages: { en: '/changelog', ru: '/ru/changelog', 'x-default': '/changelog' },
+      canonical: '/changelog',
+      languages: { en: '/en/changelog', ru: '/changelog', 'x-default': '/changelog' },
     })
   })
 })

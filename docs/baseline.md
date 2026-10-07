@@ -5,7 +5,7 @@ What every product built from this template gets out of the box. Update this tab
 | Area               | Status  | Note                                                                                                                 |
 | ------------------ | ------- | -------------------------------------------------------------------------------------------------------------------- |
 | Auth               | done    | Passwordless email codes for the admin; hashed codes, DB rate limits, signed cookie                                  |
-| i18n               | done    | next-intl: `en` (unprefixed) + `/ru`; hreflang, `<html lang>`, switcher; changelog via Payload localization          |
+| i18n               | done    | next-intl: `ru` (unprefixed) + `/en`; browser language ignored, cookie remembered; Russian `x-default`; hreflang, `<html lang>`, switcher; English CMS fallback          |
 | Security headers   | partial | HSTS, nosniff, Referrer/Permissions-Policy, frame-ancestors enforced; CSP report-only, no violations in a prod build |
 | Backups            | partial | Neon instant restore + drill in `docs/runbooks/backup-restore.md`; Vercel Blob media have no backup (documented)     |
 | Monitoring         | done    | Sentry (server, client, Server Actions) when `SENTRY_DSN` is set; PII scrubbed; no-op otherwise                      |

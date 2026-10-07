@@ -32,7 +32,7 @@ React 19 · TypeScript 6 strict · CSS Modules · Zod 4 · next-intl 4 · Vitest
 ```
 src/app/(frontend)/[locale]/  public site — Server Components by default; pages live in the (site) group
 src/app/(payload)/    Payload admin + API — generated, do not edit, not localized
-src/i18n/             locales (en default, ru), routing, request config, hreflang helpers
+src/i18n/             locales (ru default, en; CMS content defaults to en), routing, request config, hreflang helpers
 src/proxy.ts          next-intl locale negotiation for the public site (skips /admin, /api, /monitoring)
 messages/<locale>.json  UI copy — every key in every locale
 src/collections/      Payload collections (schema + access + hooks)
@@ -121,3 +121,13 @@ Report only P0/P1 findings.
 - P1: a change in `src/collections/` or `src/access/` without a matching migration in `src/migrations/`.
 - P1: a Server Action that skips Zod validation, or returns sentences instead of error codes.
 - P1: UI strings outside `messages/en.json` and `messages/ru.json`, or added to only one locale.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -1,14 +1,15 @@
 {
   "Metadata": {
-    "siteName": "Indie Starter",
-    "description": "A production-ready Next.js 16 + Payload 3 starter on Postgres, wired for AI-assisted development with Cursor and Claude Code."
+    "siteName": "Murad",
+    "description": "Learn to hear familiar English words in real speech with Murad, an English teacher. Follow his 90-day YouTube challenge and discover upcoming listening tools."
   },
   "Header": {
-    "home": "Indie Starter home",
+    "home": "{name} home",
     "nav": "Main",
-    "features": "Features",
     "changelog": "Changelog",
-    "admin": "Admin"
+    "admin": "Admin",
+    "tools": "Tools",
+    "challenge": "Challenge"
   },
   "LocaleSwitcher": {
     "label": "Language",
@@ -16,41 +17,34 @@
     "ru": "Русский"
   },
   "Footer": {
-    "stack": "Next.js 16 · Payload 3 · Postgres · Vercel"
+    "stack": "English with Murad · Listening practice"
   },
   "Home": {
-    "eyebrow": "Next.js 16 · Payload 3 · Neon · Vercel",
-    "title": "Ship your SaaS this weekend, not next quarter.",
-    "note": "Early access updates only. No spam, unsubscribe anytime.",
-    "featuresTitle": "Everything a solo founder needs on day one",
-    "features": {
-      "admin": {
-        "title": "Content & admin in one app",
-        "body": "Payload 3 runs inside Next.js: collections, auth, uploads and a full admin panel at /admin — no second service to deploy."
+    "eyebrow": "English with Murad",
+    "title": "Hear the English you already know.",
+    "lead": "I’m Murad, an English teacher. I help learners recognize familiar words in real speech, across accents and speaking speeds.",
+    "challenge": "Follow the 90–90–1 challenge",
+    "toolsTitle": "Tools — coming soon",
+    "tools": {
+      "puzzle": {
+        "title": "Phonetic Puzzle",
+        "body": "Hear one word pronounced by different speakers, then recognize it in fast speech."
       },
-      "postgres": {
-        "title": "Postgres that scales to zero",
-        "body": "Neon in production, plain Postgres locally. Schema changes go through versioned Payload migrations, applied on every Vercel deploy."
+      "player": {
+        "title": "3-Step Listening Player",
+        "body": "Watch with subtitles, explore the words and grammar, then listen again as an audio playlist."
       },
-      "types": {
-        "title": "Type-safe end to end",
-        "body": "Generated Payload types, Zod at every boundary, Server Actions instead of hand-written API routes."
+      "matcher": {
+        "title": "Level & Interest Matcher",
+        "body": "Find videos, podcasts and interviews that fit a learning level and personal interests."
       },
-      "tests": {
-        "title": "Tests the agent can run",
-        "body": "Vitest for logic and the Payload Local API, Playwright for real user flows. One command tells the agent whether it is done."
-      },
-      "ai": {
-        "title": "AI workflow built in",
-        "body": "AGENTS.md, scoped Cursor rules, skills, subagents and hooks — shared by Cursor and Claude Code from the same files."
-      },
-      "css": {
-        "title": "Plain CSS Modules",
-        "body": "Design tokens as CSS variables, dark mode via prefers-color-scheme, zero runtime styling cost."
+      "quizzer": {
+        "title": "Active Listening Quizzer",
+        "body": "Practice with questions, missing words and dictation based on a video."
       }
     },
-    "latestTitle": "Latest releases",
-    "fullChangelog": "Full changelog →"
+    "latestTitle": "Latest updates",
+    "fullChangelog": "All updates →"
   },
   "Waitlist": {
     "emailLabel": "Email address",
