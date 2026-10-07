@@ -18,7 +18,7 @@ export function LogoutButton() {
       onClick={() =>
         startTransition(async () => {
           await logoutAction()
-          // Full reload (not router.push) so Payload drops its client-side auth state.
+          // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- Full reload clears Payload's client-side auth state after logout.
           window.location.assign('/admin/login')
         })
       }
