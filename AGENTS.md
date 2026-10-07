@@ -91,7 +91,21 @@ docs/runbooks/        human-only procedures (backup & restore) — agents read, 
 3. Verify: `pnpm check`, `pnpm test:int`, `pnpm test:e2e`; check UI in the browser (Chrome DevTools MCP), then `reviewer`.
 4. Conventional commits (`feat:`, `fix:`, `chore:` …), one logical change per commit; update `docs/baseline.md`.
 
+## Multi-agent workflow (Claude Code · Codex · human)
+
+- One story = one branch = one PR. Branch: `<agent>/<story-id>-<slug>` (`codex/006-tracker-grid`, `claude/005-challenge-model`).
+- Work only on a story with `status: approved`. If the story is ambiguous, implement nothing that guesses —
+  write the questions in the PR description and stop.
+- Stories that change collections or access control run **sequentially** (they produce migrations); UI-only stories
+  may run in parallel.
+- Keep a PR under ~400 changed lines (excluding `pnpm-lock.yaml`, `payload-types.ts`, migrations); otherwise propose a split.
+- Cloud agents: `bash scripts/cloud-setup.sh` is idempotent — re-run it if Postgres is not running.
+  Hooks in `.claude/settings.json` do not run in Codex: the rules above about prod DB, `.env` and guards still apply.
+- PR description: story id, which criteria are covered by which tests, anything left for the human
+  (migration to review, env var to add in Vercel). Template: `.github/pull_request_template.md`.
+
 ## Deeper context
 
 - Payload API reference: `.claude/skills/payload/SKILL.md`
 - Product & customers: `docs/product.md` · Decisions: `docs/decisions.md`
+- Reusable prompts for planning, implementation and review: `docs/prompts/`
