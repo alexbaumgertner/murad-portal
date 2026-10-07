@@ -1,0 +1,2001 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Murad Uzhakhov — English Bridge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #20242b;
+        --ink-soft: #565d66;
+        --paper: #ede8dd;
+        --paper-deep: #e1d9c6;
+        --dark: #1c2521;
+        --dark-line: rgba(237, 232, 221, 0.16);
+        --accent: #a9723c;
+        --accent-soft: #c79a6c;
+        --teal: #3f5c58;
+        --line: rgba(32, 36, 43, 0.15);
+        --serif: 'Newsreader', Georgia, serif;
+        --sans: 'IBM Plex Sans', Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 16px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: var(--serif);
+        font-weight: 500;
+        margin: 0;
+        color: var(--ink);
+      }
+      p {
+        margin: 0;
+      }
+      a {
+        color: inherit;
+      }
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      button {
+        font-family: var(--sans);
+        cursor: pointer;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 32px;
+      }
+      @media (max-width: 640px) {
+        .wrap {
+          padding: 0 20px;
+        }
+      }
+
+      .eng {
+        display: none;
+      }
+      html[data-lang='en'] .rus {
+        display: none;
+      }
+      html[data-lang='en'] .eng {
+        display: inline;
+      }
+      html[data-lang='en'] .eng-block {
+        display: block;
+      }
+
+      /* ---------- HEADER ---------- */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(237, 232, 221, 0.92);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid var(--line);
+      }
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 0;
+      }
+      .brand {
+        font-family: var(--serif);
+        font-size: 19px;
+        letter-spacing: 0.2px;
+      }
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+      }
+      nav a {
+        font-size: 14.5px;
+        color: var(--ink-soft);
+        text-decoration: none;
+      }
+      nav a:hover {
+        color: var(--ink);
+      }
+      .nav-links {
+        display: flex;
+        gap: 24px;
+      }
+      @media (max-width: 860px) {
+        .nav-links {
+          display: none;
+        }
+      }
+
+      .lang-toggle {
+        display: flex;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        overflow: hidden;
+        font-size: 12.5px;
+      }
+      .lang-toggle button {
+        border: none;
+        background: transparent;
+        padding: 6px 12px;
+        color: var(--ink-soft);
+      }
+      .lang-toggle button.active {
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      .btn-cta {
+        display: inline-block;
+        background: var(--accent);
+        color: #fff !important;
+        text-decoration: none;
+        padding: 11px 22px;
+        border-radius: 24px;
+        font-size: 14.5px;
+        font-weight: 500;
+        border: none;
+        transition: background 0.15s ease;
+      }
+      .btn-cta:hover {
+        background: #8f5d2f;
+      }
+      .btn-ghost {
+        display: inline-block;
+        padding: 11px 20px;
+        border-radius: 24px;
+        font-size: 14.5px;
+        border: 1px solid var(--ink);
+        text-decoration: none;
+        color: var(--ink) !important;
+      }
+
+      /* ---------- SECTION RHYTHM ---------- */
+      section {
+        padding: 96px 0;
+      }
+      @media (max-width: 640px) {
+        section {
+          padding: 64px 0;
+        }
+      }
+      .section-deep {
+        background: var(--paper-deep);
+      }
+      .section-dark {
+        background: var(--dark);
+        color: var(--paper);
+      }
+      .section-dark h2,
+      .section-dark h3 {
+        color: var(--paper);
+      }
+      .eyebrow-none {
+        margin-bottom: 18px;
+      }
+
+      .label {
+        font-size: 13.5px;
+        color: var(--accent);
+        font-weight: 500;
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      .measure {
+        max-width: 62ch;
+      }
+      .measure-wide {
+        max-width: 72ch;
+      }
+
+      /* ---------- HERO ---------- */
+      .hero {
+        padding-top: 76px;
+        padding-bottom: 88px;
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: 56px;
+        align-items: center;
+      }
+      @media (max-width: 860px) {
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .hero h1 {
+        font-size: clamp(34px, 5vw, 52px);
+        line-height: 1.12;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .hero-sub {
+        margin-top: 22px;
+        font-size: 17.5px;
+        color: var(--ink-soft);
+        line-height: 1.6;
+      }
+      .hero-actions {
+        margin-top: 34px;
+        display: flex;
+        align-items: flex-start;
+        gap: 22px;
+        flex-wrap: wrap;
+      }
+      .cta-group {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .cta-handle {
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        padding-left: 4px;
+      }
+
+      .hero-stat-block {
+        margin-top: 30px;
+        padding-top: 22px;
+        border-top: 1px solid var(--line);
+        max-width: 380px;
+      }
+      .hero-stat-num {
+        font-family: var(--serif);
+        font-size: 34px;
+        color: var(--accent);
+        font-weight: 500;
+        line-height: 1;
+      }
+      .hero-stat-label {
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin-top: 4px;
+      }
+      .hero-breakdown {
+        margin-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .hero-breakdown li {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        font-size: 13px;
+        color: var(--ink-soft);
+        border-bottom: 1px dotted var(--line);
+        padding-bottom: 5px;
+      }
+      .hero-breakdown li b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      .hero-visual {
+        position: relative;
+      }
+      .window-frame {
+        border: 1.5px solid var(--ink);
+        padding: 18px;
+        background: #f4f0e6;
+      }
+      .photo-slot {
+        width: 104px;
+        height: 132px;
+        margin-left: auto;
+        margin-right: 12px;
+        margin-top: -58px;
+        background: linear-gradient(160deg, #2c332f, #4c5650 60%, #7c8a7f);
+        border: 1px solid var(--ink);
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        box-shadow: 6px 6px 0 var(--paper-deep);
+      }
+      .photo-slot span {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.75);
+        padding: 6px;
+        text-align: center;
+      }
+
+      /* ---------- ABOUT ---------- */
+      .about-grid {
+        display: grid;
+        grid-template-columns: 0.9fr 1.4fr;
+        gap: 52px;
+        align-items: start;
+      }
+      @media (max-width: 760px) {
+        .about-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .cred-table {
+        margin-top: 28px;
+        border-top: 1px solid var(--dark-line);
+      }
+      .cred-row {
+        display: grid;
+        grid-template-columns: 1fr 1.4fr;
+        gap: 16px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--dark-line);
+        font-size: 14.5px;
+      }
+      .cred-row dt {
+        color: #9aa39b;
+      }
+      .cred-row dd {
+        margin: 0;
+      }
+
+      .about-notes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        margin-top: 56px;
+        padding-top: 40px;
+        border-top: 1px solid var(--dark-line);
+      }
+      @media (max-width: 760px) {
+        .about-notes {
+          grid-template-columns: 1fr;
+        }
+      }
+      .about-note h3 {
+        font-size: 17px;
+        font-family: var(--serif);
+        margin-bottom: 10px;
+        color: var(--paper);
+        font-weight: 500;
+      }
+      .about-note p {
+        font-size: 14.5px;
+        color: #c9cfc7;
+        line-height: 1.6;
+      }
+
+      /* ---------- APPROACH (honest diagnosis) ---------- */
+      .approach-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 56px;
+        align-items: start;
+      }
+      @media (max-width: 820px) {
+        .approach-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      blockquote {
+        margin: 0;
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 20px;
+        line-height: 1.5;
+        border-left: 2px solid var(--accent);
+        padding-left: 24px;
+        color: var(--ink);
+      }
+      cite {
+        display: block;
+        margin-top: 14px;
+        font-style: normal;
+        font-family: var(--sans);
+        font-size: 13.5px;
+        color: var(--ink-soft);
+      }
+
+      .zpd-diagram {
+        margin-bottom: 24px;
+      }
+      .zpd-diagram svg {
+        max-width: 210px;
+        display: block;
+        margin: 0 auto 22px;
+      }
+      .zpd-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+        font-size: 13.5px;
+        color: var(--ink-soft);
+      }
+      .zpd-legend li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 4px;
+      }
+      .dot-inner {
+        background: var(--ink);
+      }
+      .dot-mid {
+        background: var(--accent);
+      }
+      .dot-outer {
+        background: var(--paper-deep);
+        border: 1px solid var(--ink);
+      }
+
+      /* ---------- BRIDGE / LEVELS ---------- */
+      .levels {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 56px;
+        position: relative;
+      }
+      .levels::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 19px;
+        height: 1px;
+        background: var(--line);
+      }
+      .level-node {
+        position: relative;
+        text-align: center;
+        flex: 1;
+      }
+      .level-dot {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--paper);
+        border: 1.5px solid var(--ink);
+        margin: 0 auto 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--serif);
+        font-size: 14px;
+        position: relative;
+        z-index: 2;
+      }
+      .level-node.final .level-dot {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .level-label {
+        font-size: 12.5px;
+        color: var(--ink-soft);
+      }
+
+      /* ---------- REASON GRID (Как я учу / Плюсы сертификата) ---------- */
+      .reason-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px 44px;
+        margin-top: 40px;
+      }
+      @media (max-width: 700px) {
+        .reason-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .reason-item {
+        display: flex;
+        gap: 16px;
+      }
+      .reason-num {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--paper);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--serif);
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+      .section-deep .reason-num {
+        background: var(--ink);
+        color: var(--paper-deep);
+      }
+      .reason-item p {
+        font-size: 14.5px;
+        color: var(--ink-soft);
+        line-height: 1.55;
+        padding-top: 5px;
+      }
+      .reason-footnote {
+        margin-top: 38px;
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 14.5px;
+        color: var(--ink-soft);
+        max-width: 56ch;
+      }
+
+      /* ---------- PROOF ---------- */
+      .proof-grid {
+        display: grid;
+        grid-template-columns: 0.7fr 1.3fr;
+        gap: 52px;
+        align-items: start;
+      }
+      @media (max-width: 820px) {
+        .proof-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .big-stat {
+        font-family: var(--serif);
+        font-size: 76px;
+        line-height: 1;
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .big-stat-label {
+        margin-top: 8px;
+        font-size: 14.5px;
+        color: var(--ink-soft);
+        max-width: 22ch;
+      }
+      .proof-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+      @media (max-width: 560px) {
+        .proof-cards {
+          grid-template-columns: 1fr;
+        }
+      }
+      .proof-card {
+        border: 1px solid var(--line);
+        border-top: 2px solid var(--accent);
+        padding: 20px;
+        background: var(--paper);
+      }
+      .proof-card h4 {
+        font-family: var(--sans);
+        font-weight: 600;
+        font-size: 14.5px;
+        margin: 0 0 8px;
+      }
+      .proof-card p {
+        font-size: 13.5px;
+        color: var(--ink-soft);
+      }
+      .placeholder-tag {
+        display: inline-block;
+        margin-top: 12px;
+        font-size: 11.5px;
+        color: var(--teal);
+        border: 1px dashed var(--teal);
+        padding: 3px 8px;
+        border-radius: 12px;
+      }
+
+      /* ---------- MATERIALS ---------- */
+      .resource-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-top: 32px;
+      }
+      @media (max-width: 900px) {
+        .resource-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 560px) {
+        .resource-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .resource-card {
+        border: 1px solid var(--line);
+        padding: 18px;
+        background: var(--paper);
+      }
+      .resource-type {
+        font-size: 11.5px;
+        color: var(--teal);
+        margin-bottom: 10px;
+      }
+      .resource-name {
+        font-family: var(--serif);
+        font-size: 15.5px;
+        margin-bottom: 6px;
+        line-height: 1.3;
+      }
+      .resource-note {
+        font-size: 12.5px;
+        color: var(--ink-soft);
+      }
+
+      /* ---------- DATA CHART / SCORE TABLE ---------- */
+      .chart-block {
+        border: 1px solid var(--line);
+        padding: 28px;
+        background: var(--paper);
+        margin-top: 44px;
+      }
+      .chart-caption {
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        margin-top: 14px;
+      }
+      .score-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 14px;
+      }
+      .score-table th,
+      .score-table td {
+        text-align: left;
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--line);
+      }
+      .score-table th {
+        color: var(--ink-soft);
+        font-weight: 500;
+        font-size: 12.5px;
+      }
+
+      .level-score {
+        font-size: 11px;
+        color: var(--accent);
+        margin-top: 3px;
+        font-weight: 500;
+      }
+      .bridge-footnote {
+        margin-top: 20px;
+        font-size: 12px;
+        color: var(--ink-soft);
+      }
+
+      /* ---------- COMPARE (English every day) ---------- */
+      .compare-list {
+        margin-top: 36px;
+        border-top: 1px solid var(--dark-line);
+      }
+      .compare-row {
+        display: grid;
+        grid-template-columns: 0.9fr 2fr;
+        gap: 24px;
+        padding: 22px 0;
+        border-bottom: 1px solid var(--dark-line);
+      }
+      @media (max-width: 700px) {
+        .compare-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      .compare-row h4 {
+        font-family: var(--sans);
+        font-weight: 600;
+        font-size: 15px;
+      }
+      .compare-row p {
+        font-size: 14.5px;
+        color: #c9cfc7;
+        margin-top: 6px;
+      }
+
+      /* ---------- GUARANTEE ---------- */
+      .guarantee-box {
+        border: 1.5px solid var(--ink);
+        padding: 44px;
+        display: flex;
+        gap: 36px;
+        align-items: center;
+      }
+      @media (max-width: 700px) {
+        .guarantee-box {
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 28px;
+        }
+      }
+      .guarantee-mark {
+        font-family: var(--serif);
+        font-size: 44px;
+        color: var(--accent);
+        flex-shrink: 0;
+      }
+
+      /* ---------- AUDIENCE / EXAMS ---------- */
+      .aud-grid {
+        display: grid;
+        grid-template-columns: 1.3fr 0.9fr;
+        gap: 40px;
+        margin-top: 40px;
+      }
+      @media (max-width: 760px) {
+        .aud-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .aud-card {
+        border: 1px solid var(--line);
+        padding: 28px;
+      }
+      .aud-card.primary {
+        border-color: var(--ink);
+        background: var(--paper-deep);
+      }
+      .aud-card h3 {
+        font-size: 17px;
+        margin-bottom: 14px;
+      }
+      .aud-card li {
+        font-size: 14.5px;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink-soft);
+      }
+      .aud-card.primary li {
+        color: var(--ink);
+      }
+      .aud-card li:last-child {
+        border-bottom: none;
+      }
+
+      /* ---------- PRICING ---------- */
+      .price-box {
+        border: 1px solid var(--line);
+        padding: 36px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        background: var(--paper);
+      }
+      .price-range {
+        font-family: var(--serif);
+        font-size: 30px;
+      }
+      .price-note {
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin-top: 6px;
+      }
+
+      /* ---------- BLOG ---------- */
+      .blog-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+        margin-top: 36px;
+      }
+      @media (max-width: 820px) {
+        .blog-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .blog-card {
+        border: 1px solid var(--line);
+        padding: 22px;
+        background: var(--paper);
+        position: relative;
+      }
+      .blog-card h4 {
+        font-family: var(--serif);
+        font-size: 17px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .blog-card p {
+        font-size: 13.5px;
+        color: var(--ink-soft);
+      }
+      .blog-soon {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        font-size: 10.5px;
+        letter-spacing: 0.03em;
+        color: var(--teal);
+        border: 1px solid var(--teal);
+        padding: 2px 8px;
+        border-radius: 10px;
+      }
+
+      /* ---------- FAQ ---------- */
+      .faq-item {
+        border-bottom: 1px solid var(--line);
+        padding: 22px 0;
+      }
+      .faq-item h4 {
+        font-family: var(--sans);
+        font-weight: 600;
+        font-size: 15.5px;
+        margin-bottom: 8px;
+      }
+      .faq-item p {
+        font-size: 14.5px;
+        color: var(--ink-soft);
+        max-width: 62ch;
+      }
+
+      /* ---------- FINAL CTA ---------- */
+      .final-cta {
+        text-align: left;
+      }
+      .final-cta h2 {
+        font-size: clamp(28px, 4vw, 40px);
+        max-width: 16ch;
+      }
+      .ps {
+        margin-top: 28px;
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 14.5px;
+        color: #9aa39b;
+      }
+
+      footer {
+        padding: 36px 0;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .hero-anim {
+          animation: rise 0.7s ease both;
+        }
+        .hero-anim:nth-child(2) {
+          animation-delay: 0.08s;
+        }
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap header-inner">
+        <div class="brand">Murad Uzhakhov</div>
+        <nav>
+          <div class="nav-links">
+            <a href="#about"><span class="rus">Обо мне</span><span class="eng">About</span></a>
+            <a href="#approach"><span class="rus">Подход</span><span class="eng">Approach</span></a>
+            <a href="#bridge"><span class="rus">Мост</span><span class="eng">The bridge</span></a>
+            <a href="#materials"
+              ><span class="rus">Материалы</span><span class="eng">Materials</span></a
+            >
+            <a href="#audience"><span class="rus">Экзамены</span><span class="eng">Exams</span></a>
+            <a href="#blog"><span class="rus">Блог</span><span class="eng">Blog</span></a>
+            <a href="#faq">FAQ</a>
+          </div>
+          <div class="lang-toggle">
+            <button id="btn-ru" class="active" onclick="setLang('ru')">RU</button>
+            <button id="btn-en" onclick="setLang('en')">EN</button>
+          </div>
+          <a class="btn-cta" href="https://t.me/muradalialim" target="_blank" rel="noopener"
+            ><span class="rus">Написать</span><span class="eng">Message</span></a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <h1 class="hero-anim">
+            <span class="rus"
+              >Английский для работы в международных компаниях и учёбы в лучших университетах</span
+            >
+            <span class="eng"
+              >English for work at international companies and study at top universities</span
+            >
+          </h1>
+          <p class="hero-sub hero-anim measure">
+            <span class="rus"
+              >Для IT-специалистов, которые ищут работу или уже работают в международных компаниях,
+              и студентов, которые поступают в лучшие университеты. Диагностика по официальным
+              материалам — и дальше работа на ваш конкретный экзамен, собеседование или рабочую
+              коммуникацию.</span
+            >
+            <span class="eng"
+              >For IT professionals job-hunting or already working at international companies, and
+              students applying to top universities. An honest diagnostic using official materials,
+              then work toward your actual exam, interview, or workplace communication.</span
+            >
+          </p>
+          <div class="hero-actions hero-anim">
+            <div class="cta-group">
+              <a
+                class="btn-cta"
+                href="https://t.me/muradalialim"
+                target="_blank"
+                rel="noopener"
+                style="padding: 13px 26px; font-size: 15px"
+              >
+                <span class="rus">Написать в Telegram</span
+                ><span class="eng">Message on Telegram</span>
+              </a>
+              <div class="cta-handle">@muradalialim</div>
+            </div>
+          </div>
+          <div class="hero-stat-block hero-anim">
+            <div class="hero-stat-num">54</div>
+            <div class="hero-stat-label">
+              <span class="rus">ученика дошли до своей цели</span
+              ><span class="eng">students reached their goal</span>
+            </div>
+            <ul class="hero-breakdown">
+              <li>
+                <span><span class="rus">С A1 до B1</span><span class="eng">A1 to B1</span></span>
+                <b>[18]*</b>
+              </li>
+              <li>
+                <span><span class="rus">С A2 до B2</span><span class="eng">A2 to B2</span></span>
+                <b>[21]*</b>
+              </li>
+              <li>
+                <span><span class="rus">С B1 до C1</span><span class="eng">B1 to C1</span></span>
+                <b>[15]*</b>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="hero-visual hero-anim">
+          <div class="window-frame">
+            <svg
+              viewBox="0 0 400 320"
+              width="100%"
+              height="auto"
+              role="img"
+              aria-label="Line illustration of an open door with a certificate seal, revealing a university building and an office tower beyond it"
+            >
+              <rect x="0" y="0" width="400" height="320" fill="#F4F0E6" />
+              <circle cx="300" cy="90" r="24" fill="none" stroke="#A9723C" stroke-width="1.4" />
+              <path
+                d="M270 258 L270 188 M282 258 L282 188 M294 258 L294 188 M306 258 L306 188"
+                stroke="#20242B"
+                stroke-width="1.1"
+              />
+              <path
+                d="M262 188 L314 188 L288 162 Z"
+                fill="none"
+                stroke="#20242B"
+                stroke-width="1.1"
+              />
+              <line x1="256" y1="258" x2="320" y2="258" stroke="#20242B" stroke-width="1.1" />
+              <rect
+                x="335"
+                y="150"
+                width="28"
+                height="108"
+                fill="none"
+                stroke="#3F5C58"
+                stroke-width="1"
+                opacity="0.7"
+              />
+              <path
+                d="M120 44 L120 296 L258 296 L258 44 Z"
+                fill="none"
+                stroke="#20242B"
+                stroke-width="1.6"
+              />
+              <path
+                d="M120 44 L233 62 L233 284 L120 296 Z"
+                fill="#F4F0E6"
+                stroke="#20242B"
+                stroke-width="1.4"
+              />
+              <circle cx="144" cy="172" r="3" fill="#20242B" />
+              <circle cx="150" cy="222" r="12" fill="none" stroke="#A9723C" stroke-width="1.3" />
+              <path
+                d="M145 222 l4 4 l7 -8"
+                fill="none"
+                stroke="#A9723C"
+                stroke-width="1.3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <line x1="0" y1="272" x2="400" y2="272" stroke="#20242B" stroke-width="1" />
+            </svg>
+          </div>
+          <div class="photo-slot">
+            <span class="rus">фото Мурада</span><span class="eng">Murad's photo</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ABOUT ================= -->
+    <section class="section-dark" id="about">
+      <div class="wrap about-grid">
+        <div>
+          <div class="photo-slot" style="margin: 0 0 24px 0">
+            <span class="rus">фото Мурада</span><span class="eng">Murad's photo</span>
+          </div>
+          <h2 style="font-size: 26px">
+            <span class="rus">Обо мне</span><span class="eng">About me</span>
+          </h2>
+        </div>
+        <div>
+          <p class="measure" style="color: #c9cfc7; font-size: 16px">
+            <span class="rus"
+              >Я давно потребляю информацию исключительно на английском — научную, художественную,
+              публицистику. Это вместе с опытом жизни и работы в США и сертификатом C2 даёт мне
+              статус носителя.</span
+            >
+            <span class="eng"
+              >I've long consumed information only in English — research, fiction, journalism.
+              Combined with years living and working in the US and a C2 certificate, that gives me
+              native-level command of the language.</span
+            >
+          </p>
+          <dl class="cred-table">
+            <div class="cred-row">
+              <dt><span class="rus">Образование</span><span class="eng">Education</span></dt>
+              <dd>
+                <span class="rus"
+                  >Высшее переводческое и педагогическое, магистр лингвистических наук</span
+                ><span class="eng">Translation and education degree, MA in Linguistics</span>
+              </dd>
+            </div>
+            <div class="cred-row">
+              <dt><span class="rus">Сертификат</span><span class="eng">Certification</span></dt>
+              <dd>
+                CELTA — <span class="rus">международный преподавательский сертификат</span
+                ><span class="eng">international teaching certificate</span>
+              </dd>
+            </div>
+            <div class="cred-row">
+              <dt><span class="rus">Уровень языка</span><span class="eng">Language level</span></dt>
+              <dd>C2 / TOEFL 110</dd>
+            </div>
+            <div class="cred-row">
+              <dt><span class="rus">Опыт</span><span class="eng">Experience</span></dt>
+              <dd>
+                <span class="rus">16 лет преподавания, только индивидуальные занятия</span
+                ><span class="eng">16 years teaching, one-on-one only</span>
+              </dd>
+            </div>
+          </dl>
+        </div>
+        <div class="about-notes" style="grid-column: 1 / -1">
+          <div class="about-note">
+            <h3>
+              <span class="rus">Я не мотиватор, но наставник</span
+              ><span class="eng">A mentor, not a motivator</span>
+            </h3>
+            <p>
+              <span class="rus"
+                >Я всегда, при необходимости, окажу моральную поддержку. Экзамены — стандартные, а
+                вот программа — под конкретного ученика: подбираю материалы и темп под то, как
+                учится именно он.</span
+              >
+              <span class="eng"
+                >I'll always offer moral support when it's needed. The exams are standard — the
+                programme isn't: I choose materials and pace around how each student actually
+                learns.</span
+              >
+            </p>
+          </div>
+          <div class="about-note">
+            <h3>
+              <span class="rus">В чём моя выгода?</span
+              ><span class="eng">What's in it for me?</span>
+            </h3>
+            <p>
+              <span class="rus"
+                >Она простая: каждый ваш сертификат — это и мой результат. Так я вижу свой реальный
+                вклад в качество вашей жизни, а это как раз то, ради чего я учу.</span
+              >
+              <span class="eng"
+                >It's simple: every certificate you earn is my result too. That's how I see my real
+                contribution to your life — and it's exactly why I teach.</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= APPROACH ================= -->
+    <section id="approach">
+      <div class="wrap approach-grid">
+        <div>
+          <span class="label"
+            ><span class="rus">Подход</span><span class="eng">Approach</span></span
+          >
+          <h2 style="font-size: 30px">
+            <span class="rus">Объективная диагностика</span
+            ><span class="eng">Objective diagnosis</span>
+          </h2>
+          <p class="measure" style="margin-top: 18px; color: var(--ink-soft); font-size: 15.5px">
+            <span class="rus"
+              >Я тестирую по официальным материалам, а не «на глаз». Так видно, где ученик находится
+              на самом деле — и куда реально можно двигаться, учитывая зону его ближайшего
+              развития.</span
+            >
+            <span class="eng"
+              >I test using official materials, not guesswork. That shows where a student actually
+              stands — and how far they can realistically move, based on their zone of proximal
+              development.</span
+            >
+          </p>
+        </div>
+        <div>
+          <div class="zpd-diagram">
+            <svg
+              viewBox="0 0 300 300"
+              width="100%"
+              height="auto"
+              role="img"
+              aria-label="Three concentric circles representing what a learner can do alone, the zone of proximal development, and what is not yet possible"
+            >
+              <circle cx="150" cy="150" r="135" fill="#E1D9C6" stroke="#20242B" stroke-width="1" />
+              <circle cx="150" cy="150" r="92" fill="#A9723C" opacity="0.4" />
+              <circle cx="150" cy="150" r="46" fill="#20242B" />
+            </svg>
+            <ul class="zpd-legend">
+              <li>
+                <span class="dot dot-inner"></span
+                ><span
+                  ><span class="rus">Может сделать сам</span
+                  ><span class="eng">Can do alone</span></span
+                >
+              </li>
+              <li>
+                <span class="dot dot-mid"></span
+                ><span
+                  ><span class="rus">Зона ближайшего развития — с помощью наставника</span
+                  ><span class="eng"
+                    >Zone of proximal development — with a mentor's help</span
+                  ></span
+                >
+              </li>
+              <li>
+                <span class="dot dot-outer"></span
+                ><span
+                  ><span class="rus">Пока не может</span
+                  ><span class="eng">Not yet possible</span></span
+                >
+              </li>
+            </ul>
+          </div>
+          <blockquote>
+            <span class="rus"
+              >Ко мне пришёл ученик — сказали, что у него A2. Через пару недель тестов оказалось:
+              почти B2.</span
+            >
+            <span class="eng"
+              >A student once came to me — told his level was A2. A couple of weeks of testing
+              later: almost B2.</span
+            >
+            <cite
+              ><span class="rus">Я показываю реальный старт — какой бы он ни был.</span
+              ><span class="eng"
+                >I show the real starting point — whatever it turns out to be.</span
+              ></cite
+            >
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HOW I TEACH ================= -->
+    <section>
+      <div class="wrap">
+        <span class="label"><span class="rus">Метод</span><span class="eng">Method</span></span>
+        <h2 style="font-size: 28px">
+          <span class="rus">Как я учу</span><span class="eng">How I teach</span>
+        </h2>
+        <p class="measure" style="margin-top: 14px; color: var(--ink-soft); font-size: 15px">
+          <span class="rus"
+            >Я учу через подготовку к международным экзаменам. Почему именно так?</span
+          >
+          <span class="eng"
+            >I teach through preparation for international exams. Why this way?</span
+          >
+        </p>
+        <div class="reason-grid">
+          <div class="reason-item">
+            <div class="reason-num">1</div>
+            <p>
+              <span class="rus"
+                >Даёт нам обоим чёткую цель, что сокращает время обучения и повышает его
+                эффективность.</span
+              ><span class="eng"
+                >It gives us both a clear target, which shortens study time and makes it more
+                effective.</span
+              >
+            </p>
+          </div>
+          <div class="reason-item">
+            <div class="reason-num">2</div>
+            <p>
+              <span class="rus"
+                >Создаёт здоровые отношения между учителем и учеником: каждый отвечает за свою часть
+                результата.</span
+              ><span class="eng"
+                >It builds a healthy relationship between teacher and student: each of us owns our
+                part of the result.</span
+              >
+            </p>
+          </div>
+          <div class="reason-item">
+            <div class="reason-num">3</div>
+            <p>
+              <span class="rus"
+                >Ваш результат — это буквально и мой результат, так что моя заинтересованность
+                гарантирована.</span
+              ><span class="eng"
+                >Your result is literally my result too — so my investment in it is
+                guaranteed.</span
+              >
+            </p>
+          </div>
+          <div class="reason-item">
+            <div class="reason-num">4</div>
+            <p>
+              <span class="rus"
+                >Экзамены проверяют все языковые навыки сразу, поэтому вы учитесь видеть свои слабые
+                места и работать над ними.</span
+              ><span class="eng"
+                >Exams test every language skill at once, so you learn to spot your weak points and
+                work on them.</span
+              >
+            </p>
+          </div>
+          <div class="reason-item">
+            <div class="reason-num">5</div>
+            <p>
+              <span class="rus"
+                >Даёт объективную картину скорости вашего развития — и повод вовремя скорректировать
+                программу.</span
+              ><span class="eng"
+                >It gives an objective picture of how fast you're progressing — and a reason to
+                adjust the programme in time.</span
+              >
+            </p>
+          </div>
+        </div>
+        <p class="reason-footnote">
+          <span class="rus"
+            >После подготовки каждый ученик сдаёт международный экзамен в аккредитованном центре и
+            при успешной сдаче получает сертификат.</span
+          >
+          <span class="eng"
+            >After preparation, every student sits an international exam at an accredited centre and
+            receives a certificate upon passing.</span
+          >
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= BRIDGE ================= -->
+    <section class="section-deep" id="bridge">
+      <div class="wrap">
+        <span class="label"><span class="rus">Метод</span><span class="eng">Method</span></span>
+        <h2 style="font-size: 30px; max-width: 20ch">
+          <span class="rus">У каждого ученика есть свой breaking point</span
+          ><span class="eng">Every student has their own breaking point</span>
+        </h2>
+        <p class="measure" style="margin-top: 18px; color: var(--ink-soft); font-size: 15.5px">
+          <span class="rus"
+            >Момент, где раньше застревали. Моя задача — найти именно его и построить мост через
+            него, с материалами и темпом, подобранными под вас.</span
+          >
+          <span class="eng"
+            >The exact place they used to get stuck. My job is to find it and build a bridge across
+            it, with materials and pace built around you.</span
+          >
+        </p>
+
+        <div class="levels">
+          <div class="level-node">
+            <div class="level-dot">A1</div>
+            <div class="level-label">2022</div>
+            <div class="level-score">82/150*</div>
+          </div>
+          <div class="level-node">
+            <div class="level-dot">A2</div>
+            <div class="level-label">2023</div>
+            <div class="level-score">104/150*</div>
+          </div>
+          <div class="level-node">
+            <div class="level-dot">B1</div>
+            <div class="level-label">2024</div>
+            <div class="level-score">121/150*</div>
+          </div>
+          <div class="level-node">
+            <div class="level-dot">B2</div>
+            <div class="level-label">2025</div>
+            <div class="level-score">138/150*</div>
+          </div>
+          <div class="level-node final">
+            <div class="level-dot">C1</div>
+            <div class="level-label">
+              <span class="rus">сейчас</span><span class="eng">now</span>
+            </div>
+            <div class="level-score">147/150*</div>
+          </div>
+        </div>
+        <p class="bridge-footnote">
+          <span class="rus"
+            >* Баллы — пример формата. Мурад подставит реальные результаты конкретного
+            ученика.</span
+          >
+          <span class="eng"
+            >* Scores are a format example. Murad will fill in a real student's actual
+            results.</span
+          >
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= MATERIALS ================= -->
+    <section id="materials">
+      <div class="wrap">
+        <span class="label"
+          ><span class="rus">С чем я работаю</span><span class="eng">What I use</span></span
+        >
+        <h2 style="font-size: 28px; max-width: 22ch">
+          <span class="rus">Официальные материалы, признанные экзаменационными центрами</span
+          ><span class="eng">Official materials, recognised by exam centres</span>
+        </h2>
+        <p class="measure" style="margin-top: 16px; color: var(--ink-soft); font-size: 15px">
+          <span class="rus"
+            >Каждый учебник и тест — стандартный, и вы можете проверить это самостоятельно.</span
+          >
+          <span class="eng">Every book and test is standard, and you can check it yourself.</span>
+        </p>
+        <div class="resource-grid">
+          <div class="resource-card">
+            <div class="resource-type">
+              <span class="rus">официальная подготовка</span><span class="eng">official prep</span>
+            </div>
+            <div class="resource-name">[Cambridge / IELTS practice tests]</div>
+            <div class="resource-note">
+              <span class="rus">точное название — уточнить у Мурада</span
+              ><span class="eng">exact title — to confirm with Murad</span>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-type">
+              <span class="rus">грамматика</span><span class="eng">grammar</span>
+            </div>
+            <div class="resource-name">[грамматический справочник]</div>
+            <div class="resource-note">
+              <span class="rus">точное название — уточнить у Мурада</span
+              ><span class="eng">exact title — to confirm with Murad</span>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-type">
+              <span class="rus">навыки по разделам</span><span class="eng">skill-specific</span>
+            </div>
+            <div class="resource-name">Reading / Listening / Speaking / Writing</div>
+            <div class="resource-note">
+              <span class="rus">точное название — уточнить у Мурада</span
+              ><span class="eng">exact title — to confirm with Murad</span>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-type">
+              <span class="rus">доп. материалы</span><span class="eng">extra materials</span>
+            </div>
+            <div class="resource-name">
+              <span class="rus">статьи, подкасты, книги</span
+              ><span class="eng">articles, podcasts, books</span>
+            </div>
+            <div class="resource-note">
+              <span class="rus">список — уточнить у Мурада</span
+              ><span class="eng">list — to confirm with Murad</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROOF ================= -->
+    <section id="proof">
+      <div class="wrap proof-grid">
+        <div>
+          <div class="big-stat">54</div>
+          <p class="big-stat-label">
+            <span class="rus"
+              >задокументированных истории — от первого теста до сданного экзамена</span
+            ><span class="eng">documented stories — from the first test to a passed exam</span>
+          </p>
+        </div>
+        <div>
+          <span class="label"
+            ><span class="rus">Доказательства</span><span class="eng">Proof</span></span
+          >
+          <div class="proof-cards">
+            <div class="proof-card">
+              <h4>
+                <span class="rus">Видео-разбор пути</span><span class="eng">Video walkthrough</span>
+              </h4>
+              <p>
+                <span class="rus"
+                  >Как ученик проходит путь от текущего уровня до экзамена — по шагам, без
+                  прикрас.</span
+                ><span class="eng"
+                  >How a student moves from their current level to the exam — step by step, no
+                  embellishment.</span
+                >
+              </p>
+              <span class="placeholder-tag"
+                ><span class="rus">место под видео</span
+                ><span class="eng">video placeholder</span></span
+              >
+            </div>
+            <div class="proof-card">
+              <h4>
+                <span class="rus">Сертификаты уровня</span
+                ><span class="eng">Level certificates</span>
+              </h4>
+              <p>
+                <span class="rus"
+                  >Реальные результаты реальных учеников — B2, C1, C2 в аккредитованных
+                  центрах.</span
+                ><span class="eng"
+                  >Real results from real students — B2, C1, C2 from accredited centers.</span
+                >
+              </p>
+              <span class="placeholder-tag"
+                ><span class="rus">место под сертификаты</span
+                ><span class="eng">certificates placeholder</span></span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-block">
+          <h3 style="font-size: 16.5px; margin-bottom: 4px">
+            <span class="rus">Прогресс по баллам — пример</span
+            ><span class="eng">Score progress — example</span>
+          </h3>
+          <svg
+            viewBox="0 0 640 210"
+            width="100%"
+            height="auto"
+            role="img"
+            aria-label="Line chart showing an example of rising exam scores across four years"
+          >
+            <line x1="36" y1="170" x2="600" y2="170" stroke="#20242B" stroke-width="1" />
+            <polyline
+              points="80,145 220,115 360,80 500,35"
+              fill="none"
+              stroke="#A9723C"
+              stroke-width="2"
+            />
+            <circle cx="80" cy="145" r="4" fill="#A9723C" />
+            <circle cx="220" cy="115" r="4" fill="#A9723C" />
+            <circle cx="360" cy="80" r="4" fill="#A9723C" />
+            <circle cx="500" cy="35" r="4" fill="#A9723C" />
+            <text x="80" y="133" font-size="12" fill="#20242B" text-anchor="middle">82</text>
+            <text x="220" y="103" font-size="12" fill="#20242B" text-anchor="middle">104</text>
+            <text x="360" y="68" font-size="12" fill="#20242B" text-anchor="middle">121</text>
+            <text x="500" y="23" font-size="12" fill="#20242B" text-anchor="middle">138</text>
+            <text x="80" y="188" font-size="11" fill="#565D66" text-anchor="middle">2022</text>
+            <text x="220" y="188" font-size="11" fill="#565D66" text-anchor="middle">2023</text>
+            <text x="360" y="188" font-size="11" fill="#565D66" text-anchor="middle">2024</text>
+            <text x="500" y="188" font-size="11" fill="#565D66" text-anchor="middle">2025</text>
+          </svg>
+          <p class="chart-caption">
+            <span class="rus"
+              >Пример визуализации. Реальные графики — по каждому из 54 случаев, с согласия
+              учеников.</span
+            >
+            <span class="eng"
+              >Example visualisation. Real charts available per case, with each student's
+              consent.</span
+            >
+          </p>
+
+          <table class="score-table">
+            <thead>
+              <tr>
+                <th>
+                  <span class="rus">Раздел экзамена</span><span class="eng">Exam section</span>
+                </th>
+                <th><span class="rus">Пример балла</span><span class="eng">Example score</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Reading & Writing</td>
+                <td>133/150*</td>
+              </tr>
+              <tr>
+                <td>Listening</td>
+                <td>128/150*</td>
+              </tr>
+              <tr>
+                <td>Speaking</td>
+                <td>141/150*</td>
+              </tr>
+              <tr>
+                <td><span class="rus">Итого</span><span class="eng">Overall</span></td>
+                <td>134/150*</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="chart-caption">
+            <span class="rus"
+              >* Формат — как в реальных сертификатах учеников. Цифры — иллюстративные.</span
+            >
+            <span class="eng"
+              >* Format matches real student certificates. Numbers shown are illustrative.</span
+            >
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CERTIFICATE BENEFITS ================= -->
+    <section>
+      <div class="wrap">
+        <span class="label"
+          ><span class="rus">Результат</span><span class="eng">Outcome</span></span
+        >
+        <h2 style="font-size: 28px">
+          <span class="rus">Плюсы получения сертификата</span
+          ><span class="eng">Why the certificate matters</span>
+        </h2>
+        <div class="reason-grid">
+          <div class="reason-item">
+            <div class="reason-num">1</div>
+            <p>
+              <span class="rus"
+                >Вы объективно более конкурентоспособны — легче поступить в зарубежный вуз,
+                переехать, устроиться на работу.</span
+              ><span class="eng"
+                >You become genuinely more competitive — easier to get into a university abroad,
+                relocate, or land a job.</span
+              >
+            </p>
+          </div>
+          <div class="reason-item">
+            <div class="reason-num">2</div>
+            <p>
+              <span class="rus"
+                >Вы точно знаете, что время потрачено не зря: результат задокументирован.</span
+              ><span class="eng"
+                >You know for certain the time was well spent — the result is documented.</span
+              >
+            </p>
+          </div>
+          <div class="reason-item">
+            <div class="reason-num">3</div>
+            <p>
+              <span class="rus"
+                >Учить язык дальше становится легче: с каждым экзаменом растёт уверенность в своих
+                силах — не только в языке, но и в жизни в целом.</span
+              ><span class="eng"
+                >Learning further gets easier: each exam you pass builds confidence — in the
+                language and in life generally.</span
+              >
+            </p>
+          </div>
+          <div class="reason-item">
+            <div class="reason-num">4</div>
+            <p>
+              <span class="rus"
+                >После уровня B2–C1 вы можете перестать учить язык специально и просто пользоваться
+                им.</span
+              ><span class="eng"
+                >Past B2–C1, you can stop studying the language on purpose and simply use it.</span
+              >
+            </p>
+          </div>
+          <div class="reason-item">
+            <div class="reason-num">5</div>
+            <p>
+              <span class="rus"
+                >И да — это по-настоящему хорошая память и положительные эмоции.</span
+              ><span class="eng"
+                >And yes — it's genuinely a good memory and a positive feeling.</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= GUARANTEE ================= -->
+    <section class="section-deep">
+      <div class="wrap">
+        <div class="guarantee-box">
+          <div class="guarantee-mark">✓</div>
+          <div>
+            <h2 style="font-size: 24px">
+              <span class="rus">Если я говорю, что вы готовы — вы сдадите</span
+              ><span class="eng">If I say you're ready, you'll pass</span>
+            </h2>
+            <p style="margin-top: 12px; color: var(--ink-soft); font-size: 15px" class="measure">
+              <span class="rus"
+                >Мой внутренний тест решает, отправлять ли вас на экзамен. Если по моей оценке вы
+                готовы, а результат не пришёл — я оплачиваю пересдачу.</span
+              >
+              <span class="eng"
+                >My internal test decides whether you're ready to sit the exam. If I judge you ready
+                and the result doesn't come — I cover your resit.</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ENGLISH EVERY DAY ================= -->
+    <section class="section-dark">
+      <div class="wrap">
+        <span class="label"
+          ><span class="rus">Зачем это, кроме экзамена</span
+          ><span class="eng">Beyond the exam</span></span
+        >
+        <h2 style="font-size: 27px; max-width: 22ch">
+          <span class="rus">Английский меняет то, откуда вы берёте информацию</span
+          ><span class="eng">English changes where your information comes from</span>
+        </h2>
+        <div class="compare-list">
+          <div class="compare-row">
+            <h4><span class="rus">Новости</span><span class="eng">News</span></h4>
+            <p>
+              <span class="rus"
+                >Читаете источники напрямую, а не пересказ с задержкой через один-два
+                перевода.</span
+              ><span class="eng"
+                >You read sources directly, instead of a delayed retelling filtered through
+                translation.</span
+              >
+            </p>
+          </div>
+          <div class="compare-row">
+            <h4>
+              <span class="rus">Здоровье — физическое и ментальное</span
+              ><span class="eng">Physical and mental health</span>
+            </h4>
+            <p>
+              <span class="rus"
+                >Большая часть текущих исследований и клинических рекомендаций публикуется на
+                английском раньше перевода — или вовсе без него.</span
+              ><span class="eng"
+                >Most current research and clinical guidance is published in English before any
+                translation appears — sometimes without one at all.</span
+              >
+            </p>
+          </div>
+          <div class="compare-row">
+            <h4>
+              <span class="rus">Наука и культура</span><span class="eng">Science and culture</span>
+            </h4>
+            <p>
+              <span class="rus"
+                >Статьи, книги, подкасты — в оригинале, без искажений при пересказе.</span
+              ><span class="eng"
+                >Papers, books, podcasts — in the original, without distortion from retelling.</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="audience">
+      <div class="wrap">
+        <span class="label"
+          ><span class="rus">К каким экзаменам я готовлю</span
+          ><span class="eng">Exams I prepare for</span></span
+        >
+        <h2 style="font-size: 30px">
+          <span class="rus">Для карьеры и учёбы — в первую очередь</span
+          ><span class="eng">Career and study first</span>
+        </h2>
+        <div class="aud-grid">
+          <div class="aud-card primary">
+            <h3>
+              <span class="rus">Работа и поступление за рубежом</span
+              ><span class="eng">Career and study abroad</span>
+            </h3>
+            <ul>
+              <li>IELTS</li>
+              <li>TOEFL</li>
+              <li>Cambridge C1 Advanced</li>
+              <li>Cambridge C2 Proficiency</li>
+            </ul>
+          </div>
+          <div class="aud-card">
+            <h3><span class="rus">Школьные экзамены</span><span class="eng">School exams</span></h3>
+            <ul>
+              <li>ЕГЭ / ОГЭ / ЕНТ</li>
+              <li>
+                <span class="rus">A2–B2 для школьников</span
+                ><span class="eng">A2–B2 for school students</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PRICING ================= -->
+    <section class="section-deep">
+      <div class="wrap">
+        <span class="label"
+          ><span class="rus">Стоимость</span><span class="eng">Pricing</span></span
+        >
+        <div class="price-box" style="margin-top: 20px">
+          <div>
+            <div class="price-range">от ____ до ____ ₽</div>
+            <div class="price-note">
+              <span class="rus">за занятие · точная вилка обсуждается на первой встрече</span
+              ><span class="eng">per lesson · exact range confirmed at the first meeting</span>
+            </div>
+          </div>
+          <a class="btn-ghost" href="#contact"
+            ><span class="rus">Уточнить</span><span class="eng">Ask about pricing</span></a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BLOG ================= -->
+    <section id="blog">
+      <div class="wrap">
+        <span class="label"><span class="rus">Блог</span><span class="eng">Blog</span></span>
+        <h2 style="font-size: 30px; max-width: 18ch">
+          <span class="rus">Английский как язык науки и культуры</span
+          ><span class="eng">English as the language of science and culture</span>
+        </h2>
+        <p class="measure" style="margin-top: 16px; color: var(--ink-soft); font-size: 15px">
+          <span class="rus"
+            >Разборы книг и статей, которые сейчас читает Мурад, и кейсы учеников — без нужды
+            заходить в Telegram, чтобы это увидеть.</span
+          >
+          <span class="eng"
+            >Notes on the books and articles Murad is currently reading, plus student case studies —
+            no need to leave the page to see them.</span
+          >
+        </p>
+        <div class="blog-grid">
+          <div class="blog-card">
+            <span class="blog-soon"
+              ><span class="rus">скоро</span><span class="eng">soon</span></span
+            >
+            <h4>
+              <span class="rus">Разбор главы: [книга]</span
+              ><span class="eng">Chapter notes: [book]</span>
+            </h4>
+            <p>
+              <span class="rus"
+                >Что читает Мурад и как это связано с реальным английским, а не учебником.</span
+              ><span class="eng"
+                >What Murad's reading, and how it connects to real-world English.</span
+              >
+            </p>
+          </div>
+          <div class="blog-card">
+            <span class="blog-soon"
+              ><span class="rus">скоро</span><span class="eng">soon</span></span
+            >
+            <h4>
+              <span class="rus">Кейс: A1 → C1 за четыре года</span
+              ><span class="eng">Case study: A1 to C1 in four years</span>
+            </h4>
+            <p>
+              <span class="rus"
+                >Полная история одного из 54 — с breaking point и всем остальным.</span
+              ><span class="eng"
+                >The full story behind one of the 54 — breaking point included.</span
+              >
+            </p>
+          </div>
+          <div class="blog-card">
+            <span class="blog-soon"
+              ><span class="rus">скоро</span><span class="eng">soon</span></span
+            >
+            <h4>
+              <span class="rus">Почему наука говорит по-английски</span
+              ><span class="eng">Why science speaks English</span>
+            </h4>
+            <p>
+              <span class="rus"
+                >English как lingua franca — и что это значит для вашей карьеры.</span
+              ><span class="eng"
+                >English as lingua franca — and what it means for your career.</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FAQ ================= -->
+    <section class="section-deep" id="faq">
+      <div class="wrap">
+        <span class="label">FAQ</span>
+        <h2 style="font-size: 28px">
+          <span class="rus">Частые вопросы</span><span class="eng">Common questions</span>
+        </h2>
+        <div style="margin-top: 24px">
+          <div class="faq-item">
+            <h4>
+              <span class="rus">А если мой уровень совсем низкий?</span
+              ><span class="eng">What if my level is very low?</span>
+            </h4>
+            <p>
+              <span class="rus"
+                >Не проблема — диагностика для того и нужна, чтобы честно увидеть точку старта,
+                какой бы она ни была.</span
+              ><span class="eng"
+                >That's fine — the diagnosis exists precisely to find your honest starting point,
+                whatever it is.</span
+              >
+            </p>
+          </div>
+          <div class="faq-item">
+            <h4>
+              <span class="rus">Вы работаете только с айтишниками?</span
+              ><span class="eng">Do you only work with IT professionals?</span>
+            </h4>
+            <p>
+              <span class="rus"
+                >Нет, но именно для карьеры в IT и учёбы за рубежом у меня больше всего доведённых
+                до цели случаев.</span
+              ><span class="eng"
+                >No, but IT careers and study abroad are where I have the most documented success
+                stories.</span
+              >
+            </p>
+          </div>
+          <div class="faq-item">
+            <h4>
+              <span class="rus">Есть групповые занятия?</span
+              ><span class="eng">Are there group classes?</span>
+            </h4>
+            <p>
+              <span class="rus"
+                >Нет, только индивидуально — так каждый несёт ответственность за свой результат, и
+                это ускоряет прогресс.</span
+              ><span class="eng"
+                >No, one-on-one only — that way everyone owns their own result, which speeds up
+                progress.</span
+              >
+            </p>
+          </div>
+          <div class="faq-item">
+            <h4>
+              <span class="rus">Что, если я не сдам экзамен?</span
+              ><span class="eng">What if I don't pass the exam?</span>
+            </h4>
+            <p>
+              <span class="rus"
+                >Если я отправил вас на экзамен — значит, по моей оценке вы готовы. Не сдали — я
+                оплачиваю пересдачу.</span
+              ><span class="eng"
+                >If I've sent you to sit the exam, I've judged you ready. If you don't pass — I
+                cover the resit.</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FINAL CTA ================= -->
+    <section id="contact">
+      <div class="wrap final-cta">
+        <h2>
+          <span class="rus">Готовы найти свой breaking point?</span
+          ><span class="eng">Ready to find your breaking point?</span>
+        </h2>
+        <p class="measure" style="margin-top: 16px; color: var(--ink-soft); font-size: 15.5px">
+          <span class="rus"
+            >Напишите в Telegram — расскажу, с чего начнём, и когда сможем провести первую
+            диагностику.</span
+          >
+          <span class="eng"
+            >Message me on Telegram — I'll walk you through what's next and when we can run your
+            first diagnostic.</span
+          >
+        </p>
+        <div style="margin-top: 28px">
+          <a
+            class="btn-cta"
+            style="padding: 14px 30px; font-size: 15.5px"
+            href="https://t.me/muradalialim"
+            target="_blank"
+            rel="noopener"
+          >
+            <span class="rus">Написать в Telegram</span><span class="eng">Message on Telegram</span>
+          </a>
+          <div class="cta-handle" style="margin-top: 10px">@muradalialim</div>
+        </div>
+        <p class="ps">
+          <span class="rus"
+            >P.S. Остров адекватности открыт для посещения без предварительной записи.</span
+          >
+          <span class="eng"
+            >P.S. The island of sanity is open for visits — no appointment needed.</span
+          >
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap footer-inner">
+        <span
+          >Murad Uzhakhov · <span class="rus">учитель английского языка</span
+          ><span class="eng">English teacher</span></span
+        >
+        <span>© 2026</span>
+      </div>
+    </footer>
+
+    <script>
+      function setLang(lang) {
+        document.documentElement.setAttribute('data-lang', lang)
+        document.getElementById('btn-ru').classList.toggle('active', lang === 'ru')
+        document.getElementById('btn-en').classList.toggle('active', lang === 'en')
+      }
+    </script>
+  </body>
+</html>

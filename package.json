@@ -1,5 +1,5 @@
 {
-  "name": "payload-vercel-template",
+  "name": "murad-portal",
   "version": "0.1.0",
   "private": true,
   "description": "Next.js 16 + Payload 3 + Postgres (Neon) starter with an AI-first workflow",
@@ -45,7 +45,7 @@
     "@vercel/analytics": "2.0.1",
     "graphql": "16.14.2",
     "next": "16.3.8",
-    "next-intl": "4.14.8",
+    "next-intl": "4.14.9",
     "payload": "3.90.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -71,7 +71,7 @@
     "prettier": "3.9.9",
     "tsx": "4.23.15",
     "typescript": "6.0.3",
-    "vite": "8.3.1",
+    "vite": "8.3.2",
     "vitest": "5.0.3",
     "vitest-browser-react": "2.3.0"
   }

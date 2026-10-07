@@ -2,6 +2,34 @@
 
 Short log of choices that shape the codebase. Newest first. One entry = what we chose, why, and what would make us revisit it.
 
+## 2026-10-07 — Multi-agent workflow: Claude plans, Codex implements, both review
+
+**Context.** Claude Pro limits are shared between chat and Claude Code; ChatGPT Plus includes Codex with more room for
+bulk code. Work must not depend on one laptop.
+
+**Decision.**
+
+- GitHub repo is the source of truth; every change is a PR with a Vercel Preview (and a Neon branch via the
+  Vercel–Neon integration).
+- **Claude Code** (Opus, plan mode): stories, decisions, data model; Sonnet for Payload-heavy implementation
+  (collections, access, hooks, migrations) where the `.claude/skills/payload` skill pays off.
+- **Codex cloud**: implementation of approved, well-scoped stories; parallel only for UI-only stories.
+- **Review**: `@codex review` on every PR; Claude `reviewer` subagent additionally for auth, access control,
+  schema and migrations.
+- Environments: Codex cloud and Claude Code on the web run `scripts/cloud-setup.sh` (Postgres on localhost);
+  locally a dev container (`.devcontainer/`, used by Zed and Codespaces) with Postgres as a compose service.
+
+**Consequences.** Codex does not run the Claude hooks (`guard-shell`, `guard-mcp`, `stop-typecheck`); cloud
+environments hold no production secrets, and CI enforces `pnpm check` + tests on every PR.
+Revisit if: limits change, or Codex gains a hooks mechanism we can share.
+
+## 2026-10-07 — PROPOSED: Russian as the default locale
+
+**Context.** The audience is Russian-speaking learners of English; the template defaults to English unprefixed.
+
+**Proposal.** `defaultLocale = 'ru'` (unprefixed `/`), English under `/en`, `x-default` → Russian. Story 004.
+Approve or reject before story 004 starts.
+
 ## 2026-10-01 — Agent rules as nested AGENTS.md; Node 24 and Postgres 18 everywhere
 
 **Rules.** Cursor-only `.cursor/rules/*.mdc` became nested `AGENTS.md` files (`src/collections`, `src/features`,
