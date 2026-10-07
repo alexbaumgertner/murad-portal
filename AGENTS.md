@@ -111,3 +111,13 @@ docs/runbooks/        human-only procedures (backup & restore) — agents read, 
 - Payload API reference: `.claude/skills/payload/SKILL.md`
 - Product & customers: `docs/product.md` · Decisions: `docs/decisions.md`
 - Reusable prompts for planning, implementation and review: `docs/prompts/`
+
+## Code Review Rules
+
+Report only P0/P1 findings.
+
+- P0: any change that could expose a non-public challenge to anonymous users.
+- P1: a public read or other Local API call that bypasses access control (public reads need `overrideAccess: false`).
+- P1: a change in `src/collections/` or `src/access/` without a matching migration in `src/migrations/`.
+- P1: a Server Action that skips Zod validation, or returns sentences instead of error codes.
+- P1: UI strings outside `messages/en.json` and `messages/ru.json`, or added to only one locale.
