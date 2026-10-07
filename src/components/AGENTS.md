@@ -1,0 +1,15 @@
+# UI: React components and CSS Modules
+
+Applies to `src/components/`, `src/app/(frontend)/` and `messages/`.
+
+- Server Components by default. Add `'use client'` only for state, effects or event handlers, and keep client components leaf-sized.
+- Component = folder `src/components/Name/` with `Name.tsx` + `Name.module.css`; named export.
+- Styles: CSS Modules only, camelCase class names, design tokens from `src/app/(frontend)/globals.css`
+  (`var(--color-*)`, `var(--radius-*)`, `var(--space-page)`). Add a token instead of hard-coding a new color.
+- Dark mode comes from `prefers-color-scheme` tokens — never branch on theme in JS.
+- Mobile first: must work at 360px; use `clamp()` for type scale and `min()` in grid tracks.
+- Accessibility: semantic elements, labelled inputs, `aria-live` for async feedback, visible `:focus-visible`.
+- Forms: `useActionState` + Server Action; disable controls while pending.
+- Copy: no inline strings. Add keys to `messages/en.json` and `messages/ru.json`; read them with
+  `useTranslations` (client) or `getTranslations({ locale, namespace })` (server). Internal links use `Link` from `@/i18n/navigation`;
+  `/admin` stays a plain `<a>`. Check the Russian layout at 360px — it runs ~20% longer.

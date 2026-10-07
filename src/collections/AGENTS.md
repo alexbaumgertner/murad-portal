@@ -1,0 +1,17 @@
+# Payload collections
+
+Applies to `src/collections/`, `src/access/` and `src/payload.config.ts`.
+
+- One collection per file, exported as a named `CollectionConfig` constant; register it in `src/payload.config.ts`.
+- Always set explicit `access` for create/read/update/delete. Reuse functions from `src/access/`.
+  Default to `authenticated`; open public read only when the page needs it, and filter with a query
+  (see `publishedOrAuthenticated`) instead of returning `true`.
+- Set `admin.useAsTitle` and `admin.defaultColumns`.
+- Add `index: true` on fields you filter or sort by; `unique: true` where the domain requires it.
+- Hooks: keep them small, pass `req` to nested Local API calls (same transaction),
+  and guard side effects with `req.context` flags (e.g. `disableRevalidate`).
+- Revalidate concrete per-locale paths (loop over `locales` from `@/i18n/locales`: `/${locale}`, `/${locale}/page`).
+- Mark public-facing text fields `localized: true`; reads pass `locale` and `fallbackLocale: defaultLocale`.
+- After changing fields: `pnpm generate:types`, then `pnpm migrate:create <name>` before merge.
+  Turning an existing field localized generates a drop: edit the migration to copy data into `<slug>_locales` first.
+- For anything non-trivial, consult `.claude/skills/payload/reference/*.md` first.
