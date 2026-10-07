@@ -2,45 +2,65 @@
 id: 005
 title: Murad sets up his 90-day challenge in the admin
 status: draft
+depends_on: [] # blocked only by the PROPOSED decisions "Challenge content" and "Day notes are public"
+runs: sequential # schema + access + migration
 ---
 
-# 005 — Challenge data model, admin and progress maths
+# 005 — Challenge data model and access
 
 **As** Murad
 **I want** to create my challenge (start date, six video topics) in the admin
 **so that** the tracker knows the calendar, the blocks and the targets.
 
-## Data model (needs a migration)
+## Data model (needs a migration: `pnpm migrate:create challenge`)
 
-- `challenges`: `title` (localized), `slug` (unique), `startDate` (date), `timeZone` (IANA, default `Asia/Almaty`),
-  `durationDays` (default 90), `dailyMinutes` (default 90), `blockDays` (default 15), `isPublic` (checkbox),
-  `rules` (rich text, localized — the allowed / not allowed content list),
-  `videos`: array of exactly `durationDays / blockDays` items `{ title, youtubeUrl?, publishedAt?, retroWorked?, retroDropped?, retroChange? }`.
-- `challenge-days`: `challenge` (relationship), `dayNumber` (1…durationDays), `minutes` (1…600), `notes` (textarea, ≤ 500 chars), `closedAt`.
-  Unique on (`challenge`, `dayNumber`).
-- `src/features/challenge/progress.ts` — pure, framework-free functions (no `server-only`, no `next/*`):
-  `dayNumberOn(date, startDate, timeZone)`, `blockOf(dayNumber, blockDays)`, `endsAt(...)`,
-  `summarize(challenge, days, now)` → `{ todayNumber, minutesDone, minutesTarget, sessionsDone, sessionsPlanned, videosPublished, videosTarget, daysLeft, status: 'not-started' | 'running' | 'finished' }`.
+All new collections use explicit access from `src/access/` and are registered in `src/payload.config.ts`.
+Murad-authored text is **not** `localized` (see PROPOSED decision "Challenge content is single-language").
+
+- `challenges` — `title` (text, required), `slug` (text, unique, index), `startDate` (date, day only),
+  `timeZone` (text, default `Asia/Almaty`, validated with `Intl.supportedValuesOf('timeZone')`),
+  `durationDays` (number, default 90), `dailyMinutes` (number, default 90), `blockDays` (number, default 15),
+  `isPublic` (checkbox, default false, index), `rules` (rich text, optional).
+  `useAsTitle: 'title'`, `defaultColumns: ['title', 'startDate', 'isPublic']`.
+- `challenge-videos` — one row per block: `challenge` (relationship, required, index), `blockNumber` (number, ≥ 1),
+  `title` (text, required), `youtubeUrl`, `publishedAt` (date), `retroWorked`, `retroDropped`, `retroChange`
+  (textarea, ≤ 400). Compound unique index (`challenge`, `blockNumber`).
+- `challenge-days` — `challenge` (relationship, required, index), `dayNumber` (1…`durationDays`),
+  `minutes` (1…600), `notes` (textarea, ≤ 500). Compound unique index (`challenge`, `dayNumber`).
+  `createdAt` / `updatedAt` replace the draft's `closedAt` (a row existing = the day is closed).
+- Access (`src/access/challenges.ts`):
+  - `publicChallengeOrAuthenticated` — signed in ⇒ all; else `{ isPublic: { equals: true } }`.
+  - `ofPublicChallengeOrAuthenticated` — signed in ⇒ all; else `{ 'challenge.isPublic': { equals: true } }`
+    (for `challenge-days` and `challenge-videos`).
+  - create / update / delete: `authenticated` on all three.
+- `src/features/challenge/schema.ts` — Zod schema for a day (`dayNumber`, `minutes`, `notes`) and a video, shared with
+  the Payload `validate` functions so admin and actions enforce the same limits.
 
 ## Acceptance criteria
 
-1. `[happy]` **Given** Murad is signed in **when** he creates a challenge with a start date and six video titles **then** it is saved with defaults 90 / 90 / 15 and a target of 8 100 minutes.
-2. `[edge]` **Given** `durationDays` not divisible by `blockDays`, or a `videos` count different from `durationDays / blockDays` **when** saving **then** validation rejects it with a clear message.
-3. `[happy]` **Given** start date 2026-10-07 in `Asia/Almaty` **when** it is 2026-10-07 23:30 in Astana (18:30 UTC) **then** `todayNumber` is 1; at 2026-10-08 00:10 Astana it is 2.
-4. `[happy]` **Given** days 1–20 **when** mapping to blocks **then** days 1–15 are block 1 and day 16 is block 2.
-5. `[happy]` **Given** 3 closed days of 90 minutes on day 4 **when** summarizing **then** minutesDone = 270 of 8 100, sessionsDone = 3, sessionsPlanned = 4.
-6. `[edge]` **Given** days logged above 90 minutes **when** summarizing **then** minutesDone is the real sum (may exceed the daily target); percentages are capped at 100 % for display only.
-7. `[edge]` **Given** `now` before the start / after the end **when** summarizing **then** status is `not-started` / `finished`, `daysLeft` is never negative, sessionsPlanned is 0 / durationDays.
-8. `[edge]` **Given** an anonymous API client **when** it reads a non-public challenge or its days, or writes anything **then** it is refused; a public challenge and its days are readable.
-9. `[edge]` **Given** a second `challenge-days` row for the same challenge and day **when** saving **then** it is rejected.
+1. `[happy]` **Given** Murad is signed in **when** he creates a challenge with only title, slug and start date **then** it is saved with defaults 90 / 90 / 15 and `Asia/Almaty`, and is not public.
+2. `[edge]` **Given** `durationDays` not divisible by `blockDays` **when** saving **then** validation rejects it with a clear message.
+3. `[edge]` **Given** a `challenge-videos` row with `blockNumber` outside 1…`durationDays / blockDays`, or a `challenge-days` row with `dayNumber` outside 1…`durationDays` **when** saving **then** it is rejected.
+4. `[edge]` **Given** an invalid IANA time zone **when** saving **then** it is rejected.
+5. `[edge]` **Given** a second `challenge-days` row for the same challenge and day (or a second video for the same block) **when** saving **then** it is rejected.
+6. `[edge]` **Given** an anonymous Local API call with `overrideAccess: false` (and the REST API) **when** it reads a non-public challenge, its days or its videos **then** nothing is returned; for a public challenge all three are readable. **(P0)**
+7. `[edge]` **Given** an anonymous client **when** it creates, updates or deletes any of the three **then** it is refused.
+8. `[edge]` **Given** a challenge is switched from public to non-public **when** an anonymous client reads its days **then** nothing is returned.
 
 ## Out of scope
 
-- Public page (006), closing days from the site (007), video retro UI (008).
-- Multiple owners or learner challenges.
+- Progress maths (009), public page (006), closing days (007), video retro UI (008).
+- Multiple owners, per-user ownership (every signed-in user is Murad — there is one admin).
+- Auto-creating the six video rows (Murad adds them in the admin; the page shows "Video N" for missing ones).
+
+## Notes
+
+- `pnpm generate:types`, commit `src/payload-types.ts` and the migration.
+- No revalidation hooks: the challenge page renders dynamically (PROPOSED decision "Challenge page renders per request").
+- Seed: extend `pnpm seed` with one public demo challenge; add `tests/helpers/seedChallenge.ts` for int/e2e.
 
 ## Verification
 
 | #   | Test (file › name)                  | Layer |
 | --- | ----------------------------------- | ----- |
-|     | filled in during step 3 of /feature |       |
+|     | filled in during step 3 of /feature | int   |

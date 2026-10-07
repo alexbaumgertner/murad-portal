@@ -2,6 +2,28 @@
 
 Short log of choices that shape the codebase. Newest first. One entry = what we chose, why, and what would make us revisit it.
 
+## 2026-10-07 — PROPOSED: Challenge tracker data shape (stories 005–010)
+
+**Videos are their own collection.** `challenge-videos` (unique on challenge + block) instead of an array inside
+`challenges`. An array would make 008's action rewrite the whole challenge document to change one retro, and its
+"exactly 6 rows" rule needs custom validation; a row per block gives a natural upsert, a unique index and the same
+access rule as `challenge-days`. Cost: Murad adds six rows in the admin instead of one form (the page shows "Video N"
+for missing rows). Revisit if he finds that tedious — then an `afterChange` hook can create the rows.
+
+**Challenge content is single-language.** `title`, `rules`, video titles, day notes and retros are not `localized`:
+Murad writes them once, in Russian. With `defaultLocale = 'en'` and `fallback: true`, localized fields filled only in
+`ru` would be empty on `/en`; unlocalized fields show the same text on both. UI chrome around them is still translated.
+Revisit if an English audience needs translated content.
+
+**Day notes are public.** The method is public accountability and Murad described "write what I did each day" on the
+tracker. Anonymous read of `challenge-days` returns notes for public challenges. If notes must be private, 005 needs
+field-level access on `notes` (anonymous ⇒ hidden) before anything ships. **Confirm with Murad before 005 starts.**
+
+**Challenge page renders per request.** "Today" moves at local midnight (`Asia/Almaty`) and 007 needs the signed-in
+state, so ISR (`revalidate = 3600` like the landing) would show a stale "today" and needs revalidation hooks on three
+collections. One page with a few queries per visit is cheap at this traffic. Revisit if the page gets heavy traffic
+from a video — then prerender the public view with a short `revalidate` and move the signed-in controls to a client island.
+
 ## 2026-10-07 — Multi-agent workflow: Claude plans, Codex implements, both review
 
 **Context.** Claude Pro limits are shared between chat and Claude Code; ChatGPT Plus includes Codex with more room for
