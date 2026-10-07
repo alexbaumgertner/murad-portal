@@ -71,6 +71,8 @@ export interface Config {
     media: Media;
     changelog: Changelog;
     'waitlist-signups': WaitlistSignup;
+    challenges: Challenge;
+    'challenge-days': ChallengeDay;
     'auth-codes': AuthCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -83,6 +85,8 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     changelog: ChangelogSelect<false> | ChangelogSelect<true>;
     'waitlist-signups': WaitlistSignupsSelect<false> | WaitlistSignupsSelect<true>;
+    challenges: ChallengesSelect<false> | ChallengesSelect<true>;
+    'challenge-days': ChallengeDaysSelect<false> | ChallengeDaysSelect<true>;
     'auth-codes': AuthCodesSelect<false> | AuthCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -215,6 +219,96 @@ export interface WaitlistSignup {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "challenges".
+ */
+export interface Challenge {
+  id: number;
+  title: string;
+  /**
+   * Used in the public URL: /challenge/<slug>.
+   */
+  slug: string;
+  /**
+   * Day 1 of the challenge, in the time zone below.
+   */
+  startDate: string;
+  /**
+   * IANA name, e.g. Asia/Almaty. Days flip at local midnight.
+   */
+  timeZone: string;
+  durationDays: number;
+  dailyMinutes: number;
+  blockDays: number;
+  /**
+   * Only public challenges (and their days) are visible to visitors.
+   */
+  isPublic?: boolean | null;
+  /**
+   * What counts and what does not (allowed / not allowed content).
+   */
+  rules?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Exactly one video per block: durationDays / blockDays items, in block order.
+   */
+  videos?:
+    | {
+        title: string;
+        youtubeUrl?: string | null;
+        publishedAt?: string | null;
+        /**
+         * Retro: what worked.
+         */
+        retroWorked?: string | null;
+        /**
+         * Retro: what to drop.
+         */
+        retroDropped?: string | null;
+        /**
+         * Retro: what to change.
+         */
+        retroChange?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "challenge-days".
+ */
+export interface ChallengeDay {
+  id: number;
+  challenge: number | Challenge;
+  /**
+   * 1…durationDays of the challenge.
+   */
+  dayNumber: number;
+  minutes: number;
+  notes?: string | null;
+  /**
+   * Set when the day is closed. Only closed days count towards progress.
+   */
+  closedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth-codes".
  */
 export interface AuthCode {
@@ -268,6 +362,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'waitlist-signups';
         value: number | WaitlistSignup;
+      } | null)
+    | ({
+        relationTo: 'challenges';
+        value: number | Challenge;
+      } | null)
+    | ({
+        relationTo: 'challenge-days';
+        value: number | ChallengeDay;
       } | null)
     | ({
         relationTo: 'auth-codes';
@@ -376,6 +478,47 @@ export interface ChangelogSelect<T extends boolean = true> {
 export interface WaitlistSignupsSelect<T extends boolean = true> {
   email?: T;
   source?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "challenges_select".
+ */
+export interface ChallengesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  startDate?: T;
+  timeZone?: T;
+  durationDays?: T;
+  dailyMinutes?: T;
+  blockDays?: T;
+  isPublic?: T;
+  rules?: T;
+  videos?:
+    | T
+    | {
+        title?: T;
+        youtubeUrl?: T;
+        publishedAt?: T;
+        retroWorked?: T;
+        retroDropped?: T;
+        retroChange?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "challenge-days_select".
+ */
+export interface ChallengeDaysSelect<T extends boolean = true> {
+  challenge?: T;
+  dayNumber?: T;
+  minutes?: T;
+  notes?: T;
+  closedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

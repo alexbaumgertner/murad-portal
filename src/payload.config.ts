@@ -8,6 +8,8 @@ import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 import { AuthCodes } from './collections/AuthCodes'
+import { ChallengeDays } from './collections/ChallengeDays'
+import { Challenges } from './collections/Challenges'
 import { ChangelogEntries } from './collections/ChangelogEntries'
 import { Media } from './collections/Media'
 import { Users } from './collections/Users'
@@ -31,7 +33,15 @@ export default buildConfig({
       logout: { Button: '/components/admin/LogoutButton/LogoutButton#LogoutButton' },
     },
   },
-  collections: [Users, Media, ChangelogEntries, WaitlistSignups, AuthCodes],
+  collections: [
+    Users,
+    Media,
+    ChangelogEntries,
+    WaitlistSignups,
+    Challenges,
+    ChallengeDays,
+    AuthCodes,
+  ],
   // Content locales (the admin UI itself stays English). Missing translations fall back to English.
   localization: {
     locales: locales.map((code) => ({ code, label: localeLabels[code] })),
