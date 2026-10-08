@@ -54,14 +54,19 @@ const rows = async () =>
     })
   ).docs
 
-// Day 16 in Asia/Almaty: the challenge started 15 days ago.
-const startDate = () => new Date(Date.now() - 15 * 86_400_000).toISOString().slice(0, 10)
+// Day 16 in Asia/Almaty: the challenge started 15 days ago, counted by the Almaty calendar
+// (a UTC date is a day behind there from 19:00 UTC on).
+const startDate = () =>
+  new Date(Date.now() - 15 * 86_400_000).toLocaleDateString('en-CA', { timeZone: 'Asia/Almaty' })
 
 describe('close a day', () => {
   beforeAll(async () => {
     payload = await getPayload({ config })
     await payload.delete({ collection: 'users', where: { email: { equals: ADMIN_EMAIL } } })
-    const created = await payload.create({ collection: 'users', data: { email: ADMIN_EMAIL } })
+    const created = await payload.create({
+      collection: 'users',
+      data: { email: ADMIN_EMAIL, role: 'owner' },
+    })
     adminId = created.id
     admin = { ...created, collection: 'users' }
     const old = await payload.find({ collection: 'challenges', where: { slug: { equals: SLUG } } })
@@ -277,7 +282,7 @@ describe('close a day', () => {
     it('refuses a valid session of a user that no longer exists', async () => {
       const ghost = await payload.create({
         collection: 'users',
-        data: { email: 'ghost-close-day@example.com' },
+        data: { email: 'ghost-close-day@example.com', role: 'owner' },
       })
       signInAs(ghost.id)
       await payload.delete({ collection: 'users', id: ghost.id })

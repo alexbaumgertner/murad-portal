@@ -1,6 +1,6 @@
 import { ValidationError, type CollectionBeforeValidateHook, type CollectionConfig } from 'payload'
 
-import { authenticated, publicChallengeOrAuthenticated } from '@/access'
+import { owner, publicChallengeOrOwner } from '@/access'
 
 type DayData = { challenge?: number | { id: number } | null; dayNumber?: number }
 
@@ -78,10 +78,10 @@ export const ChallengeDays: CollectionConfig = {
   defaultSort: '-dayNumber',
   // A day is public exactly when its challenge is. Writes: signed-in admin only.
   access: {
-    read: publicChallengeOrAuthenticated('challenge.isPublic'),
-    create: authenticated,
-    update: authenticated,
-    delete: authenticated,
+    read: publicChallengeOrOwner('challenge.isPublic'),
+    create: owner,
+    update: owner,
+    delete: owner,
   },
   // The database enforces one row per (challenge, day); the hook above gives a readable message first.
   indexes: [{ fields: ['challenge', 'dayNumber'], unique: true }],

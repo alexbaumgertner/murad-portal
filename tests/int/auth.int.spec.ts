@@ -15,7 +15,7 @@ describe('email-code auth against Postgres', () => {
   beforeAll(async () => {
     payload = await getPayload({ config })
     await payload.delete({ collection: 'users', where: { email: { equals: USER_EMAIL } } })
-    await payload.create({ collection: 'users', data: { email: USER_EMAIL } })
+    await payload.create({ collection: 'users', data: { email: USER_EMAIL, role: 'owner' } })
   })
 
   beforeEach(async () => {
@@ -68,7 +68,7 @@ describe('email-code auth against Postgres', () => {
     await expect(
       payload.create({
         collection: 'users',
-        data: { email: 'intruder@example.com' },
+        data: { email: 'intruder@example.com', role: 'owner' },
         overrideAccess: false,
       }),
     ).rejects.toThrow()

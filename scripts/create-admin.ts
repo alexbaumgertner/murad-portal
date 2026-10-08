@@ -20,7 +20,7 @@ async function main() {
   if (totalDocs > 0) {
     payload.logger.info(`${email} already exists — sign in at /admin with a code sent by email.`)
   } else {
-    await payload.create({ collection: 'users', data: { email } })
+    await payload.create({ collection: 'users', data: { email, role: 'owner' } })
     payload.logger.info(`Created ${email} — sign in at /admin with a code sent by email.`)
   }
 }
