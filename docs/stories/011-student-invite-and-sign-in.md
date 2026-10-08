@@ -1,7 +1,7 @@
 ---
 id: 011
 title: Murad invites a student, the student signs in by email code
-status: draft
+status: approved
 ---
 
 # 011 — Murad invites a student; the student signs in by email code
@@ -15,7 +15,7 @@ status: draft
 **so that** I can open my plan from any device.
 
 ## Data model
-- `users`: add role `student` (existing role: owner). Fields: `email` unique, required; `name` ≤80; `invitedAt` datetime; `locale` ru/en, default ru; `addressForm` ty / vy, default ty (D-SP-8).
+- `users`: add field `role` — select `owner` | `student`, required, default `owner`; the migration sets every existing user to `owner` so nobody loses admin access. Only the owner can change `role`. Fields: `email` unique, required; `name` ≤80; `invitedAt` datetime; `locale` ru/en, default ru; `addressForm` ty / vy, default ty (D-SP-8).
 - Login codes: reuse the owner's mechanism; limits per D-SP-2.
 - Write: owner creates/deletes students and may preset `addressForm`; student edits own `name`, `locale`, `addressForm`. Read: owner all; student only own record.
 
