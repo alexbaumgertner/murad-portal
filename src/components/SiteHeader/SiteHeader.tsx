@@ -12,20 +12,20 @@ export function SiteHeader() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <Link href="/" className={styles.brand} aria-label={t('home')}>
+        <Link href="/" className={styles.brand} aria-label={t('home', { name: siteConfig.name })}>
           <span className={styles.logo} aria-hidden="true" />
           <span className={styles.brandName}>{siteConfig.name}</span>
         </Link>
         <nav aria-label={t('nav')} className={styles.navArea}>
           <ul className={styles.nav}>
             <li>
-              <Link href="/#features" className={styles.link}>
-                {t('features')}
+              <Link href="/#tools" className={styles.link}>
+                {t('tools')}
               </Link>
             </li>
             <li>
-              <Link href="/changelog" className={styles.link}>
-                {t('changelog')}
+              <Link href="/challenge" className={styles.link}>
+                {t('challenge')}
               </Link>
             </li>
             <li>

@@ -15,7 +15,7 @@ import { Media } from './collections/Media'
 import { Users } from './collections/Users'
 import { WaitlistSignups } from './collections/WaitlistSignups'
 import { siteConfig } from './config/site'
-import { defaultLocale, localeLabels, locales } from './i18n/locales'
+import { contentDefaultLocale, localeLabels, locales } from './i18n/locales'
 import { env } from './lib/env'
 
 const filename = fileURLToPath(import.meta.url)
@@ -45,7 +45,7 @@ export default buildConfig({
   // Content locales (the admin UI itself stays English). Missing translations fall back to English.
   localization: {
     locales: locales.map((code) => ({ code, label: localeLabels[code] })),
-    defaultLocale,
+    defaultLocale: contentDefaultLocale,
     fallback: true,
   },
   editor: lexicalEditor(),

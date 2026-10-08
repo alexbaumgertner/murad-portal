@@ -5,7 +5,7 @@ import { defaultLocale, locales } from './locales'
 export const routing = defineRouting({
   locales,
   defaultLocale,
-  // The default locale keeps today's URLs (`/`, `/changelog`); others get a prefix (`/ru`).
+  // Russian is unprefixed (`/`, `/changelog`); English lives under `/en`.
   localePrefix: 'as-needed',
 })
 

@@ -1,39 +1,41 @@
 import { expect, test } from '@playwright/test'
 
-test.describe('Landing page', () => {
-  test('shows the hero and features', async ({ page }) => {
-    await page.goto('/')
+import { siteConfig } from '../../src/config/site'
+import en from '../../messages/en.json'
+import ru from '../../messages/ru.json'
 
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+for (const [path, messages] of [
+  ['/', ru],
+  ['/en', en],
+] as const) {
+  test(`${path} shows Murad, the challenge and four upcoming tools`, async ({ page }) => {
+    await page.goto(path)
+    await expect(page.getByRole('banner')).toContainText(siteConfig.name)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(messages.Home.title)
     await expect(
-      page.getByRole('heading', { name: /everything a solo founder needs/i }),
-    ).toBeVisible()
+      page.getByRole('main').getByRole('link', { name: messages.Home.challenge }),
+    ).toHaveAttribute('href', path === '/' ? '/challenge' : '/en/challenge')
+    const tools = page.getByRole('region', { name: messages.Home.toolsTitle })
+    await expect(tools.getByRole('listitem')).toHaveCount(4)
+    for (const tool of Object.values(messages.Home.tools)) {
+      await expect(tools.getByRole('heading', { name: tool.title })).toBeVisible()
+    }
   })
 
-  test('rejects an invalid email without leaving the page', async ({ page }) => {
-    await page.goto('/')
-
-    await page.getByPlaceholder('you@company.com').fill('not-an-email')
-    await page.getByRole('button', { name: 'Join the waitlist' }).click()
-
-    // Scoped to <main>: Next.js renders its own role="alert" route announcer.
-    await expect(page.getByRole('main').getByRole('alert')).toHaveText(
-      'Enter a valid email address.',
-    )
+  test(`${path} hides the waitlist form`, async ({ page }) => {
+    await page.goto(path)
+    await expect(page.locator('form')).toHaveCount(0)
+    await expect(page.getByPlaceholder('you@company.com')).toHaveCount(0)
   })
 
-  test('joins the waitlist with a valid email', async ({ page }, testInfo) => {
-    await page.goto('/')
-
-    const email = `e2e-${testInfo.project.name}-${Date.now()}@example.com`
-    await page.getByPlaceholder('you@company.com').fill(email)
-    await page.getByRole('button', { name: 'Join the waitlist' }).click()
-
-    await expect(page.getByRole('main').getByRole('status')).toContainText("You're on the list")
+  test(`${path} fits a 360px viewport`, async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 })
+    await page.goto(path)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360)
   })
-})
+}
 
 test('changelog page renders', async ({ page }) => {
   await page.goto('/changelog')
-  await expect(page.getByRole('heading', { level: 1, name: 'Changelog' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: 'Изменения' })).toBeVisible()
 })

@@ -27,8 +27,11 @@ Revisit if: limits change, or Codex gains a hooks mechanism we can share.
 
 **Context.** The audience is Russian-speaking learners of English; the template defaults to English unprefixed.
 
-**Proposal.** `defaultLocale = 'ru'` (unprefixed `/`), English under `/en`, `x-default` → Russian. Story 004.
-Approve or reject before story 004 starts.
+**Decision.** Approved in story 004: `defaultLocale = 'ru'` (unprefixed `/`), English under `/en`,
+`x-default` → Russian. Browser `Accept-Language` is ignored; an explicit `NEXT_LOCALE` choice is remembered.
+The language switcher keeps the current path. Existing CMS content keeps English as its default and fallback
+locale, so untranslated changelog entries remain visible. This supersedes the public-routing defaults below.
+Revisit if the audience or supported languages change.
 
 ## 2026-10-01 — Agent rules as nested AGENTS.md; Node 24 and Postgres 18 everywhere
 

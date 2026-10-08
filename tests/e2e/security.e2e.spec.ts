@@ -62,9 +62,6 @@ test('the public site never compiles code from strings', async ({ page }) => {
 
   await page.goto('/')
   await page.waitForLoadState('networkidle')
-  await page.getByPlaceholder('you@company.com').fill('not-an-email')
-  await page.getByRole('button', { name: 'Join the waitlist' }).click()
-  await expect(page.getByRole('main').getByRole('alert')).toBeVisible()
   expect(await calls(), '/').toEqual([])
 
   await page.goto('/changelog')

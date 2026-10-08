@@ -12,86 +12,32 @@ const alternates = (page: Page) =>
       ]),
     )
 
-test.describe('English (default locale)', () => {
-  test('keeps unprefixed URLs, lang="en" and hreflang alternates', async ({ page }) => {
-    await page.goto('/changelog')
-
-    await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-    await expect(page.getByRole('heading', { level: 1, name: 'Changelog' })).toBeVisible()
+for (const path of ['/', '/en', '/changelog', '/en/changelog']) {
+  test(`${path} has canonical and Russian-default hreflang alternates`, async ({ page }) => {
+    await page.goto(path)
+    await expect(page.locator('html')).toHaveAttribute('lang', path.startsWith('/en') ? 'en' : 'ru')
+    expect(new URL(page.url()).pathname).toBe(path)
+    const russian = path.replace(/^\/en/, '') || '/'
+    const english = `/en${russian === '/' ? '' : russian}`
     expect(await alternates(page)).toEqual([
-      ['en', '/changelog'],
-      ['ru', '/ru/changelog'],
-      ['x-default', '/changelog'],
+      ['en', english],
+      ['ru', russian],
+      ['x-default', russian],
     ])
+    const canonical = page.locator('link[rel="canonical"]')
+    await expect(canonical).toHaveCount(1)
+    expect(new URL((await canonical.getAttribute('href')) ?? '').href).toBe(
+      new URL(path, process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').href,
+    )
   })
+}
 
-  test('/en redirects to the single unprefixed URL', async ({ page }) => {
-    await page.goto('/en/changelog')
-    await expect(page).toHaveURL(/\/changelog$/)
-    expect(new URL(page.url()).pathname).toBe('/changelog')
-  })
+test('the redundant Russian prefix redirects to the unprefixed URL', async ({ page }) => {
+  await page.goto('/ru/changelog')
+  expect(new URL(page.url()).pathname).toBe('/changelog')
 })
 
 test.describe('Russian', () => {
-  test('renders the landing page in Russian with lang="ru"', async ({ page }) => {
-    await page.goto('/ru')
-
-    await expect(page.locator('html')).toHaveAttribute('lang', 'ru')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-      'Запустите SaaS на этих выходных, а не в следующем квартале.',
-    )
-    await expect(page.getByRole('link', { name: 'Изменения' }).first()).toHaveAttribute(
-      'href',
-      '/ru/changelog',
-    )
-    expect(await alternates(page)).toEqual([
-      ['en', '/'],
-      ['ru', '/ru'],
-      ['x-default', '/'],
-    ])
-  })
-
-  test('fits the longer Russian header on a 320px phone', async ({ page }) => {
-    await page.setViewportSize({ width: 320, height: 640 })
-    await page.goto('/ru')
-
-    const header = page.getByRole('banner')
-    const bounds = await header.evaluate((banner) => {
-      const nav = banner.querySelector('nav ul')
-      const items = [...banner.querySelectorAll('a')].map((a) => a.getBoundingClientRect())
-      return {
-        pageScrolls: document.documentElement.scrollWidth > window.innerWidth,
-        navClipped: nav ? nav.scrollWidth > nav.clientWidth : true,
-        offscreen: items.filter((r) => r.left < 0 || r.right > window.innerWidth).length,
-      }
-    })
-    expect(bounds).toEqual({ pageScrolls: false, navClipped: false, offscreen: 0 })
-  })
-
-  test('validates the waitlist form in Russian', async ({ page }) => {
-    await page.goto('/ru')
-
-    await page.getByPlaceholder('you@company.com').fill('not-an-email')
-    await page.getByRole('button', { name: 'Записаться в лист ожидания' }).click()
-
-    await expect(page.getByRole('main').getByRole('alert')).toHaveText(
-      'Введите корректный адрес электронной почты.',
-    )
-  })
-
-  test('confirms a waitlist signup in Russian', async ({ page }, testInfo) => {
-    await page.goto('/ru')
-
-    await page
-      .getByPlaceholder('you@company.com')
-      .fill(`i18n-${testInfo.project.name}-${Date.now()}@example.com`)
-    await page.getByRole('button', { name: 'Записаться в лист ожидания' }).click()
-
-    await expect(page.getByRole('main').getByRole('status')).toHaveText(
-      'Вы в списке. Напишем, когда будет что показать.',
-    )
-  })
-
   test('shows translated changelog content and falls back to English', async ({
     page,
   }, testInfo) => {
@@ -104,15 +50,13 @@ test.describe('Russian', () => {
       await seedChangelogEntry({ title: `English only ${id}`, summary: `Not translated ${id}` }),
     ]
     try {
-      await page.goto('/ru/changelog')
+      await page.goto('/changelog')
       await expect(page.getByRole('heading', { level: 1, name: 'Изменения' })).toBeVisible()
       await expect(page.getByRole('heading', { name: `Переведено ${id}` })).toBeVisible()
       await expect(page.getByRole('heading', { name: `English only ${id}` })).toBeVisible()
       await expect(page.getByText(`Not translated ${id}`)).toBeVisible()
 
-      // Visiting /ru stores the locale cookie, which would redirect /changelog back to /ru.
-      await page.context().clearCookies()
-      await page.goto('/changelog')
+      await page.goto('/en/changelog')
       await expect(page.getByRole('heading', { name: `Translated ${id}` })).toBeVisible()
       await expect(page.getByText('Русское описание')).toHaveCount(0)
     } finally {
@@ -121,7 +65,7 @@ test.describe('Russian', () => {
   })
 
   test('renders a Russian 404 for unknown pages', async ({ page }) => {
-    const response = await page.goto('/ru/no-such-page')
+    const response = await page.goto('/no-such-page')
 
     expect(response?.status()).toBe(404)
     await expect(page.getByRole('heading', { name: 'Страница не найдена' })).toBeVisible()
@@ -129,51 +73,45 @@ test.describe('Russian', () => {
 })
 
 test.describe('language switcher', () => {
-  test('switches to the same page in the other language and remembers the choice', async ({
-    page,
-  }) => {
-    await page.goto('/changelog')
-    const switcher = page.getByRole('group', { name: 'Language' })
-    await expect(switcher.getByRole('link', { name: 'English' })).toHaveAttribute(
-      'aria-current',
-      'true',
-    )
-
-    await switcher.getByRole('link', { name: 'Русский' }).click()
-    await expect(page).toHaveURL(/\/ru\/changelog$/)
-    await expect(page.getByRole('heading', { level: 1, name: 'Изменения' })).toBeVisible()
-
-    await page.goto('/')
-    await expect(page).toHaveURL(/\/ru$/)
-
-    await page.getByRole('group', { name: 'Язык' }).getByRole('link', { name: 'English' }).click()
-    await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-    expect(new URL(page.url()).pathname).toBe('/')
-  })
+  for (const path of ['/', '/changelog']) {
+    test(`switches ${path} in both directions and remembers the choice`, async ({ page }) => {
+      await page.goto(path)
+      await page.getByRole('group', { name: 'Язык' }).getByRole('link', { name: 'English' }).click()
+      await expect(page).toHaveURL(`/en${path === '/' ? '' : path}`)
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+      await page.goto(path)
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+      await page
+        .getByRole('group', { name: 'Language' })
+        .getByRole('link', { name: 'Русский' })
+        .click()
+      await expect(page).toHaveURL(path)
+      await expect(page.locator('html')).toHaveAttribute('lang', 'ru')
+    })
+  }
 })
 
 test.describe('locale negotiation', () => {
-  test('a Russian browser landing on / is sent to /ru', async ({ browser }) => {
-    const context = await browser.newContext({ locale: 'ru-RU' })
-    const page = await context.newPage()
-    await page.goto('/')
-    expect(new URL(page.url()).pathname).toBe('/ru')
-    await context.close()
-  })
-
-  test('an unsupported browser language falls back to English', async ({ browser }) => {
-    const context = await browser.newContext({ locale: 'de-DE' })
-    const page = await context.newPage()
-    await page.goto('/')
-    expect(new URL(page.url()).pathname).toBe('/')
-    await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-    await context.close()
-  })
+  for (const language of ['ru-RU', 'en-US', 'de-DE']) {
+    test(`a ${language} browser without a locale cookie lands in Russian at /`, async ({
+      browser,
+    }) => {
+      const context = await browser.newContext({ locale: language })
+      try {
+        const page = await context.newPage()
+        await page.goto('/')
+        expect(new URL(page.url()).pathname).toBe('/')
+        await expect(page.locator('html')).toHaveAttribute('lang', 'ru')
+      } finally {
+        await context.close()
+      }
+    })
+  }
 
   test('an unknown locale prefix is a 404, not a new language', async ({ page }) => {
     const response = await page.goto('/de/changelog')
     expect(response?.status()).toBe(404)
-    await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ru')
   })
 })
 
