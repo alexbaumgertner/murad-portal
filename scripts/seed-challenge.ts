@@ -11,7 +11,10 @@ export async function seedDemoChallenge(payload: Payload, slug = '90-90-1') {
     depth: 0,
   })
   if (existing.docs[0]) return existing.docs[0]
-  const startDate = new Date(Date.now() - 15 * 86_400_000).toISOString().slice(0, 10)
+  // Counted by the Almaty calendar (the challenge's time zone): from 19:00 UTC a UTC date is a day behind.
+  const startDate = new Date(Date.now() - 15 * 86_400_000).toLocaleDateString('en-CA', {
+    timeZone: 'Asia/Almaty',
+  })
   const created = await payload.create({
     collection: 'challenges',
     locale: 'en',
