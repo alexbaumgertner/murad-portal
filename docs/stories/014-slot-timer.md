@@ -1,7 +1,7 @@
 ---
 id: 014
 title: Slot timer that plays a sound when the minimum is reached
-status: draft
+status: approved
 ---
 
 # 014 — Slot timer with a sound at the minimum

@@ -1,7 +1,7 @@
 ---
 id: 013
 title: Student sees what to do today and the week grid
-status: draft
+status: approved
 ---
 
 # 013 — «Сегодня» and the week grid

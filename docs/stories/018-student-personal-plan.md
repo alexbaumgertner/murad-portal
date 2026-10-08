@@ -1,7 +1,7 @@
 ---
 id: 018
 title: Each student gets a personal plan copied from the program, which Murad can edit
-status: draft
+status: approved
 ---
 
 # 018 — Personal plan per student
