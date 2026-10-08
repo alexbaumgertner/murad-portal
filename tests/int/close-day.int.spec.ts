@@ -54,8 +54,10 @@ const rows = async () =>
     })
   ).docs
 
-// Day 16 in Asia/Almaty: the challenge started 15 days ago.
-const startDate = () => new Date(Date.now() - 15 * 86_400_000).toISOString().slice(0, 10)
+// Day 16 in Asia/Almaty: the challenge started 15 days ago, counted by the Almaty calendar
+// (a UTC date is a day behind there from 19:00 UTC on).
+const startDate = () =>
+  new Date(Date.now() - 15 * 86_400_000).toLocaleDateString('en-CA', { timeZone: 'Asia/Almaty' })
 
 describe('close a day', () => {
   beforeAll(async () => {
