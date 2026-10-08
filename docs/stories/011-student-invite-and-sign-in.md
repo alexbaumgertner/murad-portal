@@ -36,5 +36,5 @@ status: draft
 - Converting Murad's own task texts between «ты» and «вы» — he writes them as he likes.
 
 ## Notes
-- D-SP-1 accepted; D-SP-2 (code limits, session length) still needs the owner's OK. The PR also updates `docs/product.md` («аккаунты учеников — только по приглашению»). Security review by Claude Code is mandatory.
+- D-SP-1 and D-SP-2 accepted (Oct 8, 2026). The PR also updates `docs/product.md` («аккаунты учеников — только по приглашению»). Security review by Claude Code is mandatory.
 - Analytics: none with email.

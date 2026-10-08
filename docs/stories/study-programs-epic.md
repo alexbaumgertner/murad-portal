@@ -83,7 +83,7 @@ Order of work: 009 → 010 → 011 → 012 → 018 → 013 → 014 → 015 → 0
 
 ## Decisions this epic changes
 
-`docs/product.md` says «не делаем аккаунты учеников, оплату, комментарии». D-SP-1 (accepted Oct 8, 2026) brings in invite-only student accounts and private day comments; update `product.md` in the first PR of the epic. Payment stays out. All decisions: `decisions-proposal.md` (D-SP-1…9).
+`docs/product.md` says «не делаем аккаунты учеников, оплату, комментарии». D-SP-1 (accepted Oct 8, 2026) brings in invite-only student accounts and private day comments; update `product.md` in the first PR of the epic. Payment stays out. All decisions: `study-programs-decisions.md` (D-SP-1…9).
 
 ## Analytics events (no personal data)
 
@@ -112,6 +112,7 @@ Payment, trial, freemium; self-learners and public sign-up; public program catal
 | Q7 | Future weeks visible? | Yes, slots and tasks |
 | Q8 | «Ты» or «вы»? | Student's setting, default «ты» (D-SP-8) |
 | Q10 | Placement result format? | Common test scales (IELTS, TOEFL, Cambridge…) + CEFR (D-SP-9) |
+| Q14 | D-SP-2 limits (code 10 min, session 30 days) and D-SP-4 (timer stops at 4 h)? | Accepted (D-SP-2, D-SP-4) |
 
 ## Open questions (assumptions in force until answered)
 
@@ -121,4 +122,3 @@ Payment, trial, freemium; self-learners and public sign-up; public program catal
 | Q11 | Which test does Murad actually use, and which of the listed ones are needed at launch? | All listed; unused ones are harmless |
 | Q12 | Default form for new students — «ты» or «вы»? | «Ты»; Murad can preset per student |
 | Q13 | Up to 3 tasks per day — enough? | Yes |
-| Q14 | D-SP-2 limits (code 10 min, session 30 days) and D-SP-4 (timer stops at 4 h) — OK? | Yes |

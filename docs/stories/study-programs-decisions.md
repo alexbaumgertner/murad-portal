@@ -1,6 +1,6 @@
 # Decisions for the Study Programs epic
 
-To be moved into `docs/decisions.md`. Accepted by the owner on Oct 8, 2026: D-SP-1, 3, 5, 6, 7, 8, 9. Still proposed: D-SP-2, 4.
+Accepted by the owner on Oct 8, 2026: D-SP-1 to D-SP-9 (all). To be moved into `docs/decisions.md` when the epic is merged.
 
 ## D-SP-1 — Student accounts (changes product.md)
 
@@ -11,7 +11,7 @@ To be moved into `docs/decisions.md`. Accepted by the owner on Oct 8, 2026: D-SP
 
 ## D-SP-2 — Sign-in by one-time email code
 
-**Status:** proposed
+**Status:** accepted
 Students sign in like the owner (code from email), on the public site, not in `/admin`. Code: 6 digits, valid 10 minutes, max 5 attempts, max 3 codes per email per 15 minutes. Session: 30 days.
 
 ## D-SP-3 — Program day is relative to the start
@@ -21,7 +21,7 @@ Day 1 of the template is the day the student pressed «Начать», in her ti
 
 ## D-SP-4 — Timer state lives on the server
 
-**Status:** proposed
+**Status:** accepted
 Starting a timer saves `timerStartedAt`; elapsed = now − timerStartedAt + saved minutes. Closing the tab does not lose time. One running timer per student. A timer running over 4 hours is stopped and counted as 240 minutes.
 
 ## D-SP-5 — Personal plans built from a shared task pool
