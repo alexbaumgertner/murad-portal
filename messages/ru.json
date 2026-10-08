@@ -78,5 +78,27 @@
     "errorBody": "Страница не загрузилась. Мы уже знаем об ошибке — попробуйте чуть позже.",
     "retry": "Попробовать снова",
     "loading": "Загрузка…"
+  },
+  "Challenge": {
+    "title": "Трекер челленджа",
+    "video": "Видео {number}",
+    "watch": "Смотреть на YouTube",
+    "closed": "Закрыт",
+    "today": "Сегодня",
+    "missed": "Пропущен",
+    "future": "Впереди",
+    "day": "День {number}: {state}",
+    "minutes": "{done} / {target} мин · {hours} / {targetHours} ч",
+    "videos": "Опубликовано видео: {done} / {target}",
+    "sessions": "Сессии: {done} / {target}",
+    "remaining": "Осталось {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}",
+    "starts": "Начало {date}",
+    "finished": "Челлендж завершён",
+    "rules": "Правила",
+    "dayMinutes": "{minutes} минут",
+    "demoTitle": "90 дней для YouTube",
+    "demoTopic": "Как услышать знакомые английские слова",
+    "demoNotes": "Составил план урока, записал примеры и проверил монтаж.",
+    "demoRules": "Первые 90 минут посвящай проекту. Завершай каждую сессию короткой заметкой."
   }
 }

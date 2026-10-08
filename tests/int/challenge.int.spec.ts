@@ -2,6 +2,7 @@ import config from '@payload-config'
 import { getPayload, type Payload, type TypedUser } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
+import { getPublicChallenge } from '@/features/challenge/queries'
 import { summarize } from '@/features/challenge/progress'
 import type { Challenge } from '@/payload-types'
 
@@ -190,6 +191,20 @@ describe('challenges', () => {
         depth: 0,
       })
       expect(docs.map((d) => d.challenge)).toEqual([publicChallenge.id])
+    })
+
+    it('public tracker query hides private/unknown slugs and returns fresh days', async () => {
+      expect(await getPublicChallenge(payload, 'access-private', 'en')).toBeNull()
+      expect(await getPublicChallenge(payload, 'missing', 'ru')).toBeNull()
+      const found = await getPublicChallenge(payload, 'access-public', 'en')
+      expect(found?.days).toHaveLength(1)
+      await payload.update({
+        collection: 'challenge-days',
+        id: found!.days[0]!.id,
+        context,
+        data: { minutes: 120 },
+      })
+      expect((await getPublicChallenge(payload, 'access-public', 'ru'))?.days[0]?.minutes).toBe(120)
     })
 
     it('shows everything to a signed-in admin', async () => {

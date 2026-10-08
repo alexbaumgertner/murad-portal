@@ -78,5 +78,27 @@
     "errorBody": "The page failed to load. It's been logged — try again in a moment.",
     "retry": "Try again",
     "loading": "Loading…"
+  },
+  "Challenge": {
+    "title": "Challenge tracker",
+    "video": "Video {number}",
+    "watch": "Watch on YouTube",
+    "closed": "Closed",
+    "today": "Today",
+    "missed": "Missed",
+    "future": "Ahead",
+    "day": "Day {number}: {state}",
+    "minutes": "{done} / {target} min · {hours} / {targetHours} h",
+    "videos": "Videos published: {done} / {target}",
+    "sessions": "Sessions: {done} / {target}",
+    "remaining": "{days, plural, one {# day left} other {# days left}}",
+    "starts": "Starts on {date}",
+    "finished": "Challenge finished",
+    "rules": "Rules",
+    "dayMinutes": "{minutes} minutes",
+    "demoTitle": "90 days for YouTube",
+    "demoTopic": "Hearing familiar English words",
+    "demoNotes": "Planned the lesson, recorded examples and reviewed the edit.",
+    "demoRules": "Spend the first 90 minutes on the project. Close each session with a short note."
   }
 }

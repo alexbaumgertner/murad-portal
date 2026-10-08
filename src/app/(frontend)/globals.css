@@ -1,4 +1,9 @@
 :root {
+  --color-tracker-paper: #ede8dd;
+  --color-tracker-ink: #20242b;
+  --color-tracker-teal: #3f5c58;
+  --color-tracker-accent: #a9723c;
+  --color-tracker-border: rgb(32 36 43 / 15%);
   --color-bg: #fbfaf7;
   --color-surface: #ffffff;
   --color-surface-muted: #f3f1ec;

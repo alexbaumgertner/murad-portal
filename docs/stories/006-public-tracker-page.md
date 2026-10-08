@@ -1,7 +1,7 @@
 ---
 id: 006
 title: Anyone can watch Murad's challenge progress
-status: approved
+status: done
 ---
 
 # 006 — Public challenge page: 90-cell grid, progress, countdown
@@ -28,6 +28,16 @@ status: approved
 
 ## Verification
 
-| #   | Test (file › name)                  | Layer |
-| --- | ----------------------------------- | ----- |
-|     | filled in during step 3 of /feature |       |
+| #             | Test (file › name)                                                                                                                                  | Layer                 |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| 1, 2, 3, 4, 8 | `tests/e2e/challenge.e2e.spec.ts` › `ru/en: blocks, states, details, summary and 360px targets`                                                     | e2e, desktop + mobile |
+| 5, 7, 9       | `tests/e2e/challenge.e2e.spec.ts` › `reload reflects closed days; empty rules and outside-calendar states` (plus rules visible in ru/en grid tests) | e2e, desktop + mobile |
+| 6             | `tests/e2e/challenge.e2e.spec.ts` › `unknown and non-public slugs return HTTP 404 in both locales`                                                  | e2e, desktop + mobile |
+| 6, 9          | `tests/int/challenge.int.spec.ts` › `public tracker query hides private/unknown slugs and returns fresh days`                                       | integration           |
+
+The page reuses story 005's `summarize`, `percent` and calendar helpers. Dynamic rendering reads
+fresh anonymous data on each request, including reloads in either locale and local-midnight rollover.
+The shared loading boundary is scoped to the changelog so tracker misses can return HTTP 404 before streaming.
+Browser inspection at 360px: 90 cells, no horizontal overflow; e2e checks every target is at least 32px.
+
+Validation: `pnpm check` (206 unit tests), `pnpm test:int` (58 tests) and `CI=true pnpm test:e2e` (91 passed; one existing landing CSP network-idle timeout passed on retry) passed. Reviewer found no P0/P1 issues.
