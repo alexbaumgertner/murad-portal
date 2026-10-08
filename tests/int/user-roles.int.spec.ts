@@ -228,6 +228,47 @@ describe('user roles (story 011a)', () => {
       }
     })
 
+    it("cannot see or change the owner's document locks (payload-locked-documents)", async () => {
+      const lock = await payload.create({
+        collection: 'payload-locked-documents',
+        data: {
+          document: { relationTo: 'users', value: anna.id },
+          user: { relationTo: 'users', value: owner.id },
+        },
+      })
+      const slug = 'payload-locked-documents' as const
+      await expect(
+        payload.find({ collection: slug, overrideAccess: false, user: anna }),
+      ).rejects.toThrow()
+      await expect(
+        payload.update({
+          collection: slug,
+          id: lock.id,
+          data: {},
+          overrideAccess: false,
+          user: anna,
+        }),
+      ).rejects.toThrow()
+      await expect(
+        payload.delete({ collection: slug, id: lock.id, overrideAccess: false, user: anna }),
+      ).rejects.toThrow()
+      await expect(
+        payload.create({
+          collection: slug,
+          data: {
+            document: { relationTo: 'users', value: boris.id },
+            user: { relationTo: 'users', value: anna.id },
+          },
+          overrideAccess: false,
+          user: anna,
+        }),
+      ).rejects.toThrow()
+      // The owner (the admin panel) still works with locks.
+      const mine = await payload.find({ collection: slug, overrideAccess: false, user: owner })
+      expect(mine.totalDocs).toBeGreaterThanOrEqual(1)
+      await payload.delete({ collection: slug, id: lock.id })
+    })
+
     it('has no owner powers over other collections', async () => {
       await expect(
         payload.find({ collection: 'waitlist-signups', overrideAccess: false, user: anna }),

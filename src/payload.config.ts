@@ -7,6 +7,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
+import { owner } from './access'
 import { AuthCodes } from './collections/AuthCodes'
 import { ChallengeDays } from './collections/ChallengeDays'
 import { Challenges } from './collections/Challenges'
@@ -57,6 +58,14 @@ export default buildConfig({
       })
     : undefined,
   secret: env.PAYLOAD_SECRET,
+  onInit: (payload) => {
+    // Payload adds `payload-locked-documents` itself with "any signed-in user" access, which would
+    // let a student read or clear the owner's edit locks. There is no config hook for it: replace
+    // the access functions once the config is sanitized.
+    const locks = payload.collections['payload-locked-documents']?.config
+    if (locks)
+      locks.access = { ...locks.access, create: owner, read: owner, update: owner, delete: owner }
+  },
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
