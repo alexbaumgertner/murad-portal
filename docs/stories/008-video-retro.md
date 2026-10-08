@@ -1,7 +1,7 @@
 ---
 id: 008
 title: Murad marks a video published and writes a 3-sentence retro
-status: draft
+status: approved
 ---
 
 # 008 — Video publication and retro

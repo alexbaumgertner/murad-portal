@@ -1,7 +1,7 @@
 ---
 id: 007
 title: Murad closes a day in a few taps
-status: draft
+status: approved
 ---
 
 # 007 — Close a day from the tracker page

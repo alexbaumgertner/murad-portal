@@ -1,7 +1,7 @@
 ---
 id: 006
 title: Anyone can watch Murad's challenge progress
-status: draft
+status: approved
 ---
 
 # 006 — Public challenge page: 90-cell grid, progress, countdown
