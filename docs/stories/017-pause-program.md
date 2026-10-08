@@ -1,7 +1,7 @@
 ---
 id: 017
 title: Student pauses and resumes a program
-status: draft
+status: approved
 ---
 
 # 017 — Pause and resume

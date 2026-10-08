@@ -1,7 +1,7 @@
 ---
 id: 012
 title: Murad assigns a program after the placement test, the student starts it
-status: draft
+status: approved
 ---
 
 # 012 — Murad assigns a program; the student presses «Начать»

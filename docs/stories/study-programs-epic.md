@@ -1,6 +1,6 @@
 # Epic: Study Programs («Учебные программы»)
 
-Status: draft · Oct 8, 2026 · source: owner + Murad answers in chat
+Status: approved · Oct 8, 2026 · source: owner + Murad answers in chat
 
 ## Goal
 

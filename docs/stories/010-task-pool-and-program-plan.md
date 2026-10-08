@@ -1,7 +1,7 @@
 ---
 id: 010
 title: Murad keeps a task pool by level and builds a default plan for each program
-status: draft
+status: approved
 ---
 
 # 010 — Task pool by level and the program's default plan

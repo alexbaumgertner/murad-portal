@@ -1,7 +1,7 @@
 ---
 id: 016
 title: Student comments on a day, Murad reads the comments
-status: draft
+status: approved
 ---
 
 # 016 — Day comments

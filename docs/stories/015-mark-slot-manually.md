@@ -1,7 +1,7 @@
 ---
 id: 015
 title: Student marks a slot done manually, including past days
-status: draft
+status: approved
 ---
 
 # 015 — Mark a slot manually, including past days
