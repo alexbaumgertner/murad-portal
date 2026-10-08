@@ -67,7 +67,7 @@ describe('changelog access', () => {
   it('shows scheduled entries to a signed-in user with access control on', async () => {
     const user = await payload.create({
       collection: 'users',
-      data: { email: 'editor@example.com' },
+      data: { email: 'editor@example.com', role: 'owner' },
     })
     try {
       const { docs } = await payload.find({

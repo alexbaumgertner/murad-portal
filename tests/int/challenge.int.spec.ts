@@ -54,7 +54,7 @@ describe('challenges', () => {
     await cleanup()
     const user = await payload.create({
       collection: 'users',
-      data: { email: 'challenge@example.com' },
+      data: { email: 'challenge@example.com', role: 'owner' },
     })
     admin = { ...user, collection: 'users' }
   })

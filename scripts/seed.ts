@@ -104,7 +104,7 @@ async function seed() {
     where: { email: { equals: email } },
   })
   if (userCount === 0) {
-    await payload.create({ collection: 'users', data: { email } })
+    await payload.create({ collection: 'users', data: { email, role: 'owner' } })
     payload.logger.info(`Created admin ${email} (sign in with an email code)`)
   }
 

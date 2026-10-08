@@ -6,7 +6,7 @@ import {
   type CollectionConfig,
 } from 'payload'
 
-import { authenticated, publicChallengeOrAuthenticated } from '@/access'
+import { owner, publicChallengeOrOwner } from '@/access'
 import {
   DEFAULT_BLOCK_DAYS,
   DEFAULT_DAILY_MINUTES,
@@ -92,10 +92,10 @@ export const Challenges: CollectionConfig = {
   },
   // Anonymous readers only get public challenges; the Local API caller passes overrideAccess: false.
   access: {
-    read: publicChallengeOrAuthenticated('isPublic'),
-    create: authenticated,
-    update: authenticated,
-    delete: authenticated,
+    read: publicChallengeOrOwner('isPublic'),
+    create: owner,
+    update: owner,
+    delete: owner,
   },
   hooks: {
     beforeValidate: [validateShape],

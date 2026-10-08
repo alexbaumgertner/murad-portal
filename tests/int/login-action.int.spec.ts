@@ -46,7 +46,7 @@ describe('loginAction analytics', () => {
   beforeAll(async () => {
     payload = await getPayload({ config })
     await payload.delete({ collection: 'users', where: { email: { equals: USER_EMAIL } } })
-    await payload.create({ collection: 'users', data: { email: USER_EMAIL } })
+    await payload.create({ collection: 'users', data: { email: USER_EMAIL, role: 'owner' } })
   })
 
   beforeEach(async () => {

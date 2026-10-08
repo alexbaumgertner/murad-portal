@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '@/access'
+import { owner } from '@/access'
 
 export const WaitlistSignups: CollectionConfig = {
   slug: 'waitlist-signups',
@@ -11,10 +11,10 @@ export const WaitlistSignups: CollectionConfig = {
   },
   // Signups are created server-side via the Local API; the public REST/GraphQL API stays closed.
   access: {
-    create: authenticated,
-    read: authenticated,
-    update: authenticated,
-    delete: authenticated,
+    create: owner,
+    read: owner,
+    update: owner,
+    delete: owner,
   },
   fields: [
     {

@@ -6,7 +6,7 @@ import type {
   PayloadRequest,
 } from 'payload'
 
-import { authenticated, publishedOrAuthenticated } from '@/access'
+import { owner, publishedOrOwner } from '@/access'
 import { locales } from '@/i18n/locales'
 
 export const CHANGELOG_TAGS = ['feature', 'improvement', 'fix'] as const
@@ -41,10 +41,10 @@ export const ChangelogEntries: CollectionConfig = {
   },
   defaultSort: '-publishedAt',
   access: {
-    read: publishedOrAuthenticated,
-    create: authenticated,
-    update: authenticated,
-    delete: authenticated,
+    read: publishedOrOwner,
+    create: owner,
+    update: owner,
+    delete: owner,
   },
   hooks: {
     afterChange: [afterChange],

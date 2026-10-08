@@ -35,7 +35,7 @@ beforeAll(async () => {
   userId = (
     await payload.create({
       collection: 'users',
-      data: { email: `retro-${Date.now()}@example.com` },
+      data: { email: `retro-${Date.now()}@example.com`, role: 'owner' },
     })
   ).id
   id = (

@@ -61,7 +61,10 @@ describe('close a day', () => {
   beforeAll(async () => {
     payload = await getPayload({ config })
     await payload.delete({ collection: 'users', where: { email: { equals: ADMIN_EMAIL } } })
-    const created = await payload.create({ collection: 'users', data: { email: ADMIN_EMAIL } })
+    const created = await payload.create({
+      collection: 'users',
+      data: { email: ADMIN_EMAIL, role: 'owner' },
+    })
     adminId = created.id
     admin = { ...created, collection: 'users' }
     const old = await payload.find({ collection: 'challenges', where: { slug: { equals: SLUG } } })
@@ -277,7 +280,7 @@ describe('close a day', () => {
     it('refuses a valid session of a user that no longer exists', async () => {
       const ghost = await payload.create({
         collection: 'users',
-        data: { email: 'ghost-close-day@example.com' },
+        data: { email: 'ghost-close-day@example.com', role: 'owner' },
       })
       signInAs(ghost.id)
       await payload.delete({ collection: 'users', id: ghost.id })

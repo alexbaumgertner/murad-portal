@@ -74,7 +74,7 @@ describe('joinWaitlist', () => {
     await joinWaitlist(payload, { email: 'visible@example.com' })
     const user = await payload.create({
       collection: 'users',
-      data: { email: 'waitlist-reader@example.com' },
+      data: { email: 'waitlist-reader@example.com', role: 'owner' },
     })
     try {
       const { docs } = await payload.find({
