@@ -1,57 +1,46 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 import { useActionState, useEffect, useId } from 'react'
 
 import { loginAction } from '@/features/auth/actions'
-import { CODE_LENGTH, initialLoginState, type LoginError } from '@/features/auth/schema'
+import { CODE_LENGTH, initialLoginState } from '@/features/auth/schema'
 
-import styles from './EmailCodeLogin.module.css'
+import styles from './StudentLogin.module.css'
 
-// The admin UI is English-only, so its copy stays here rather than in messages/*.
-const errorMessages: Record<LoginError, string> = {
-  invalid_email: 'Enter a valid email address.',
-  rate_limited: 'Too many attempts. Try again later.',
-  mail_failed: 'Could not send the email with your code. Please try again later.',
-  wrong_code: 'The code is wrong or has expired.',
-  code_expired: 'The code is wrong or has expired.',
-}
-
-/**
- * Admin login: email → 6-digit code by email. Rendered in Payload's `beforeLogin`
- * slot; the password form is gone because the local strategy is disabled.
- */
-export function EmailCodeLogin() {
+/** Public sign-in for invited students: email → 6-digit code → /study (story 011). */
+export function StudentLogin() {
+  const t = useTranslations('Login')
+  const locale = useLocale()
   const [state, formAction, isPending] = useActionState(loginAction, initialLoginState)
-  const redirect = useSearchParams().get('redirect') ?? ''
   const emailId = useId()
   const codeId = useId()
   const errorId = useId()
 
   useEffect(() => {
-    // Full reload so the admin shell boots with the new session cookie.
+    // Full navigation: the session cookie is new, and the owner is sent on to /admin.
     if (state.step === 'done') window.location.assign(state.redirectTo)
   }, [state])
-
-  const error = state.step !== 'done' ? state.error : undefined
 
   if (state.step === 'done') {
     return (
       <p className={styles.hint} role="status">
-        Signed in. Opening the admin panel…
+        {t('done')}
       </p>
     )
   }
 
+  const error = state.error
+
   return (
     <form action={formAction} className={styles.form} noValidate>
-      <input type="hidden" name="redirect" value={redirect} />
+      <input type="hidden" name="locale" value={locale} />
 
       {state.step === 'email' ? (
         <>
           <div className={styles.field}>
             <label htmlFor={emailId} className={styles.label}>
-              Email
+              {t('emailLabel')}
             </label>
             <input
               id={emailId}
@@ -61,7 +50,6 @@ export function EmailCodeLogin() {
               autoComplete="email"
               inputMode="email"
               required
-              autoFocus
               className={styles.input}
               aria-invalid={Boolean(error)}
               aria-describedby={error ? errorId : undefined}
@@ -72,22 +60,22 @@ export function EmailCodeLogin() {
             type="submit"
             name="intent"
             value="request"
-            className="btn btn--style-primary btn--size-large"
+            className={styles.button}
             disabled={isPending}
           >
-            {isPending ? 'Sending…' : 'Send login code'}
+            {isPending ? t('sending') : t('send')}
           </button>
         </>
       ) : (
         <>
           <input type="hidden" name="email" value={state.email} />
-          <p className={styles.hint}>
-            If <strong>{state.email}</strong> has an account, a {CODE_LENGTH}-digit code is on its
-            way. It is valid for 10 minutes.
-          </p>
+          <div className={styles.notice} role="status">
+            <p className={styles.sent}>{t('sent')}</p>
+            <p className={styles.hint}>{t('sentHint')}</p>
+          </div>
           <div className={styles.field}>
             <label htmlFor={codeId} className={styles.label}>
-              Code
+              {t('codeLabel')}
             </label>
             <input
               key={state.email}
@@ -105,25 +93,25 @@ export function EmailCodeLogin() {
               disabled={isPending}
             />
           </div>
-          <div className={styles.actions}>
-            <button
-              type="submit"
-              name="intent"
-              value="verify"
-              className="btn btn--style-primary btn--size-large"
-              disabled={isPending}
-            >
-              {isPending ? 'Checking…' : 'Sign in'}
-            </button>
+          <button
+            type="submit"
+            name="intent"
+            value="verify"
+            className={styles.button}
+            disabled={isPending}
+          >
+            {isPending ? t('verifying') : t('verify')}
+          </button>
+          <div className={styles.secondary}>
             <button
               type="submit"
               name="intent"
               value="request"
               formNoValidate
-              className="btn btn--style-secondary btn--size-large"
+              className={styles.link}
               disabled={isPending}
             >
-              Send a new code
+              {t('resend')}
             </button>
             <button
               type="submit"
@@ -133,14 +121,14 @@ export function EmailCodeLogin() {
               className={styles.link}
               disabled={isPending}
             >
-              Use another email
+              {t('restart')}
             </button>
           </div>
         </>
       )}
 
       <p id={errorId} className={styles.error} role="alert">
-        {error ? errorMessages[error] : null}
+        {error ? t(`errors.${error}`) : null}
       </p>
     </form>
   )

@@ -16,9 +16,12 @@ export const codeSchema = z
 export const requestCodeSchema = z.object({ email: emailSchema })
 export const verifyCodeSchema = z.object({ email: emailSchema, code: codeSchema })
 
+export type LoginError =
+  'invalid_email' | 'rate_limited' | 'mail_failed' | 'wrong_code' | 'code_expired'
+
 export type LoginState =
-  | { step: 'email'; email?: string; error?: string }
-  | { step: 'code'; email: string; error?: string }
+  | { step: 'email'; email?: string; error?: LoginError }
+  | { step: 'code'; email: string; error?: LoginError }
   | { step: 'done'; redirectTo: string }
 
 export const initialLoginState: LoginState = { step: 'email' }

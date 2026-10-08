@@ -26,10 +26,16 @@ export const PER_IP_LIMIT = 20
 export const CODE_RETENTION_MS = 24 * 60 * 60 * 1000
 export const MIN_RESPONSE_MS = 400
 
-export const TOO_MANY = 'Too many attempts. Try again later.'
-export const BAD_CODE = 'The code is wrong or has expired.'
-export const BAD_EMAIL = 'Enter a valid email address.'
-export const MAIL_BROKEN = 'Could not send the email with your code. Please try again later.'
+// Error codes, not sentences: each login form translates them for its audience.
+export const BAD_EMAIL = 'invalid_email'
+export const TOO_MANY = 'rate_limited'
+export const MAIL_BROKEN = 'mail_failed'
+export const BAD_CODE = 'wrong_code'
+/** No usable code is left: it expired, was used, or 5 wrong attempts burned it. */
+export const CODE_EXPIRED = 'code_expired'
+
+export type RequestError = typeof BAD_EMAIL | typeof TOO_MANY | typeof MAIL_BROKEN
+export type VerifyError = typeof BAD_CODE | typeof CODE_EXPIRED
 
 export type CodeRecord = {
   id: string | number
@@ -78,7 +84,7 @@ async function atLeast<T>(ms: number, work: Promise<T>): Promise<T> {
   return result
 }
 
-export type RequestResult = { ok: true; email: string } | { ok: false; error: string }
+export type RequestResult = { ok: true; email: string } | { ok: false; error: RequestError }
 
 export async function requestCode(
   emailInput: string,
@@ -128,7 +134,7 @@ export async function requestCode(
   )
 }
 
-export type VerifyResult = { ok: true; userId: string | number } | { ok: false; error: string }
+export type VerifyResult = { ok: true; userId: string | number } | { ok: false; error: VerifyError }
 
 export async function verifyCode(
   emailInput: string,
@@ -144,11 +150,11 @@ export async function verifyCode(
       if (!email.success || !code.success) return { ok: false, error: BAD_CODE }
 
       const record = await deps.store.latestActiveCode(email.data, new Date(now()))
-      if (!record) return { ok: false, error: BAD_CODE }
+      if (!record) return { ok: false, error: CODE_EXPIRED }
 
       if (record.attempts >= MAX_ATTEMPTS) {
         await deps.store.updateCode(record.id, { consumedAt: new Date(now()) })
-        return { ok: false, error: TOO_MANY }
+        return { ok: false, error: CODE_EXPIRED }
       }
 
       const expected = Buffer.from(record.codeHash, 'hex')
@@ -161,7 +167,7 @@ export async function verifyCode(
           attempts,
           ...(attempts >= MAX_ATTEMPTS ? { consumedAt: new Date(now()) } : {}),
         })
-        return { ok: false, error: attempts >= MAX_ATTEMPTS ? TOO_MANY : BAD_CODE }
+        return { ok: false, error: attempts >= MAX_ATTEMPTS ? CODE_EXPIRED : BAD_CODE }
       }
 
       await deps.store.updateCode(record.id, { consumedAt: new Date(now()) })

@@ -8,6 +8,8 @@ import crypto from 'node:crypto'
 export const SESSION_COOKIE = 'indie_session'
 /** Short-lived on purpose: a stolen laptop should not mean a month of admin access. */
 export const SESSION_TTL_SECONDS = 7 * 24 * 60 * 60
+/** Students have no admin powers and sign in from their phones: 30 days (D-SP-2). */
+export const STUDENT_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60
 
 function sign(body: string, secret: string): string {
   const key = crypto.createHash('sha256').update(`indie-session:${secret}`).digest()
@@ -25,11 +27,12 @@ export function issueToken(
   userId: string | number,
   secret: string,
   now: number = Date.now(),
+  ttlSeconds: number = SESSION_TTL_SECONDS,
 ): { token: string; maxAge: number } {
   if (!secret) throw new Error('Session secret is empty; refusing to sign sessions')
-  const exp = Math.floor(now / 1000) + SESSION_TTL_SECONDS
+  const exp = Math.floor(now / 1000) + ttlSeconds
   const body = `${userId}.${exp}`
-  return { token: `${body}.${sign(body, secret)}`, maxAge: SESSION_TTL_SECONDS }
+  return { token: `${body}.${sign(body, secret)}`, maxAge: ttlSeconds }
 }
 
 /** User id from a valid, unexpired token; otherwise null. */
