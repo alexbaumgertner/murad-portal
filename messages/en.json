@@ -96,6 +96,23 @@
     "finished": "Challenge finished",
     "rules": "Rules",
     "dayMinutes": "{minutes} minutes",
+    "closeDay": {
+      "minutesLabel": "Minutes",
+      "notesLabel": "Notes (2–3 short lines)",
+      "submit": "Close day",
+      "update": "Save changes",
+      "pending": "Saving…",
+      "errors": {
+        "unauthorized": "Sign in to close a day.",
+        "invalid_request": "Something is wrong with the form. Reload the page and try again.",
+        "invalid_day": "This day is not part of the challenge.",
+        "invalid_minutes": "Enter whole minutes from 1 to 600.",
+        "invalid_notes": "Notes can be up to 500 characters.",
+        "future_day": "This day has not started yet.",
+        "not_found": "This challenge was not found.",
+        "server": "Could not save. Please try again."
+      }
+    },
     "demoTitle": "90 days for YouTube",
     "demoTopic": "Hearing familiar English words",
     "demoNotes": "Planned the lesson, recorded examples and reviewed the edit.",

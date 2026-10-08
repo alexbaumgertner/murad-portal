@@ -22,6 +22,7 @@ export const analyticsEvents = {
   waitlist_joined: z.strictObject({ source: slug }),
   login_code_requested: z.strictObject({ resend: z.boolean() }),
   login_succeeded: z.strictObject({}),
+  challenge_day_closed: z.strictObject({ updated: z.boolean() }),
 } satisfies Record<string, z.ZodType<Record<string, string | number | boolean>>>
 
 export type AnalyticsEvent = keyof typeof analyticsEvents
