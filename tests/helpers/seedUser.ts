@@ -4,11 +4,14 @@ import config from '../../src/payload.config'
 
 export const testUserEmail = (suffix: string) => `e2e-admin-${suffix}@example.com`
 
-export async function seedTestUser(suffix: string): Promise<string> {
+export async function seedTestUser(
+  suffix: string,
+  role: 'owner' | 'student' = 'owner',
+): Promise<string> {
   const payload = await getPayload({ config })
   const email = testUserEmail(suffix)
   await payload.delete({ collection: 'users', where: { email: { equals: email } } })
-  await payload.create({ collection: 'users', data: { email, role: 'owner' } })
+  await payload.create({ collection: 'users', data: { email, role } })
   return email
 }
 
