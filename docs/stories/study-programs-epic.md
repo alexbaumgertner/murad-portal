@@ -68,9 +68,9 @@ Every student-facing Russian text exists in two forms, «ты» and «вы» (D-
 
 | # | User gets | Executor | Depends on |
 | --- | --- | --- | --- |
-| 009 | Murad creates slot types and a program with a week template | Claude Code | — |
+| 009 | Murad creates slot types and a program with a week template | Claude Code | 011 (role `student`) |
 | 010 | Murad keeps a task pool by level and builds each program's default plan | Claude Code | 009 |
-| 011 | Murad invites a student; sign-in by email code; «ты»/«вы» setting | Claude Code | D-SP-2 |
+| 011 | Murad invites a student; sign-in by email code; «ты»/«вы» setting | Claude Code | D-SP-2 (first in order: adds `users.role`) |
 | 012 | Murad records the placement test and assigns a program; the student presses «Начать» | Claude Code | 009, 011 |
 | 018 | The student gets a personal plan copied from the program; Murad edits it | Claude Code | 010, 012 |
 | 013 | Student sees «Сегодня», the week grid and all weeks | Codex | 012, 018 |
@@ -79,7 +79,7 @@ Every student-facing Russian text exists in two forms, «ты» and «вы» (D-
 | 016 | Student comments on a day; Murad reads comments | Claude Code | 013 |
 | 017 | Pause and resume, no limits | Claude Code | 013, 014 |
 
-Order of work: 009 → 010 → 011 → 012 → 018 → 013 → 014 → 015 → 016 → 017. Data stories go strictly one after another (each adds a migration); 013 is UI only and can be started as soon as 018 is merged.
+Order of work: 011 → 009 → 010 → 012 → 018 → 013 → 014 → 015 → 016 → 017. Data stories go strictly one after another (each adds a migration); 013 is UI only and can be started as soon as 018 is merged.
 
 ## Decisions this epic changes
 
