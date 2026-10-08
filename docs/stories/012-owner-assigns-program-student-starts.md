@@ -39,6 +39,7 @@ status: draft
 12. `[edge]` **Given** the test is «Мурад (CEFR)» **then** the score field is hidden and only the CEFR level is required.
 13. `[access]` **Given** a student **when** she calls the API to create an enrollment, change its program or placement, or read `placement.note` **then** 403 / field absent.
 14. `[access]` **Given** anonymous **when** opening `/study` **then** redirect to `/login`.
+15. `[edge]` **Given** the owner deletes a student **then** her enrollments are deleted with her (moved from 011; logs and comments are added by the stories that introduce them).
 
 ## Analytics
 - `program_assigned` {programSlug, levelFrom, levelTo, placementTest, placementCefr}
