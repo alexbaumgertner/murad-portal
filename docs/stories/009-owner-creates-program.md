@@ -1,7 +1,7 @@
 ---
 id: 009
 title: Murad creates slot types and a study program with a week template
-status: draft
+status: approved
 ---
 
 # 009 — Murad creates slot types and a study program with a week template
