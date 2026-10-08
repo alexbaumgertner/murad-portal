@@ -1,0 +1,24 @@
+.panel {
+  margin: 1rem 0;
+}
+.form {
+  composes: form from '../CloseDayCell/CloseDayCell.module.css';
+  padding-top: 0.75rem;
+}
+.input {
+  composes: input from '../CloseDayCell/CloseDayCell.module.css';
+}
+.button {
+  composes: button from '../CloseDayCell/CloseDayCell.module.css';
+}
+.error {
+  composes: error from '../CloseDayCell/CloseDayCell.module.css';
+}
+.toggle {
+  min-height: 44px;
+  cursor: pointer;
+}
+.toggle:focus-visible {
+  outline: 2px solid var(--color-tracker-accent);
+  outline-offset: 2px;
+}

@@ -7,6 +7,8 @@ import { notFound } from 'next/navigation'
 import { hasLocale } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
 import { CloseDayCell } from '@/components/CloseDayCell/CloseDayCell'
+import { VideoRetroForm } from '@/components/VideoRetroForm/VideoRetroForm'
+import { retroFields } from '@/features/challenge/schema'
 import { currentAdmin } from '@/features/auth/current-user'
 import { dayNumberOn, percent, summarize } from '@/features/challenge/progress'
 import { getPublicChallenge } from '@/features/challenge/queries'
@@ -108,8 +110,32 @@ export default async function ChallengePage({ params }: Props) {
           <section key={video.id ?? index} data-block={index + 1}>
             <h2>{t('video', { number: index + 1 })}</h2>
             <h3>{video.title}</h3>
-            {video.youtubeUrl && video.publishedAt && new Date(video.publishedAt) <= now ? (
+            {video.youtubeUrl && video.publishedAt ? (
               <a href={video.youtubeUrl}>{t('watch')}</a>
+            ) : null}
+            {video.publishedAt ? (
+              <dl className={styles.retro}>
+                {retroFields.map((key) =>
+                  video[key] ? (
+                    <div key={key}>
+                      <dt>{t(`videoRetro.${key}`)}</dt>
+                      <dd>{video[key]}</dd>
+                    </div>
+                  ) : null,
+                )}
+              </dl>
+            ) : null}
+            {isAdmin ? (
+              <VideoRetroForm
+                key={JSON.stringify(video)}
+                slug={slug}
+                blockNumber={index + 1}
+                youtubeUrl={video.youtubeUrl ?? ''}
+                publishedAt={video.publishedAt?.slice(0, 10) ?? now.toISOString().slice(0, 10)}
+                retroWorked={video.retroWorked ?? ''}
+                retroDropped={video.retroDropped ?? ''}
+                retroChange={video.retroChange ?? ''}
+              />
             ) : null}
             <ol className={styles.grid}>
               {Array.from({ length: challenge.blockDays }, (_, offset) => {

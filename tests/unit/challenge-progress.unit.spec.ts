@@ -157,7 +157,7 @@ describe('summarize', () => {
     expect(summarize(challenge, [], at('2027-01-04T19:00:00.000Z')).status).toBe('finished')
   })
 
-  it('counts videos published up to now', () => {
+  it('counts marked publications regardless of date (story 008 criterion 5)', () => {
     const videos = [
       { publishedAt: '2026-10-20T10:00:00.000Z' },
       { publishedAt: '2026-11-05T10:00:00.000Z' },
@@ -167,7 +167,7 @@ describe('summarize', () => {
       { publishedAt: null },
     ]
     const s = summarize({ ...challenge, videos }, [], at('2026-11-10T08:00:00.000Z'))
-    expect(s.videosPublished).toBe(2)
+    expect(s.videosPublished).toBe(3)
     expect(s.videosTarget).toBe(6)
   })
 

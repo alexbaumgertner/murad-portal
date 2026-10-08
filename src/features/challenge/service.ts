@@ -3,7 +3,7 @@ import 'server-only'
 import type { Payload, TypedUser } from 'payload'
 
 import { dayNumberOn } from './progress'
-import type { CloseDayError, CloseDayInput } from './schema'
+import type { CloseDayError, CloseDayInput, VideoRetroInput } from './schema'
 
 export type CloseDayResult =
   | { ok: true; updated: boolean }
@@ -81,4 +81,34 @@ export async function closeDay(
     await write(winner)
     return { ok: true, updated: true }
   }
+}
+
+/** Update the selected embedded video; preserve row ids, titles and the other blocks. */
+export async function saveVideoRetro(payload: Payload, user: TypedUser, input: VideoRetroInput) {
+  const { slug, blockNumber, ...video } = input
+  const { docs } = await payload.find({
+    collection: 'challenges',
+    where: { slug: { equals: slug } },
+    limit: 1,
+    depth: 0,
+    user,
+    overrideAccess: false,
+  })
+  const challenge = docs[0]
+  if (!challenge) return { ok: false, error: 'not_found' } as const
+  if (!challenge.videos?.[blockNumber - 1]) return { ok: false, error: 'invalid_request' } as const
+  await payload.update({
+    collection: 'challenges',
+    id: challenge.id,
+    user,
+    overrideAccess: false,
+    data: {
+      videos: challenge.videos.map((existing, index) =>
+        index === blockNumber - 1
+          ? { ...existing, ...video, publishedAt: `${video.publishedAt}T00:00:00.000Z` }
+          : existing,
+      ),
+    },
+  })
+  return { ok: true } as const
 }

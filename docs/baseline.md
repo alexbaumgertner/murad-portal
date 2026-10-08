@@ -4,7 +4,7 @@ What every product built from this template gets out of the box. Update this tab
 
 | Area               | Status  | Note                                                                                                                                                                               |
 | ------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Public tracker     | done    | Localized `/challenge/[slug]`, anonymous access checks, 90-day grid, progress and countdown; idempotent demo seed; 360px verified; signed-in admin closes days from the grid (007) |
+| Public tracker     | done    | Localized `/challenge/[slug]`, anonymous access checks, 90-day grid, progress and countdown; idempotent demo seed; 360px verified; signed-in admin closes days (007) and saves video publications and public retros (008) |
 | Auth               | done    | Passwordless email codes for the admin; hashed codes, DB rate limits, signed cookie                                                                                                |
 | i18n               | done    | next-intl: `ru` (unprefixed) + `/en`; browser language ignored, cookie remembered; Russian `x-default`; hreflang, `<html lang>`, switcher; English CMS fallback                    |
 | Security headers   | partial | HSTS, nosniff, Referrer/Permissions-Policy, frame-ancestors enforced; CSP report-only, no violations in a prod build                                                               |

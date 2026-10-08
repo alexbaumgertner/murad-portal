@@ -106,3 +106,11 @@ summary.cell::-webkit-details-marker {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+.retro dt {
+  font-weight: 600;
+}
+.retro dd {
+  margin: 0.25rem 0 1rem;
+  white-space: pre-wrap;
+}
