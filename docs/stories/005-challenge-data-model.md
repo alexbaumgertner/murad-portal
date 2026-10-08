@@ -1,7 +1,7 @@
 ---
 id: 005
 title: Murad sets up his 90-day challenge in the admin
-status: approved
+status: done
 ---
 
 # 005 — Challenge data model, admin and progress maths
@@ -41,6 +41,18 @@ status: approved
 
 ## Verification
 
-| #   | Test (file › name)                  | Layer |
-| --- | ----------------------------------- | ----- |
-|     | filled in during step 3 of /feature |       |
+| #   | Test (file › name)                                                                                                                                                                          | Layer |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| 1   | `challenge.int.spec.ts` › data model › saves a challenge with the defaults 90 / 90 / 15 and an 8 100-minute target                                                                          | int   |
+| 2   | `challenge.int.spec.ts` › rejects a durationDays that is not divisible by blockDays · rejects a videos count different from durationDays / blockDays · re-checks the shape on update        | int   |
+| 2   | `challenge-progress.unit.spec.ts` › checkChallengeShape › (divisible / videos count / non-integer cases)                                                                                    | unit  |
+| 3   | `challenge-progress.unit.spec.ts` › dayNumberOn › is day 1 at 23:30 Astana … (18:30 UTC) · is day 2 at 00:10 Astana … (19:10 UTC) · is still day 1 at 23:59:59 and day 2 at 00:00:00 Astana | unit  |
+| 4   | `challenge-progress.unit.spec.ts` › blockOf › maps days 1–15 to block 1 and day 16 to block 2                                                                                               | unit  |
+| 5   | `challenge-progress.unit.spec.ts` › summarize › counts minutes, sessions and the 8 100-minute target on day 4                                                                               | unit  |
+| 6   | `challenge-progress.unit.spec.ts` › summarize › reports the real minutes when days exceed the daily target · percent › caps at 100 for display while the real value stays above             | unit  |
+| 7   | `challenge-progress.unit.spec.ts` › summarize › is not-started before the start date · is finished after the end, with no negative days left · is still running on day 90 …                 | unit  |
+| 8   | `challenge.int.spec.ts` › access › (anonymous reads see public challenges and their days only · hides a non-public challenge from findByID · refuses anonymous writes on both collections)  | int   |
+| 9   | `challenge.int.spec.ts` › challenge days › rejects a second row for the same challenge and day (plus the unique index `challenge_dayNumber_idx` in the migration)                           | int   |
+
+Also covered: day/minutes/notes bounds and a signed-in admin seeing private rows (`challenge.int.spec.ts`), DST-safe day counting and `endsAt` (`challenge-progress.unit.spec.ts`).
+No browser flow in this story (admin only), so no e2e test was added.
