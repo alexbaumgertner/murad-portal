@@ -37,3 +37,48 @@ export type CloseDayState =
   | { status: 'error'; error: CloseDayError }
 
 export const initialCloseDayState: CloseDayState = { status: 'idle' }
+
+/** Only actual YouTube video links; never trust a URL's apparent prefix or scheme. */
+export function isYouTubeVideoUrl(value: string): boolean {
+  if (!/^https?:\/\//i.test(value) || /[\s\\]/.test(value)) return false
+  try {
+    const url = new URL(value)
+    if (url.username || url.password || url.port) return false
+    if (url.hostname === 'youtu.be') return /^\/[\w-]{11}\/?$/.test(url.pathname)
+    if (!['youtube.com', 'www.youtube.com', 'm.youtube.com'].includes(url.hostname)) return false
+    return (
+      /^\/shorts\/[\w-]{11}\/?$/.test(url.pathname) ||
+      (url.pathname === '/watch' &&
+        url.searchParams.getAll('v').length === 1 &&
+        /^[\w-]{11}$/.test(url.searchParams.get('v') ?? ''))
+    )
+  } catch {
+    return false
+  }
+}
+
+export const retroFields = ['retroWorked', 'retroDropped', 'retroChange'] as const
+const retroAnswer = z.string().trim().max(400)
+export const videoRetroSchema = z.object({
+  slug: z.string().trim().min(1).max(100),
+  blockNumber: z.coerce.number().int().min(1).max(365),
+  youtubeUrl: z.string().trim().max(2048).refine(isYouTubeVideoUrl),
+  publishedAt: z.iso.date(),
+  retroWorked: retroAnswer,
+  retroDropped: retroAnswer,
+  retroChange: retroAnswer,
+})
+export type VideoRetroInput = z.infer<typeof videoRetroSchema>
+export type VideoRetroState =
+  | { status: 'idle' | 'success' }
+  | {
+      status: 'error'
+      error:
+        | 'unauthorized'
+        | 'invalid_request'
+        | 'invalid_url'
+        | 'invalid_date'
+        | 'invalid_retro'
+        | 'not_found'
+        | 'server'
+    }

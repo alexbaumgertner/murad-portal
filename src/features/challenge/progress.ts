@@ -146,9 +146,7 @@ export function summarize(
     minutesTarget: durationDays * dailyMinutes,
     sessionsDone: closedDays.length,
     sessionsPlanned: status === 'not-started' ? 0 : Math.min(rawToday, durationDays),
-    videosPublished: videos.filter(
-      (v) => v.publishedAt && new Date(v.publishedAt).getTime() <= now.getTime(),
-    ).length,
+    videosPublished: videos.filter((v) => v.publishedAt).length,
     videosTarget: Math.floor(durationDays / blockDays),
     daysLeft:
       status === 'not-started'

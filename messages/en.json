@@ -116,6 +116,25 @@
     "demoTitle": "90 days for YouTube",
     "demoTopic": "Hearing familiar English words",
     "demoNotes": "Planned the lesson, recorded examples and reviewed the edit.",
-    "demoRules": "Spend the first 90 minutes on the project. Close each session with a short note."
+    "demoRules": "Spend the first 90 minutes on the project. Close each session with a short note.",
+    "videoRetro": {
+      "edit": "Publication and retro",
+      "youtubeUrl": "YouTube URL",
+      "publishedAt": "Publish date",
+      "retroWorked": "What worked?",
+      "retroDropped": "Where did viewers drop off / what did not work?",
+      "retroChange": "What will I change in the next video?",
+      "submit": "Save video",
+      "pending": "Saving…",
+      "errors": {
+        "unauthorized": "Sign in to save a video.",
+        "invalid_request": "Choose a valid video block.",
+        "invalid_url": "Enter a YouTube watch, youtu.be or shorts link.",
+        "invalid_date": "Enter a valid publish date.",
+        "invalid_retro": "Each retro answer must be at most 400 characters.",
+        "not_found": "This challenge could not be found.",
+        "server": "Could not save. Please try again."
+      }
+    }
   }
 }
