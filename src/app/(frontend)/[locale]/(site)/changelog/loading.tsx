@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 
-import styles from '../status.module.css'
+import styles from '../../status.module.css'
 
 export default function Loading() {
   const t = useTranslations('Status')

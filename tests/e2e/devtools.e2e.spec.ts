@@ -14,7 +14,7 @@ function collectProblems(page: Page) {
   return problems
 }
 
-for (const path of ['/', '/changelog']) {
+for (const path of ['/', '/changelog', '/challenge/90-90-1', '/en/challenge/90-90-1']) {
   test(`${path} has no console errors or server failures`, async ({ page }) => {
     const problems = collectProblems(page)
     await page.goto(path)
