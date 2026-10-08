@@ -4,9 +4,18 @@ import { useSearchParams } from 'next/navigation'
 import { useActionState, useEffect, useId } from 'react'
 
 import { loginAction } from '@/features/auth/actions'
-import { CODE_LENGTH, initialLoginState } from '@/features/auth/schema'
+import { CODE_LENGTH, initialLoginState, type LoginError } from '@/features/auth/schema'
 
 import styles from './EmailCodeLogin.module.css'
+
+// The admin UI is English-only, so its copy stays here rather than in messages/*.
+const errorMessages: Record<LoginError, string> = {
+  invalid_email: 'Enter a valid email address.',
+  rate_limited: 'Too many attempts. Try again later.',
+  mail_failed: 'Could not send the email with your code. Please try again later.',
+  wrong_code: 'The code is wrong or has expired.',
+  code_expired: 'The code is wrong or has expired.',
+}
 
 /**
  * Admin login: email → 6-digit code by email. Rendered in Payload's `beforeLogin`
@@ -131,7 +140,7 @@ export function EmailCodeLogin() {
       )}
 
       <p id={errorId} className={styles.error} role="alert">
-        {error}
+        {error ? errorMessages[error] : null}
       </p>
     </form>
   )
