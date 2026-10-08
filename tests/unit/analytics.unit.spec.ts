@@ -122,3 +122,14 @@ describe('track', () => {
     expect(vercel.track).not.toHaveBeenCalled()
   })
 })
+
+describe('challenge_day_closed', () => {
+  it('is in the catalog and carries only a boolean', async () => {
+    await track('challenge_day_closed', { updated: false }, headersOf({}))
+    expect(vercel.track).toHaveBeenCalledWith(
+      'challenge_day_closed',
+      { updated: false },
+      expect.anything(),
+    )
+  })
+})

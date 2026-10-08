@@ -2,9 +2,12 @@ import { hasText } from '@payloadcms/richtext-lexical/shared'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { Metadata } from 'next'
 import { IBM_Plex_Sans, Newsreader } from 'next/font/google'
+import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { hasLocale } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
+import { CloseDayCell } from '@/components/CloseDayCell/CloseDayCell'
+import { currentAdmin } from '@/features/auth/current-user'
 import { dayNumberOn, percent, summarize } from '@/features/challenge/progress'
 import { getPublicChallenge } from '@/features/challenge/queries'
 import { alternatesFor } from '@/i18n/alternates'
@@ -31,9 +34,12 @@ const symbols = { closed: '✓', today: '●', missed: '—', future: '○' }
 export default async function ChallengePage({ params }: Props) {
   const { locale, slug } = await params
   if (!hasLocale(routing.locales, locale)) notFound()
-  const result = await getPublicChallenge(await getPayloadClient(), slug, locale)
+  const payload = await getPayloadClient()
+  const result = await getPublicChallenge(payload, slug, locale)
   if (!result) notFound()
   const { challenge, days } = result
+  // Only decides whether to render the form; the action re-verifies the session on the server.
+  const isAdmin = Boolean(await currentAdmin(payload, await headers()))
   const t = await getTranslations({ locale, namespace: 'Challenge' })
   const now = new Date()
   const summary = summarize(challenge, days, now)
@@ -126,20 +132,36 @@ export default async function ChallengePage({ params }: Props) {
                 )
                 const calendarDate = new Date(`${challenge.startDate.slice(0, 10)}T12:00:00Z`)
                 calendarDate.setUTCDate(calendarDate.getUTCDate() + dayNumber - 1)
+                const detail = day?.closedAt ? (
+                  <div className={styles.detail}>
+                    <time dateTime={calendarDate.toISOString().slice(0, 10)}>
+                      {date(calendarDate.toISOString())}
+                    </time>
+                    <p>{t('dayMinutes', { minutes: day.minutes })}</p>
+                    {day.notes ? <p>{day.notes}</p> : null}
+                  </div>
+                ) : null
                 return (
                   <li key={dayNumber} data-day={dayNumber} data-state={state}>
-                    {day?.closedAt ? (
+                    {isAdmin && state !== 'future' ? (
+                      <CloseDayCell
+                        slug={challenge.slug}
+                        dayNumber={dayNumber}
+                        defaultMinutes={challenge.dailyMinutes}
+                        minutes={day?.closedAt ? day.minutes : undefined}
+                        notes={day?.closedAt ? (day.notes ?? undefined) : undefined}
+                        label={label}
+                        summary={cell}
+                        summaryClassName={styles.cell}
+                      >
+                        {detail}
+                      </CloseDayCell>
+                    ) : day?.closedAt ? (
                       <details>
                         <summary className={styles.cell} aria-label={label}>
                           {cell}
                         </summary>
-                        <div className={styles.detail}>
-                          <time dateTime={calendarDate.toISOString().slice(0, 10)}>
-                            {date(calendarDate.toISOString())}
-                          </time>
-                          <p>{t('dayMinutes', { minutes: day.minutes })}</p>
-                          {day.notes ? <p>{day.notes}</p> : null}
-                        </div>
+                        {detail}
                       </details>
                     ) : (
                       <div
