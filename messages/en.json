@@ -208,8 +208,6 @@
     "timezoneChange": "change",
     "timezoneLabel": "Time zone",
     "almaty": "Almaty",
-    "today": "Today",
-    "dayOf": "Day {day} of {total}",
     "errors": {
       "unauthorized": "Sign in to start the program.",
       "invalid_timezone": "Pick a time zone from the list.",
@@ -224,8 +222,41 @@
     "weeksNav": "Program weeks",
     "week": "Week {week}",
     "weekCurrent": "Week {week} (now)",
-    "day": "Day {day}",
-    "dayEmpty": "No tasks",
-    "empty": "No tasks this week"
+    "empty": "No tasks this week",
+    "weekProgress": "Week {week}, done {done} of {total}",
+    "weekProgressShort": "{done}/{total}",
+    "dayRest": "Rest day",
+    "dayDate": "Day {day} · {date}"
+  },
+  "StudyToday": {
+    "title": "Today",
+    "headerDay": "Day {day} of {total} · Week {week}",
+    "statDone": "Days done",
+    "statMissed": "Days missed",
+    "statMinutes": "Total minutes",
+    "restToday": "Today is a rest day",
+    "rest": "Rest day",
+    "slotMinimum": "min. {minutes} min",
+    "tasksTitle": "Tasks",
+    "tasksEmpty": "No tasks for this day",
+    "dayHeading": "Day {day} · {date}",
+    "backToToday": "← Back to Today",
+    "gridLabel": "Days of week {week}",
+    "cellLabel": "Day {day}, {date}: {state}",
+    "legend": "What the markers mean",
+    "gridHint": "Tap a day to see its activities and tasks.",
+    "finishedTitle": "Program completed",
+    "finishedBody": "{program} is complete.",
+    "finishedTotals": "Days done: {done} of {total}.",
+    "loading": "Loading…",
+    "states": {
+      "done": "Done",
+      "partial": "Partly done",
+      "missed": "Missed",
+      "today": "Today",
+      "paused": "Paused",
+      "rest": "Rest day",
+      "upcoming": "Upcoming"
+    }
   }
 }

@@ -3,8 +3,12 @@ import { createTranslator, hasLocale } from 'next-intl'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 
+import { DayContent } from '@/components/DayContent/DayContent'
+import { DayMarker } from '@/components/DayMarker/DayMarker'
 import { currentStudent } from '@/features/auth/current-user'
 import { getStudentWeek } from '@/features/student-plan/queries'
+import { getStudyOverview } from '@/features/study-today/queries'
+import { formatCalendarDate, weekCells, weekCount, weekOf } from '@/features/study-today/shape'
 import { messagesFor, parseAddressForm } from '@/i18n/address-form'
 import { Link, redirect } from '@/i18n/navigation'
 import { routing } from '@/i18n/routing'
@@ -33,8 +37,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 /**
- * `/study/weeks` — «Все недели» (story 018, Q7): every week of her personal plan, read-only. The
- * current week opens first; `?week=N` opens another. The full week view with slots is story 013.
+ * `/study/weeks` — «Все недели» (stories 018 and 013, Q7): every week of the program with its
+ * done/total count, and one week's slots and personal tasks, read-only. The current week opens
+ * first; `?week=N` opens another, a future one included.
  */
 export default async function StudyWeeksPage({ params, searchParams }: PageProps) {
   const { locale } = await params
@@ -48,13 +53,24 @@ export default async function StudyWeeksPage({ params, searchParams }: PageProps
   const view = await getStudentWeek(payload, student, locale, asked || undefined)
   if (view.kind === 'none') return redirect({ href: '/study', locale })
 
-  const t = createTranslator({
-    locale,
-    messages: messagesFor(locale, parseAddressForm(student.addressForm)),
-    namespace: 'StudyPlan',
-  })
+  const overview = await getStudyOverview(payload, student, locale)
+  if (overview.kind !== 'ready') return redirect({ href: '/study', locale })
+
+  const addressForm = parseAddressForm(student.addressForm)
+  const messages = messagesFor(locale, addressForm)
+  const t = createTranslator({ locale, messages, namespace: 'StudyPlan' })
   const weeks = Array.from({ length: view.totalWeeks }, (_, i) => i + 1)
-  const empty = view.days.every((day) => day.tasks.length === 0)
+  const currentWeek = weekOf(overview.today)
+  const cells = weekCells({
+    week: view.week,
+    startDate: overview.startDate,
+    today: overview.today,
+    template: overview.template,
+    progress: overview.progress,
+  })
+  const empty =
+    view.days.every((day) => day.tasks.length === 0) &&
+    overview.template.every((day) => day.slots.length === 0)
 
   return (
     <div className={shared.page}>
@@ -66,20 +82,41 @@ export default async function StudyWeeksPage({ params, searchParams }: PageProps
         <p className={shared.lead}>{t('hint')}</p>
       </header>
 
-      <nav aria-label={t('weeksNav')} className={styles.weeks}>
-        {weeks.map((week) => (
-          <Link
-            key={week}
-            href={{ pathname: '/study/weeks', query: { week } }}
-            className={week === view.currentWeek ? styles.weekNow : styles.week}
-            aria-current={week === view.week ? 'page' : undefined}
-            aria-label={
-              week === view.currentWeek ? t('weekCurrent', { week }) : t('week', { week })
-            }
-          >
-            {week}
-          </Link>
-        ))}
+      <nav aria-label={t('weeksNav')}>
+        <ol className={styles.weeks}>
+          {weeks.map((week) => {
+            const isCurrent = week === currentWeek
+            const past = week < currentWeek
+            const count = weekCount({
+              week,
+              template: overview.template,
+              progress: overview.progress,
+            })
+            return (
+              <li key={week} className={styles.weekItem}>
+                <Link
+                  href={{ pathname: '/study/weeks', query: { week } }}
+                  className={isCurrent ? styles.weekNow : styles.week}
+                  aria-current={week === view.week ? 'page' : undefined}
+                  aria-label={
+                    isCurrent
+                      ? t('weekCurrent', { week })
+                      : past
+                        ? t('weekProgress', { week, ...count })
+                        : t('week', { week })
+                  }
+                >
+                  <span aria-hidden="true">{week}</span>
+                  {past ? (
+                    <span className={styles.count} aria-hidden="true">
+                      {t('weekProgressShort', count)}
+                    </span>
+                  ) : null}
+                </Link>
+              </li>
+            )
+          })}
+        </ol>
       </nav>
 
       <section className={shared.section} aria-labelledby="week-title">
@@ -90,20 +127,26 @@ export default async function StudyWeeksPage({ params, searchParams }: PageProps
           <p className={shared.lead}>{t('empty')}</p>
         ) : (
           <ol className={styles.days}>
-            {view.days.map((day) => (
-              <li key={day.day} className={styles.day}>
-                <h3 className={styles.dayTitle}>{t('day', { day: day.programDay })}</h3>
-                {day.tasks.length === 0 ? (
-                  <p className={styles.dayEmpty}>{t('dayEmpty')}</p>
-                ) : (
-                  <ul className={styles.tasks}>
-                    {day.tasks.map((task) => (
-                      <li key={task.id}>{task.text}</li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
+            {view.days.map((day, index) => {
+              const cell = cells[index]!
+              return (
+                <li key={day.day} className={styles.day}>
+                  <h3 className={styles.dayTitle}>
+                    {t('dayDate', {
+                      day: day.programDay,
+                      date: formatCalendarDate(cell.date, locale).long,
+                    })}{' '}
+                    <DayMarker state={cell.state} locale={locale} addressForm={addressForm} />
+                  </h3>
+                  <DayContent
+                    slots={overview.template[index]?.slots ?? []}
+                    tasks={day.tasks.map((task) => task.text)}
+                    locale={locale}
+                    addressForm={addressForm}
+                  />
+                </li>
+              )
+            })}
           </ol>
         )}
       </section>

@@ -199,6 +199,7 @@ test.describe('The student sees all weeks of her plan (story 018)', () => {
 
       await studentSignsIn(page, email)
       await page.getByRole('link', { name: 'Все недели' }).click()
+      await page.waitForURL(/\/study\/weeks/)
       await expect(page.getByRole('heading', { name: 'Неделя 2' })).toBeVisible()
       await expect(page.getByRole('link', { name: /Неделя 2/ })).toHaveAttribute(
         'aria-current',

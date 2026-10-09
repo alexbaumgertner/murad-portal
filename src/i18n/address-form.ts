@@ -31,6 +31,7 @@ export const STUDENT_NAMESPACES = [
   'StudySettings',
   'StudyProgram',
   'StudyPlan',
+  'StudyToday',
 ] as const
 
 export function parseAddressForm(value: unknown): AddressForm {

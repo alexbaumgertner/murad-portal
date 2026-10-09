@@ -70,8 +70,6 @@
     "timezoneChange": "изменить",
     "timezoneLabel": "Часовой пояс",
     "almaty": "Алматы",
-    "today": "Сегодня",
-    "dayOf": "День {day} из {total}",
     "errors": {
       "unauthorized": "Войдите, чтобы начать программу.",
       "invalid_timezone": "Выберите часовой пояс из списка.",
@@ -86,8 +84,41 @@
     "weeksNav": "Недели программы",
     "week": "Неделя {week}",
     "weekCurrent": "Неделя {week} (сейчас)",
-    "day": "День {day}",
-    "dayEmpty": "Без заданий",
-    "empty": "На этой неделе заданий нет"
+    "empty": "На этой неделе заданий нет",
+    "weekProgress": "Неделя {week}, выполнено {done} из {total}",
+    "weekProgressShort": "{done}/{total}",
+    "dayRest": "День отдыха",
+    "dayDate": "День {day} · {date}"
+  },
+  "StudyToday": {
+    "title": "Сегодня",
+    "headerDay": "День {day} из {total} · Неделя {week}",
+    "statDone": "Дней выполнено",
+    "statMissed": "Дней пропущено",
+    "statMinutes": "Минут всего",
+    "restToday": "Сегодня отдых",
+    "rest": "День отдыха",
+    "slotMinimum": "мин. {minutes} мин",
+    "tasksTitle": "Задания",
+    "tasksEmpty": "На этот день заданий нет",
+    "dayHeading": "День {day} · {date}",
+    "backToToday": "← К «Сегодня»",
+    "gridLabel": "Дни недели {week}",
+    "cellLabel": "День {day}, {date}: {state}",
+    "legend": "Что значат значки",
+    "gridHint": "Нажмите на день, чтобы посмотреть его занятия и задания.",
+    "finishedTitle": "Программа пройдена",
+    "finishedBody": "Программа «{program}» завершена.",
+    "finishedTotals": "Выполнено дней: {done} из {total}.",
+    "loading": "Загрузка…",
+    "states": {
+      "done": "Выполнено",
+      "partial": "Выполнено частично",
+      "missed": "Пропущено",
+      "today": "Сегодня",
+      "paused": "Пауза",
+      "rest": "День отдыха",
+      "upcoming": "Впереди"
+    }
   }
 }
