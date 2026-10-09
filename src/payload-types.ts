@@ -80,6 +80,7 @@ export interface Config {
     enrollments: Enrollment;
     'student-assignments': StudentAssignment;
     'slot-logs': SlotLog;
+    'day-comments': DayComment;
     'auth-codes': AuthCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -105,6 +106,7 @@ export interface Config {
     enrollments: EnrollmentsSelect<false> | EnrollmentsSelect<true>;
     'student-assignments': StudentAssignmentsSelect<false> | StudentAssignmentsSelect<true>;
     'slot-logs': SlotLogsSelect<false> | SlotLogsSelect<true>;
+    'day-comments': DayCommentsSelect<false> | DayCommentsSelect<true>;
     'auth-codes': AuthCodesSelect<false> | AuthCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -558,6 +560,24 @@ export interface SlotLog {
   createdAt: string;
 }
 /**
+ * Что ученики пишут к своим дням. Пишет только сам ученик, на сайте; здесь — читать.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "day-comments".
+ */
+export interface DayComment {
+  id: number;
+  studentName?: string | null;
+  programTitle?: string | null;
+  programDay?: number | null;
+  enrollment: number | Enrollment;
+  student?: (number | null) | User;
+  date: string;
+  text: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth-codes".
  */
@@ -648,6 +668,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'slot-logs';
         value: number | SlotLog;
+      } | null)
+    | ({
+        relationTo: 'day-comments';
+        value: number | DayComment;
       } | null)
     | ({
         relationTo: 'auth-codes';
@@ -940,6 +964,21 @@ export interface SlotLogsSelect<T extends boolean = true> {
   minutes?: T;
   completed?: T;
   timerStartedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "day-comments_select".
+ */
+export interface DayCommentsSelect<T extends boolean = true> {
+  studentName?: T;
+  programTitle?: T;
+  programDay?: T;
+  enrollment?: T;
+  student?: T;
+  date?: T;
+  text?: T;
   updatedAt?: T;
   createdAt?: T;
 }

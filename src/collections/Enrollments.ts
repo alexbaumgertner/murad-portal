@@ -33,6 +33,7 @@ import type { AnalyticsProps } from '@/lib/analytics'
 import { sendAssigned } from '@/features/enrollments/send-assigned'
 import { copyProgramPlan, deletePlan } from '@/features/student-plan/copy-plan'
 import { LEVELS } from '@/features/programs/shape'
+import { deleteComments } from '@/features/day-comments/delete-comments'
 import { deleteLogs } from '@/features/slot-timer/delete-logs'
 import { parseAddressForm } from '@/i18n/address-form'
 import type { Enrollment } from '@/payload-types'
@@ -300,10 +301,11 @@ export const Enrollments: CollectionConfig = {
     beforeOperation: [refuseForeignKeys],
     beforeValidate: [validateRules],
     afterChange: [copyPlanOnAssign, afterAssign],
-    // The plan's and the logs' `enrollment` column is required: delete them before the database would null it.
+    // The plan's, the logs' and the comments' `enrollment` column is required: delete them before the database would null it.
     beforeDelete: [
       ({ id, req }) => deletePlan(req, Number(id)),
       ({ id, req }) => deleteLogs(req, Number(id)),
+      ({ id, req }) => deleteComments(req, Number(id)),
     ],
   },
   fields: [

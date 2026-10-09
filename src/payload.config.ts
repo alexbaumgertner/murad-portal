@@ -16,6 +16,7 @@ import { Enrollments } from './collections/Enrollments'
 import { Media } from './collections/Media'
 import { ProgramPlanItems } from './collections/ProgramPlanItems'
 import { Programs } from './collections/Programs'
+import { DayComments } from './collections/DayComments'
 import { SlotLogs } from './collections/SlotLogs'
 import { SlotTypes } from './collections/SlotTypes'
 import { StudentAssignments } from './collections/StudentAssignments'
@@ -62,6 +63,7 @@ export default buildConfig({
     Enrollments,
     StudentAssignments,
     SlotLogs,
+    DayComments,
     AuthCodes,
   ],
   // Content locales (the admin UI itself stays English). Missing translations fall back to English.
