@@ -72,6 +72,14 @@ const validateRules: CollectionBeforeValidateHook = async ({ data, originalDoc, 
 // A deleted program takes its default plan with it. Before the delete: the database would otherwise
 // null `program` on the items first, and the column is required.
 const deletePlan: CollectionBeforeDeleteHook = async ({ id, req }) => {
+  // A program a student follows (or followed) stays: her history points at it (story 012).
+  const { totalDocs } = await req.payload.count({
+    collection: 'enrollments',
+    where: { program: { equals: id } },
+    overrideAccess: true,
+    req,
+  })
+  if (totalDocs > 0) fail('status', messages.assigned)
   await req.payload.delete({
     collection: 'program-plan-items',
     where: { program: { equals: id } },

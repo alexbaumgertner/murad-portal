@@ -25,7 +25,7 @@ export const addressFormCookieOptions = () =>
     maxAge: 60 * 60 * 24 * 365,
   }) as const
 
-export const STUDENT_NAMESPACES = ['Login', 'Study', 'StudySettings'] as const
+export const STUDENT_NAMESPACES = ['Login', 'Study', 'StudySettings', 'StudyProgram'] as const
 
 export function parseAddressForm(value: unknown): AddressForm {
   return value === 'vy' ? 'vy' : defaultAddressForm
@@ -42,5 +42,10 @@ export function messagesFor(locale: Locale, form: AddressForm): Messages {
 /** Only the student namespaces, for a nested client provider (keeps the page payload small). */
 export function studentMessages(locale: Locale, form: AddressForm) {
   const all = messagesFor(locale, form)
-  return { Login: all.Login, Study: all.Study, StudySettings: all.StudySettings }
+  return {
+    Login: all.Login,
+    Study: all.Study,
+    StudySettings: all.StudySettings,
+    StudyProgram: all.StudyProgram,
+  }
 }

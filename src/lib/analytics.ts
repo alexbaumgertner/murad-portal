@@ -17,12 +17,27 @@ const slug = z
   .string()
   .max(64)
   .regex(/^[a-z0-9-]+$/)
+const cefr = z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
 
 export const analyticsEvents = {
   waitlist_joined: z.strictObject({ source: slug }),
   login_code_requested: z.strictObject({ resend: z.boolean() }),
   login_succeeded: z.strictObject({}),
   challenge_day_closed: z.strictObject({ updated: z.boolean() }),
+  // Story 012. Never the exact score or the owner's placement note.
+  program_assigned: z.strictObject({
+    programSlug: slug,
+    levelFrom: cefr,
+    levelTo: cefr,
+    placementTest: slug,
+    placementCefr: cefr,
+  }),
+  program_started: z.strictObject({
+    programSlug: slug,
+    levelFrom: cefr,
+    levelTo: cefr,
+    daysFromAssignToStart: z.number().int().min(0),
+  }),
 } satisfies Record<string, z.ZodType<Record<string, string | number | boolean>>>
 
 export type AnalyticsEvent = keyof typeof analyticsEvents

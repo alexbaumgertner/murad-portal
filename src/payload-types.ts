@@ -77,13 +77,18 @@ export interface Config {
     programs: Program;
     'task-pool': TaskPool;
     'program-plan-items': ProgramPlanItem;
+    enrollments: Enrollment;
     'auth-codes': AuthCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    users: {
+      enrollments: 'enrollments';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -95,6 +100,7 @@ export interface Config {
     programs: ProgramsSelect<false> | ProgramsSelect<true>;
     'task-pool': TaskPoolSelect<false> | TaskPoolSelect<true>;
     'program-plan-items': ProgramPlanItemsSelect<false> | ProgramPlanItemsSelect<true>;
+    enrollments: EnrollmentsSelect<false> | EnrollmentsSelect<true>;
     'auth-codes': AuthCodesSelect<false> | AuthCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -149,6 +155,11 @@ export interface User {
   invitedAt?: string | null;
   locale?: ('ru' | 'en') | null;
   addressForm?: ('ty' | 'vy') | null;
+  enrollments?: {
+    docs?: (number | Enrollment)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -168,6 +179,131 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * Программа ученика после теста уровня. Назначайте со страницы ученика (Users → ученик).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enrollments".
+ */
+export interface Enrollment {
+  id: number;
+  student: number | User;
+  placement: {
+    test: 'murad' | 'ielts' | 'toefl' | 'cambridge' | 'duolingo' | 'pte' | 'efset' | 'other';
+    /**
+     * Вводится вручную, без автоматического пересчёта.
+     */
+    cefr: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+    takenAt: string;
+    testName?: string | null;
+    scoreText?: string | null;
+    exam?: ('KET' | 'PET' | 'FCE' | 'CAE' | 'CPE') | null;
+    score?: number | null;
+    note?: string | null;
+  };
+  /**
+   * Только опубликованные. Сменить можно, пока ученик не начал.
+   */
+  program: number | Program;
+  /**
+   * Начинает ученик («Начать»). Владелец может только завершить.
+   */
+  status: 'assigned' | 'active' | 'paused' | 'finished';
+  assignedAt?: string | null;
+  /**
+   * День 1 — день, когда ученик нажал «Начать».
+   */
+  startDate?: string | null;
+  timezone?: string | null;
+  /**
+   * Паузы появятся в истории 017.
+   */
+  pauses?:
+    | {
+        from: string;
+        to?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "programs".
+ */
+export interface Program {
+  id: number;
+  title: string;
+  /**
+   * Lowercase letters, digits and hyphens, e.g. "a2-b1".
+   */
+  slug: string;
+  levelFrom: 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
+  levelTo: 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+  durationWeeks: number;
+  summary?: string | null;
+  /**
+   * Textbooks and resources for the program.
+   */
+  materials?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Exactly 7 days, repeated every week. Day 1 is the day the student starts.
+   */
+  weekTemplate: {
+    /**
+     * Up to 5 activities. Leave empty for a rest day.
+     */
+    slots?:
+      | {
+          slotType: number | SlotType;
+          /**
+           * Empty = the slot type's default minimum.
+           */
+          minMinutes?: number | null;
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  /**
+   * Students see only published programs.
+   */
+  status: 'draft' | 'published';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Kinds of daily activity (Anki, series …) that programs are built from.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "slot-types".
+ */
+export interface SlotType {
+  id: number;
+  name: string;
+  description?: string | null;
+  /**
+   * Minimum time for the slot to count as done, unless a program overrides it.
+   */
+  defaultMinMinutes: number;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -324,82 +460,6 @@ export interface ChallengeDay {
   createdAt: string;
 }
 /**
- * Kinds of daily activity (Anki, series …) that programs are built from.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "slot-types".
- */
-export interface SlotType {
-  id: number;
-  name: string;
-  description?: string | null;
-  /**
-   * Minimum time for the slot to count as done, unless a program overrides it.
-   */
-  defaultMinMinutes: number;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "programs".
- */
-export interface Program {
-  id: number;
-  title: string;
-  /**
-   * Lowercase letters, digits and hyphens, e.g. "a2-b1".
-   */
-  slug: string;
-  levelFrom: 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
-  levelTo: 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
-  durationWeeks: number;
-  summary?: string | null;
-  /**
-   * Textbooks and resources for the program.
-   */
-  materials?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Exactly 7 days, repeated every week. Day 1 is the day the student starts.
-   */
-  weekTemplate: {
-    /**
-     * Up to 5 activities. Leave empty for a rest day.
-     */
-    slots?:
-      | {
-          slotType: number | SlotType;
-          /**
-           * Empty = the slot type's default minimum.
-           */
-          minMinutes?: number | null;
-          id?: string | null;
-        }[]
-      | null;
-    id?: string | null;
-  }[];
-  /**
-   * Students see only published programs.
-   */
-  status: 'draft' | 'published';
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * Задания, из которых собираются планы программ. Студенты видят копии, не эти записи.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -523,6 +583,10 @@ export interface PayloadLockedDocument {
         value: number | ProgramPlanItem;
       } | null)
     | ({
+        relationTo: 'enrollments';
+        value: number | Enrollment;
+      } | null)
+    | ({
         relationTo: 'auth-codes';
         value: number | AuthCode;
       } | null);
@@ -578,6 +642,7 @@ export interface UsersSelect<T extends boolean = true> {
   invitedAt?: T;
   locale?: T;
   addressForm?: T;
+  enrollments?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -744,6 +809,39 @@ export interface ProgramPlanItemsSelect<T extends boolean = true> {
   day?: T;
   order?: T;
   task?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enrollments_select".
+ */
+export interface EnrollmentsSelect<T extends boolean = true> {
+  student?: T;
+  placement?:
+    | T
+    | {
+        test?: T;
+        cefr?: T;
+        takenAt?: T;
+        testName?: T;
+        scoreText?: T;
+        exam?: T;
+        score?: T;
+        note?: T;
+      };
+  program?: T;
+  status?: T;
+  assignedAt?: T;
+  startDate?: T;
+  timezone?: T;
+  pauses?:
+    | T
+    | {
+        from?: T;
+        to?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

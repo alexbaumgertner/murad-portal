@@ -1,0 +1,89 @@
+.card {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 4vw, 1.5rem);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.eyebrow,
+.hint,
+.weeks {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.badge {
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.title {
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+}
+
+.summary {
+  white-space: pre-line;
+}
+
+.block {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+}
+
+.rich {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.rich :global(ul),
+.rich :global(ol) {
+  padding-left: 1.25rem;
+}
+
+.days {
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.day {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, auto) 1fr;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.dayName {
+  font-weight: 600;
+}
+
+.rest {
+  color: var(--color-text-muted);
+}
+
+.slots {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
