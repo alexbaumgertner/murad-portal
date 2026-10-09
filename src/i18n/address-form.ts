@@ -25,7 +25,13 @@ export const addressFormCookieOptions = () =>
     maxAge: 60 * 60 * 24 * 365,
   }) as const
 
-export const STUDENT_NAMESPACES = ['Login', 'Study', 'StudySettings', 'StudyProgram'] as const
+export const STUDENT_NAMESPACES = [
+  'Login',
+  'Study',
+  'StudySettings',
+  'StudyProgram',
+  'StudyPlan',
+] as const
 
 export function parseAddressForm(value: unknown): AddressForm {
   return value === 'vy' ? 'vy' : defaultAddressForm

@@ -78,6 +78,7 @@ export interface Config {
     'task-pool': TaskPool;
     'program-plan-items': ProgramPlanItem;
     enrollments: Enrollment;
+    'student-assignments': StudentAssignment;
     'auth-codes': AuthCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -101,6 +102,7 @@ export interface Config {
     'task-pool': TaskPoolSelect<false> | TaskPoolSelect<true>;
     'program-plan-items': ProgramPlanItemsSelect<false> | ProgramPlanItemsSelect<true>;
     enrollments: EnrollmentsSelect<false> | EnrollmentsSelect<true>;
+    'student-assignments': StudentAssignmentsSelect<false> | StudentAssignmentsSelect<true>;
     'auth-codes': AuthCodesSelect<false> | AuthCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -503,6 +505,33 @@ export interface ProgramPlanItem {
   createdAt: string;
 }
 /**
+ * Личный план ученика: копия плана программы на момент назначения. Правки меняют только этого ученика. Сетка — на странице ученика (Users → ученик → «План ученика»).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "student-assignments".
+ */
+export interface StudentAssignment {
+  id: number;
+  enrollment: number | Enrollment;
+  week: number;
+  day: number;
+  order: number;
+  /**
+   * Выбери задание из пула — его текст скопируется. Пусто — своё задание (текст ниже).
+   */
+  sourceTask?: (number | null) | TaskPool;
+  /**
+   * Копия, не ссылка: правки пула сюда не попадают.
+   */
+  text?: {
+    ru?: string | null;
+    en?: string | null;
+  };
+  editedByOwner?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth-codes".
  */
@@ -585,6 +614,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'enrollments';
         value: number | Enrollment;
+      } | null)
+    | ({
+        relationTo: 'student-assignments';
+        value: number | StudentAssignment;
       } | null)
     | ({
         relationTo: 'auth-codes';
@@ -842,6 +875,26 @@ export interface EnrollmentsSelect<T extends boolean = true> {
         to?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "student-assignments_select".
+ */
+export interface StudentAssignmentsSelect<T extends boolean = true> {
+  enrollment?: T;
+  week?: T;
+  day?: T;
+  order?: T;
+  sourceTask?: T;
+  text?:
+    | T
+    | {
+        ru?: T;
+        en?: T;
+      };
+  editedByOwner?: T;
   updatedAt?: T;
   createdAt?: T;
 }

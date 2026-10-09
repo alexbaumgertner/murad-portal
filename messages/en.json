@@ -216,5 +216,16 @@
       "not_found": "Program not found. Please reload the page.",
       "server": "Could not start. Please try again."
     }
+  },
+  "StudyPlan": {
+    "title": "All weeks",
+    "back": "← Back to Today",
+    "hint": "You can look at any week's tasks in advance. Murad may change them for you.",
+    "weeksNav": "Program weeks",
+    "week": "Week {week}",
+    "weekCurrent": "Week {week} (now)",
+    "day": "Day {day}",
+    "dayEmpty": "No tasks",
+    "empty": "No tasks this week"
   }
 }

@@ -1,3 +1,4 @@
+import { StudentPlanGrid as StudentPlanGrid_94cb85c11b8dd9fb739a3f7fa9981d9f } from '../../../components/admin/StudentPlanGrid/StudentPlanGrid'
 import { InviteStudent as InviteStudent_4e6c4a2781c608b8af4bf1bfea259aba } from '../../../components/admin/InviteStudent/InviteStudent'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -32,6 +33,7 @@ import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "/components/admin/StudentPlanGrid/StudentPlanGrid#StudentPlanGrid": StudentPlanGrid_94cb85c11b8dd9fb739a3f7fa9981d9f,
   "/components/admin/InviteStudent/InviteStudent#InviteStudent": InviteStudent_4e6c4a2781c608b8af4bf1bfea259aba,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
