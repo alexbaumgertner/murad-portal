@@ -8,20 +8,30 @@ import type { TimerActionState } from '@/features/slot-timer/schema'
 import type { TimerState } from '@/features/slot-timer/shape'
 import { messagesFor } from '@/i18n/address-form'
 
-const { startTimerAction, stopTimerAction, syncTimerAction, playChime, primeChime, vibrate } =
-  vi.hoisted(() => ({
-    startTimerAction: vi.fn<(input: unknown) => Promise<TimerActionState>>(),
-    stopTimerAction: vi.fn<(input: unknown) => Promise<TimerActionState>>(),
-    syncTimerAction: vi.fn<(input: unknown) => Promise<TimerActionState>>(),
-    playChime: vi.fn<() => Promise<boolean>>(),
-    primeChime: vi.fn<() => Promise<void>>(),
-    vibrate: vi.fn(),
-  }))
+const {
+  startTimerAction,
+  stopTimerAction,
+  syncTimerAction,
+  markSlotAction,
+  playChime,
+  primeChime,
+  vibrate,
+} = vi.hoisted(() => ({
+  startTimerAction: vi.fn<(input: unknown) => Promise<TimerActionState>>(),
+  stopTimerAction: vi.fn<(input: unknown) => Promise<TimerActionState>>(),
+  syncTimerAction: vi.fn<(input: unknown) => Promise<TimerActionState>>(),
+  markSlotAction: vi.fn<(input: unknown) => Promise<TimerActionState>>(),
+  playChime: vi.fn<() => Promise<boolean>>(),
+  primeChime: vi.fn<() => Promise<void>>(),
+  vibrate: vi.fn(),
+}))
 vi.mock('@/features/slot-timer/actions', () => ({
   startTimerAction,
   stopTimerAction,
   syncTimerAction,
+  markSlotAction,
 }))
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }))
 vi.mock('@/lib/chime', () => ({ playChime, primeChime, vibrate }))
 
 const slots: TimerSlot[] = [
@@ -47,7 +57,7 @@ const stateOf = (
 const renderTimers = (initial: TimerState, locale: 'ru' | 'en' = 'ru', form: 'ty' | 'vy' = 'ty') =>
   render(
     <NextIntlClientProvider locale={locale} messages={messagesFor(locale, form)}>
-      <SlotTimers slots={slots} initial={initial} />
+      <SlotTimers slots={slots} initial={initial} programDay={10} />
     </NextIntlClientProvider>,
   )
 
@@ -57,6 +67,7 @@ describe('SlotTimers (story 014)', () => {
       startTimerAction,
       stopTimerAction,
       syncTimerAction,
+      markSlotAction,
       playChime,
       primeChime,
       vibrate,
@@ -101,9 +112,7 @@ describe('SlotTimers (story 014)', () => {
     }))
     await renderTimers(stateOf([{ startedAt: started }, {}]))
 
-    await expect
-      .element(page.getByText('Минимум выполнен ✓'), { timeout: 6000 })
-      .toBeVisible()
+    await expect.element(page.getByText('Минимум выполнен ✓'), { timeout: 6000 }).toBeVisible()
     expect(playChime).toHaveBeenCalledTimes(1)
     expect(vibrate).toHaveBeenCalledTimes(1)
     expect(syncTimerAction).toHaveBeenCalled()
@@ -196,5 +205,47 @@ describe('SlotTimers (story 014)', () => {
     await expect
       .element(page.getByText('Timer from the previous day: Anki'))
       .not.toBeInTheDocument()
+  })
+
+  test('015. «Отметить вручную» sends the day, slot and minutes, and takes the answer', async () => {
+    markSlotAction.mockResolvedValue({
+      status: 'success',
+      state: stateOf([{ minutes: 30, completed: true }, {}]),
+    })
+    await renderTimers(stateOf([{}, {}]))
+
+    await page.getByRole('button', { name: 'Отметить вручную: Anki' }).click()
+    await page.getByLabelText('Минут: Anki').fill('30')
+    await page.getByRole('button', { name: 'Сохранить' }).click()
+
+    expect(markSlotAction).toHaveBeenCalledExactlyOnceWith({
+      programDay: 10,
+      slotIndex: 0,
+      minutes: 30,
+    })
+    await expect.element(page.getByText('Минимум выполнен ✓')).toBeVisible()
+  })
+
+  test('015. 601 is refused in the form with «Не больше 600 минут», nothing is sent', async () => {
+    await renderTimers(stateOf([{}, {}]))
+    await page.getByRole('button', { name: 'Отметить вручную: Anki' }).click()
+    await page.getByLabelText('Минут: Anki').fill('601')
+    await page.getByRole('button', { name: 'Сохранить' }).click()
+
+    await expect.element(page.getByRole('alert')).toHaveTextContent('Не больше 600 минут')
+    expect(markSlotAction).not.toHaveBeenCalled()
+  })
+
+  test('015. a server error is shown and the form stays open', async () => {
+    markSlotAction.mockResolvedValue({ status: 'error', error: 'forbidden' })
+    await renderTimers(stateOf([{}, {}]), 'en')
+    await page.getByRole('button', { name: 'Mark manually: Anki' }).click()
+    await page.getByLabelText('Minutes: Anki').fill('10')
+    await page.getByRole('button', { name: 'Save' }).click()
+
+    await expect
+      .element(page.getByRole('alert'))
+      .toHaveTextContent('This day cannot be marked: it has not started yet')
+    await expect.element(page.getByLabelText('Minutes: Anki')).toBeVisible()
   })
 })

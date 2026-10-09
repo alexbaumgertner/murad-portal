@@ -6,6 +6,7 @@ import { createTranslator, hasLocale, NextIntlClientProvider } from 'next-intl'
 import { DayContent } from '@/components/DayContent/DayContent'
 import { DayGrid } from '@/components/DayGrid/DayGrid'
 import { SlotTimers } from '@/components/SlotTimers/SlotTimers'
+import { ManualMark } from '@/components/ManualMark/ManualMark'
 import { ProgramCard } from '@/components/ProgramCard/ProgramCard'
 import { StartProgram } from '@/components/StartProgram/StartProgram'
 import { logoutAction } from '@/features/auth/actions'
@@ -209,6 +210,27 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
               addressForm={addressForm}
               restLabel={selected === ready.today ? 'restToday' : 'rest'}
               logs={ready.logs.get(selected)}
+              renderMark={
+                // Past days of a running program only; today has the same control among its timers.
+                selected < ready.today && ready.status === 'active'
+                  ? (slotIndex, minutes) => (
+                      <NextIntlClientProvider
+                        locale={locale}
+                        messages={studentMessages(locale, addressForm)}
+                      >
+                        <ManualMark
+                          programDay={selected}
+                          slotIndex={slotIndex}
+                          slotName={
+                            ready.template[templateDayOf(selected) - 1]?.slots[slotIndex]?.name ??
+                            ''
+                          }
+                          minutes={minutes}
+                        />
+                      </NextIntlClientProvider>
+                    )
+                  : undefined
+              }
               timers={
                 selected === ready.today && timer?.ok && ready.status === 'active' ? (
                   <NextIntlClientProvider
@@ -220,6 +242,7 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
                         (slot, index) => ({ ...slot, index }),
                       )}
                       initial={timer.state}
+                      programDay={ready.today}
                     />
                   </NextIntlClientProvider>
                 ) : undefined
