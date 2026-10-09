@@ -9,6 +9,7 @@ import * as migration_20261009_074618_enrollments from './20261009_074618_enroll
 import * as migration_20261009_083238_student_plan from './20261009_083238_student_plan';
 import * as migration_20261009_094359_slot_timer from './20261009_094359_slot_timer';
 import * as migration_20261009_102257_day_comments from './20261009_102257_day_comments';
+import * as migration_20261009_124909_enrollment_one_open from './20261009_124909_enrollment_one_open';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20261009_102257_day_comments.up,
     down: migration_20261009_102257_day_comments.down,
-    name: '20261009_102257_day_comments'
+    name: '20261009_102257_day_comments',
+  },
+  {
+    up: migration_20261009_124909_enrollment_one_open.up,
+    down: migration_20261009_124909_enrollment_one_open.down,
+    name: '20261009_124909_enrollment_one_open'
   },
 ];

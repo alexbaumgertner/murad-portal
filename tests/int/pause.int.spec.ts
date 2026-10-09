@@ -348,8 +348,11 @@ describe('pause and resume (story 017)', () => {
     it('the student’s start card and views read the pause-aware day', async () => {
       await enroll(anna, program, { pauses: [{ from: '2026-10-05', to: '2026-10-07' }] })
       // Without the pause the calendar day today would be larger than the program day.
+      // The enrollment's own time zone decides when the calendar day turns over.
+      const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Almaty' }).format(new Date())
       const calendar =
-        Math.round((Date.now() - Date.parse(`${START}T00:00:00.000Z`)) / 86_400_000) + 1
+        (Date.parse(`${today}T00:00:00.000Z`) - Date.parse(`${START}T00:00:00.000Z`)) / 86_400_000 +
+        1
       const view = await getStudyView(payload, anna, 'ru')
       expect(view.kind).toBe('active')
       if (view.kind === 'active') expect(view.day).toBe(calendar - 3)
