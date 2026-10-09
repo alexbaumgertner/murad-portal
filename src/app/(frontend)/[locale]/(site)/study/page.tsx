@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { hasLocale } from 'next-intl'
-import { getTranslations } from 'next-intl/server'
+import { createTranslator, hasLocale } from 'next-intl'
 
 import { logoutAction } from '@/features/auth/actions'
 import { currentStudent } from '@/features/auth/current-user'
-import { redirect } from '@/i18n/navigation'
+import { messagesFor, parseAddressForm } from '@/i18n/address-form'
+import { Link, redirect } from '@/i18n/navigation'
 import { routing } from '@/i18n/routing'
 import { getPayloadClient } from '@/lib/payload'
 
@@ -20,7 +20,7 @@ type PageProps = { params: Promise<{ locale: string }> }
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params
   if (!hasLocale(routing.locales, locale)) return {}
-  const t = await getTranslations({ locale, namespace: 'Study' })
+  const t = createTranslator({ locale, messages: messagesFor(locale, 'ty'), namespace: 'Study' })
   return { title: t('title'), robots: { index: false } }
 }
 
@@ -30,7 +30,12 @@ export default async function StudyPage({ params }: PageProps) {
   if (!hasLocale(routing.locales, locale)) notFound()
   const student = await currentStudent(await getPayloadClient(), await headers())
   if (!student) return redirect({ href: '/login', locale })
-  const t = await getTranslations({ locale, namespace: 'Study' })
+  // «Ты» or «вы» is her setting (story 011c); English ignores it.
+  const t = createTranslator({
+    locale,
+    messages: messagesFor(locale, parseAddressForm(student.addressForm)),
+    namespace: 'Study',
+  })
 
   return (
     <div className={styles.page}>
@@ -40,11 +45,16 @@ export default async function StudyPage({ params }: PageProps) {
         </h1>
         <p className={styles.lead}>{t('empty')}</p>
       </header>
-      <form action={logoutAction}>
-        <button type="submit" className={styles.logout}>
-          {t('logout')}
-        </button>
-      </form>
+      <div className={styles.actions}>
+        <Link href="/study/settings" className={styles.logout}>
+          {t('settingsLink')}
+        </Link>
+        <form action={logoutAction}>
+          <button type="submit" className={styles.logout}>
+            {t('logout')}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

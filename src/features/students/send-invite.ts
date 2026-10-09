@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 
+import type { AddressForm } from '@/i18n/address-form'
 import { defaultLocale } from '@/i18n/locales'
 import { env } from '@/lib/env'
 
@@ -20,8 +21,9 @@ export async function sendInvite(
   payload: Payload,
   to: string,
   locale: InviteLocale = defaultLocale,
+  addressForm: AddressForm = 'ty',
 ): Promise<void> {
-  const mail = inviteEmail(locale, env.NEXT_PUBLIC_SITE_URL)
+  const mail = inviteEmail(locale, env.NEXT_PUBLIC_SITE_URL, addressForm)
   try {
     if (!env.RESEND_API_KEY) {
       if (process.env.NODE_ENV === 'production') throw new Error('RESEND_API_KEY is not set')

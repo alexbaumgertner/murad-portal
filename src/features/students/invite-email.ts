@@ -1,4 +1,5 @@
 import { siteConfig } from '@/config/site'
+import type { AddressForm } from '@/i18n/address-form'
 import { defaultLocale } from '@/i18n/locales'
 
 /**
@@ -9,7 +10,7 @@ import { defaultLocale } from '@/i18n/locales'
 
 export type InviteLocale = 'ru' | 'en'
 
-// «ты» only for now; the «вы» variant comes with the addressForm setting (011c).
+// Russian has two forms (D-SP-8); the owner can preset the student's form, «ты» if none.
 const copy = {
   ru: {
     subject: 'Мурад пригласил тебя в трекер учёбы',
@@ -18,6 +19,13 @@ const copy = {
     button: 'Войти в трекер',
     ignore: 'Если ты не ждёшь этого письма, просто не обращай на него внимания.',
   },
+  ruVy: {
+    subject: 'Мурад пригласил вас в трекер учёбы',
+    lead: 'Мурад добавил вас в трекер учёбы: там будет ваш план занятий и отметки за каждый день.',
+    how: 'Чтобы войти, откройте ссылку и введите этот адрес почты — пришлём код. Пароль не нужен.',
+    button: 'Войти в трекер',
+    ignore: 'Если вы не ждёте этого письма, просто не обращайте на него внимания.',
+  },
   en: {
     subject: 'Murad invited you to the study tracker',
     lead: 'Murad added you to his study tracker: your study plan and daily progress will live there.',
@@ -25,15 +33,19 @@ const copy = {
     button: 'Open the study tracker',
     ignore: 'If you were not expecting this email, you can ignore it.',
   },
-} satisfies Record<InviteLocale, Record<string, string>>
+} satisfies Record<'ru' | 'ruVy' | InviteLocale, Record<string, string>>
 
 export function loginUrl(locale: InviteLocale, siteUrl: string): string {
   const path = locale === defaultLocale ? '/login' : `/${locale}/login`
   return new URL(path, siteUrl).href
 }
 
-export function inviteEmail(locale: InviteLocale, siteUrl: string) {
-  const t = copy[locale]
+export function inviteEmail(
+  locale: InviteLocale,
+  siteUrl: string,
+  addressForm: AddressForm = 'ty',
+) {
+  const t = locale === 'ru' && addressForm === 'vy' ? copy.ruVy : copy[locale]
   const url = loginUrl(locale, siteUrl)
   const text = [t.lead, '', t.how, url, '', t.ignore].join('\n')
   const html = [
