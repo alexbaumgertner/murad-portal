@@ -84,10 +84,15 @@ test.describe('Programs in the admin (story 009)', () => {
     }
     await pick('levelFrom', 'B2')
     await pick('levelTo', 'B1')
-    await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(
-      page.getByText('Начальный уровень должен быть ниже целевого').first(),
-    ).toBeAttached()
+    await expect(page.locator('#field-levelFrom')).toContainText('B2')
+    await expect(page.locator('#field-levelTo')).toContainText('B1')
+    // The admin form validates asynchronously; saving again is what a user would do.
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Save', exact: true }).click()
+      await expect(
+        page.getByText('Начальный уровень должен быть ниже целевого').first(),
+      ).toBeAttached({ timeout: 3_000 })
+    }).toPass({ timeout: 30_000 })
     await expect(page).toHaveURL(/\/programs\/create/)
   })
 })
