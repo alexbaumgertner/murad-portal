@@ -19,6 +19,8 @@ type Props = {
   timers?: ReactNode
   /** What was logged on this day, shown on each slot (story 014); ignored when `timers` is given. */
   logs?: LoggedSlot[]
+  /** Extra controls under a slot of the plain list, e.g. «Отметить вручную» (story 015). */
+  renderMark?: (slotIndex: number, minutes: number) => ReactNode
 }
 
 /** The slots of a day (name, minimum, description) and its personal tasks below (story 013). */
@@ -30,6 +32,7 @@ export function DayContent({
   restLabel = 'rest',
   timers,
   logs = [],
+  renderMark,
 }: Props) {
   const t = createTranslator({
     locale,
@@ -68,6 +71,7 @@ export function DayContent({
                 {slot.description ? (
                   <span className={styles.slotText}>{slot.description}</span>
                 ) : null}
+                {renderMark ? renderMark(index, log?.minutes ?? 0) : null}
               </li>
             )
           })}

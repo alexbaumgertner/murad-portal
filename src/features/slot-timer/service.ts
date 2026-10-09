@@ -4,6 +4,7 @@ import type { Payload, TypedUser } from 'payload'
 
 import {
   dateOnlyToISO,
+  isPausedOn,
   programDay,
   resolvePauses,
   todayIn,
@@ -11,10 +12,11 @@ import {
 } from '@/features/enrollments/shape'
 import { contentDefaultLocale } from '@/i18n/locales'
 import type { Enrollment, Program, SlotLog, SlotType } from '@/payload-types'
-import { isOver, programDayOfDate, templateDayOf } from '@/features/study-today/shape'
+import { dateOfDay, isOver, programDayOfDate, templateDayOf } from '@/features/study-today/shape'
 
 import {
   MAX_SLOT_INDEX,
+  MAX_SLOT_MINUTES,
   addToSaved,
   elapsedMs,
   isExpired,
@@ -30,7 +32,8 @@ import {
  */
 
 export type CompletedSlot = { slotTypeId: number; minutes: number }
-export type TimerError = 'no_program' | 'invalid_slot' | 'program_over' | 'paused'
+export type TimerError =
+  'no_program' | 'invalid_slot' | 'program_over' | 'forbidden' | 'paused' | 'too_many_minutes'
 export type TimerResult =
   { ok: true; state: TimerState; completedNow: CompletedSlot[] } | { ok: false; error: TimerError }
 
@@ -324,5 +327,98 @@ export async function stopTimer(
   const ctx = await forAny(payload, student)
   if (!ctx) return { ok: false, error: 'no_program' }
   const completedNow = await settleRunning(payload, ctx, now, true)
+  return { ok: true, state: await buildState(payload, ctx, now), completedNow }
+}
+
+/**
+ * «Отметить вручную» (story 015): sets the minutes of one slot of today or an earlier program day,
+ * replacing what was there (a repeat updates, never duplicates). The slot is done only at its
+ * minimum (D-SP-7); 0 resets it. A timer running on this very slot is stopped by the same write,
+ * the manual value replaces the total; a timer on another slot is left alone. Future days and days
+ * before the start are refused. The day in a pause (story 017) is refused here as soon as that
+ * story supplies the pause days; today a paused enrollment is refused as a whole.
+ */
+export async function markSlot(
+  payload: Payload,
+  student: TypedUser,
+  input: { programDay: number; slotIndex: number; minutes: number },
+  now: Date = new Date(),
+): Promise<TimerResult> {
+  const ctx = await forAny(payload, student)
+  if (!ctx) return { ok: false, error: 'no_program' }
+  if (ctx.enrollment.status === 'paused') return { ok: false, error: 'paused' }
+  const today = dayOfToday(ctx, now)
+  if (ctx.enrollment.status === 'finished' || isOver(today, ctx.durationWeeks)) {
+    return { ok: false, error: 'program_over' }
+  }
+
+  const { programDay: day, slotIndex, minutes } = input
+  if (!Number.isInteger(day) || day < 1 || day > today) return { ok: false, error: 'forbidden' }
+  if (!Number.isInteger(minutes) || minutes < 0) return { ok: false, error: 'forbidden' }
+  if (minutes > MAX_SLOT_MINUTES) return { ok: false, error: 'too_many_minutes' }
+  const ranges = pausesOf(ctx, now)
+  const date = dateOfDay(ctx.startDate, day, ranges)
+  // A program day is never a paused calendar day; the check keeps it so if the mapping changes.
+  if (isPausedOn(ranges, date)) return { ok: false, error: 'paused' }
+  const slot =
+    Number.isInteger(slotIndex) && slotIndex >= 0 && slotIndex <= MAX_SLOT_INDEX
+      ? slotsOnDate(ctx, date, now)[slotIndex]
+      : undefined
+  if (!slot) return { ok: false, error: 'invalid_slot' }
+
+  const completed = minutes >= slot.minutes
+  const dateISO = dateOnlyToISO(date)
+  const find = async () =>
+    (
+      await payload.find({
+        collection: 'slot-logs',
+        where: {
+          enrollment: { equals: ctx.enrollment.id },
+          date: { equals: dateISO },
+          slotIndex: { equals: slotIndex },
+        },
+        limit: 1,
+        depth: 0,
+        overrideAccess: false,
+        user: ctx.student,
+      })
+    ).docs[0]
+  const save = (log: SlotLog) =>
+    payload.update({
+      collection: 'slot-logs',
+      id: log.id,
+      data: { minutes, completed, timerStartedAt: null },
+      depth: 0,
+      overrideAccess: true,
+    })
+
+  let before = await find()
+  if (before) {
+    await save(before)
+  } else if (minutes > 0) {
+    try {
+      await payload.create({
+        collection: 'slot-logs',
+        data: {
+          enrollment: ctx.enrollment.id,
+          date: dateISO,
+          slotIndex,
+          slotType: slot.slotTypeId,
+          minutes,
+          completed,
+        },
+        depth: 0,
+        overrideAccess: true,
+      })
+    } catch (error) {
+      // The unique (enrollment, date, slot) index: a double tap created it a moment ago.
+      before = await find()
+      if (!before) throw error
+      await save(before)
+    }
+  }
+
+  const completedNow: CompletedSlot[] =
+    completed && !before?.completed ? [{ slotTypeId: slot.slotTypeId, minutes }] : []
   return { ok: true, state: await buildState(payload, ctx, now), completedNow }
 }

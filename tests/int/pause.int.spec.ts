@@ -6,7 +6,7 @@ import { pauseProgramAction, resumeProgramAction } from '@/features/program-paus
 import { pauseProgram, resumeProgram } from '@/features/program-pause/service'
 import { getStudyView } from '@/features/enrollments/queries'
 import { saveDayComment } from '@/features/day-comments/service'
-import { getTimerState, startTimer } from '@/features/slot-timer/service'
+import { getTimerState, markSlot, startTimer } from '@/features/slot-timer/service'
 import { getStudyOverview } from '@/features/study-today/queries'
 import { todayIn } from '@/features/enrollments/shape'
 import type { Enrollment, Program, SlotLog, SlotType } from '@/payload-types'
@@ -364,6 +364,52 @@ describe('pause and resume (story 017)', () => {
       await reset()
       await enroll(anna, sparse)
       expect((await ok(getTimerState(payload, anna, DAY20))).state.slots).toHaveLength(0)
+    })
+  })
+
+  describe('marking under pauses (requirement 3)', () => {
+    const pauses = [{ from: '2026-10-05', to: '2026-10-09' }] // five paused days
+
+    it('a program day after a pause is stored on its own calendar date, never on a paused one', async () => {
+      const enrollment = await enroll(anna, program, { pauses })
+      // Oct 20 is program day 15. Day 6 was studied on Oct 11, the first day after the pause.
+      await ok(markSlot(payload, anna, { programDay: 6, slotIndex: 0, minutes: 25 }, DAY20))
+      const { docs } = await payload.find({
+        collection: 'slot-logs',
+        where: { enrollment: { equals: enrollment.id } },
+        depth: 0,
+      })
+      expect(docs.map((log) => log.date.slice(0, 10))).toEqual(['2026-10-11'])
+      const view = await getStudyOverview(payload, anna, 'ru', DAY20)
+      if (view.kind !== 'ready') throw new Error('expected a started program')
+      expect(view.progress.get(6)).toEqual({ done: true, minutes: 25 })
+      expect(view.progress.has(11)).toBe(false)
+    })
+
+    it('days after today are refused by the pause-aware day, not the calendar', async () => {
+      await enroll(anna, program, { pauses })
+      expect(
+        await markSlot(payload, anna, { programDay: 16, slotIndex: 0, minutes: 25 }, DAY20),
+      ).toEqual({
+        ok: false,
+        error: 'forbidden',
+      })
+      expect(
+        await markSlot(payload, anna, { programDay: 15, slotIndex: 0, minutes: 25 }, DAY20),
+      ).toMatchObject({
+        ok: true,
+      })
+    })
+
+    it('a paused program marks nothing', async () => {
+      await enroll(anna, program, { pauses })
+      await ok(pauseProgram(payload, anna, DAY20))
+      expect(
+        await markSlot(payload, anna, { programDay: 3, slotIndex: 0, minutes: 25 }, later(1)),
+      ).toEqual({
+        ok: false,
+        error: 'paused',
+      })
     })
   })
 

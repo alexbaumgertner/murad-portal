@@ -154,6 +154,8 @@ test.describe('Pause and resume (story 017)', () => {
       await expect(page.getByTestId('paused-status')).toHaveCount(0)
       await expect(page.getByRole('button', { name: 'Старт' })).toBeVisible()
       await expect(page.getByRole('img', { name: /пауза/i })).toHaveCount(5)
+      // Paused days are not links: nothing to open, mark or comment on.
+      await expect(page.getByRole('link', { name: /пауза/i })).toHaveCount(0)
 
       const resumed = await payload.findByID({ collection: 'enrollments', id: enrollment.id })
       expect(resumed.status).toBe('active')

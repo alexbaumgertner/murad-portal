@@ -332,3 +332,7 @@ The «minimum reached» signal is two notes made with the Web Audio API (`src/li
 Students never write `slot-logs` directly (owner-only create/update/delete); the Server Actions write with the Local API after deriving the enrollment, date and minutes themselves, so no minutes are trusted from the browser.
 Revisit if: Murad wants a custom sound (then host a file ≤ 50 KB in `public/` and play it with `new Audio()`).
 
+## Pauses are written by the server, not by the student (story 017)
+
+A student has no write access to `enrollments.status` or `enrollments.pauses`. «Пауза» and «Продолжить» are Server Actions that derive the enrollment from the session and write with the Local API and the `pauseTransition` context, which the collection hooks accept only for `status` + `pauses` and only active ⇄ paused (a request over HTTP cannot set a context).
+A pause begins today (that day is paused too) and ends yesterday on resume, so the program day stands still. Known limit: work logged on the day a pause begins is counted toward that program day, while the timer on the resume day starts from 0.
