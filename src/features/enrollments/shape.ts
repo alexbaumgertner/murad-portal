@@ -139,12 +139,97 @@ function ymdParts(value: string): [number, number, number] {
   return [y ?? 1970, (m ?? 1) - 1, d ?? 1]
 }
 
+/** `YYYY-MM-DD` that is `days` calendar days after `date` (negative: before). */
+export function addDays(date: string, days: number): string {
+  const [y, m, d] = ymdParts(date)
+  return new Date(Date.UTC(y, m, d + days)).toISOString().slice(0, 10)
+}
+
+/** A pause as stored (story 017): the first paused day and the last one, `null` while it lasts. */
+export type StoredPause = { from: string; to?: string | null }
+/** A pause with both ends known (`YYYY-MM-DD`, both days paused). */
+export type PauseRange = { from: string; to: string }
+
 /**
- * Day 1 is the start date in the student's zone (D-SP-3). Pauses arrive with story 017 and will
- * subtract their days here.
+ * The pauses as sorted, merged calendar ranges. A pause that is still open lasts through `today`
+ * (the day it started is paused too); a range that ends before it starts is dropped.
  */
-export function programDay(startDate: string, timeZone: string, now: Date = new Date()): number {
-  return daysBetween(startDate, todayIn(timeZone, now)) + 1
+export function resolvePauses(
+  pauses: readonly StoredPause[] | null | undefined,
+  today: string,
+): PauseRange[] {
+  const ranges = (pauses ?? [])
+    .map((pause) => ({
+      from: pause.from.slice(0, 10),
+      to: pause.to ? pause.to.slice(0, 10) : today,
+    }))
+    .filter((range) => range.from <= range.to)
+    .sort((a, b) => (a.from < b.from ? -1 : a.from > b.from ? 1 : 0))
+  const merged: PauseRange[] = []
+  for (const range of ranges) {
+    const last = merged[merged.length - 1]
+    if (last && range.from <= addDays(last.to, 1)) {
+      if (range.to > last.to) last.to = range.to
+    } else {
+      merged.push({ ...range })
+    }
+  }
+  return merged
+}
+
+/** Is `date` (`YYYY-MM-DD`) a paused calendar day? */
+export const isPausedOn = (ranges: readonly PauseRange[], date: string): boolean =>
+  ranges.some((range) => range.from <= date && date <= range.to)
+
+/** Paused calendar days strictly before `date`. */
+export function pausedDaysBefore(ranges: readonly PauseRange[], date: string): number {
+  const lastDay = addDays(date, -1)
+  let count = 0
+  for (const range of ranges) {
+    if (range.from > lastDay) continue
+    count += daysBetween(range.from, range.to < lastDay ? range.to : lastDay) + 1
+  }
+  return count
+}
+
+/**
+ * Program day of the calendar date `date`: `(date − start) − pausedDaysBefore(date) + 1`. A paused
+ * date has the number of the day it interrupted, the same as the first day after the pause.
+ */
+export function programDayOnDate(
+  startDate: string,
+  date: string,
+  ranges: readonly PauseRange[] = [],
+): number {
+  return daysBetween(startDate, date) - pausedDaysBefore(ranges, date) + 1
+}
+
+/** The calendar date on which program day `day` is studied: after every pause that began before it. */
+export function dateOfProgramDay(
+  startDate: string,
+  day: number,
+  ranges: readonly PauseRange[] = [],
+): string {
+  let offset = day - 1
+  for (const range of ranges) {
+    if (addDays(startDate, offset) >= range.from) offset += daysBetween(range.from, range.to) + 1
+  }
+  return addDays(startDate, offset)
+}
+
+/**
+ * Day 1 is the start date in the student's zone (D-SP-3). Paused days are not counted (story 017,
+ * `dayIndex = (today − startDate) − pausedDaysBefore(today) + 1`): during a pause and on the day
+ * it ends the number stays where it stopped.
+ */
+export function programDay(
+  startDate: string,
+  timeZone: string,
+  now: Date = new Date(),
+  pauses?: readonly StoredPause[] | null,
+): number {
+  const today = todayIn(timeZone, now)
+  return programDayOnDate(startDate, today, resolvePauses(pauses, today))
 }
 
 /** True when the placement level is above the level the program starts from (AC 11, a warning only). */

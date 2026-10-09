@@ -104,3 +104,24 @@
   align-items: center;
   gap: 0.375rem;
 }
+
+/* A long pause: one cell across the whole row, text instead of a wall of ‖. */
+.run {
+  grid-column: 1 / -1;
+}
+
+.run .cell {
+  grid-auto-flow: column;
+  justify-content: center;
+  min-height: 2.75rem;
+  text-align: center;
+}
+
+.runText {
+  font-size: 0.875rem;
+}
+
+.cell[data-state='paused'] {
+  border-style: dashed;
+  color: var(--color-text-muted);
+}

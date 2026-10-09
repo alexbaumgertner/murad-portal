@@ -34,6 +34,7 @@ export const STUDENT_NAMESPACES = [
   'StudyToday',
   'StudyTimer',
   'StudyComment',
+  'StudyPause',
 ] as const
 
 export function parseAddressForm(value: unknown): AddressForm {
@@ -58,5 +59,6 @@ export function studentMessages(locale: Locale, form: AddressForm) {
     StudyProgram: all.StudyProgram,
     StudyTimer: all.StudyTimer,
     StudyComment: all.StudyComment,
+    StudyPause: all.StudyPause,
   }
 }

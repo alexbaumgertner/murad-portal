@@ -257,7 +257,9 @@
       "paused": "Paused",
       "rest": "Rest day",
       "upcoming": "Upcoming"
-    }
+    },
+    "pausedCellLabel": "{date}: paused",
+    "pausedRun": "{from} – {to} · {count, plural, one {# day} other {# days}}"
   },
   "StudyTimer": {
     "listLabel": "Today's activities",
@@ -280,7 +282,8 @@
       "no_program": "The program has not started or is already finished",
       "invalid_slot": "There is no such activity today. Refresh the page",
       "program_over": "The program is already finished",
-      "server": "That did not work. Please try again"
+      "server": "That did not work. Please try again",
+      "paused": "The program is paused. Press “Resume” to study"
     }
   },
   "StudyComment": {
@@ -298,7 +301,27 @@
       "no_program": "Program not found",
       "future_day": "You can comment on today or a past day only",
       "invalid_day": "That day is not in your program",
-      "server": "Could not save. Your text is still in the field — try again"
+      "server": "Could not save. Your text is still in the field — try again",
+      "paused_day": "A paused day cannot be commented on"
+    }
+  },
+  "StudyPause": {
+    "pause": "Pause",
+    "confirm": "Pause your program? Paused days are not counted as missed, and the plan continues from the same day.",
+    "confirmYes": "Pause the program",
+    "cancel": "Cancel",
+    "pending": "Pausing…",
+    "resume": "Resume",
+    "resumePending": "Resuming…",
+    "status": "Paused since {since} · Day {day} of {total}",
+    "hint": "Paused days do not count. Press “Resume” when you are back to your studies.",
+    "errors": {
+      "unauthorized": "Sign in again to continue",
+      "invalid_input": "That did not work. Refresh the page and try again",
+      "no_program": "The program has not started or is already finished",
+      "program_over": "The program is already finished",
+      "not_paused": "The program is already running. Refresh the page",
+      "server": "That did not work. Try again"
     }
   }
 }

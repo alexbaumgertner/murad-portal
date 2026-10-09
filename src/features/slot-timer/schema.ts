@@ -11,7 +11,13 @@ export const startSchema = z.strictObject({
 export const emptySchema = z.strictObject({})
 
 export type TimerError =
-  'unauthorized' | 'invalid_input' | 'no_program' | 'invalid_slot' | 'program_over' | 'server'
+  | 'unauthorized'
+  | 'invalid_input'
+  | 'no_program'
+  | 'invalid_slot'
+  | 'program_over'
+  | 'paused'
+  | 'server'
 
 export type TimerActionState =
   { status: 'success'; state: TimerState } | { status: 'error'; error: TimerError }

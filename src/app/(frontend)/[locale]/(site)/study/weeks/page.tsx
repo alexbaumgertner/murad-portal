@@ -67,6 +67,7 @@ export default async function StudyWeeksPage({ params, searchParams }: PageProps
     today: overview.today,
     template: overview.template,
     progress: overview.progress,
+    pauses: overview.pauses,
   })
   const empty =
     view.days.every((day) => day.tasks.length === 0) &&

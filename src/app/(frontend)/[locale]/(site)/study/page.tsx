@@ -6,6 +6,7 @@ import { createTranslator, hasLocale, NextIntlClientProvider } from 'next-intl'
 import { DayComment } from '@/components/DayComment/DayComment'
 import { DayContent } from '@/components/DayContent/DayContent'
 import { DayGrid } from '@/components/DayGrid/DayGrid'
+import { PauseProgram } from '@/components/PauseProgram/PauseProgram'
 import { SlotTimers } from '@/components/SlotTimers/SlotTimers'
 import { ProgramCard } from '@/components/ProgramCard/ProgramCard'
 import { StartProgram } from '@/components/StartProgram/StartProgram'
@@ -23,7 +24,7 @@ import {
   progressTotals,
   templateDayOf,
   trainingDaysIn,
-  weekCells,
+  weekGrid,
   weekOf,
 } from '@/features/study-today/shape'
 import { messagesFor, parseAddressForm, studentMessages } from '@/i18n/address-form'
@@ -35,6 +36,13 @@ import styles from './page.module.css'
 
 // Per-student page: always read the session.
 export const dynamic = 'force-dynamic'
+
+/** «12 окт»: the day a pause began, a calendar date with no time zone. */
+function shortDate(date: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' })
+    .format(new Date(`${date}T12:00:00.000Z`))
+    .replace(/\./g, '')
+}
 
 type PageProps = {
   params: Promise<{ locale: string }>
@@ -66,6 +74,7 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
   const tp = createTranslator({ locale, messages, namespace: 'StudyProgram' })
   const tw = createTranslator({ locale, messages, namespace: 'StudyPlan' })
   const tt = createTranslator({ locale, messages, namespace: 'StudyToday' })
+  const tpause = createTranslator({ locale, messages, namespace: 'StudyPause' })
   const view = await getStudyView(payload, student, locale)
   // An assigned program shows the start card; otherwise a started (or just finished) one shows «Сегодня».
   // A timer left running is settled first (4-hour cap, minimum reached while the tab was closed),
@@ -90,17 +99,19 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
     : null
 
   // The current week's grid, and the day shown below it: today, or a day picked with `?day=N`.
-  let grid: ReturnType<typeof weekCells> = []
+  let grid: ReturnType<typeof weekGrid> = []
   let selected = 0
   let tasksOf: (programDay: number) => string[] = () => []
   if (ready && !finished) {
     const week = weekOf(ready.today)
-    grid = weekCells({
+    grid = weekGrid({
       week,
       startDate: ready.startDate,
       today: ready.today,
       template: ready.template,
       progress: ready.progress,
+      pauses: ready.pauses,
+      paused: ready.status === 'paused',
     })
     const asked = Number((await searchParams).day)
     selected = grid.some((cell) => cell.programDay === asked) ? asked : ready.today
@@ -111,7 +122,11 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
   }
   const selectedCell = grid.find((cell) => cell.programDay === selected)
   // Her private comment on the shown day: today or a past day only, never a future one (story 016).
-  const commentable = ready != null && selectedCell != null && selected <= ready.today
+  // While paused there is no day to comment on: today's number is the day she returns to.
+  const paused = ready?.status === 'paused'
+  const commentable = ready != null && selectedCell != null && selected <= ready.today && !paused
+  // Is the open day today's? A paused student is on no day: her next one is shown as a date.
+  const isTodayView = ready != null && selected === ready.today && !paused
   const comments = commentable ? await getDayComments(payload, student) : null
 
   return (
@@ -180,6 +195,24 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
               <dd data-testid="stat-minutes">{totals.minutes}</dd>
             </div>
           </dl>
+          {paused && ready.pausedSince ? (
+            <div className={styles.paused} data-testid="paused-status">
+              <p className={styles.today}>
+                {tpause('status', {
+                  since: shortDate(ready.pausedSince, locale),
+                  day: ready.today,
+                  total: ready.totalDays,
+                })}
+              </p>
+              <p className={styles.lead}>{tpause('hint')}</p>
+              <NextIntlClientProvider
+                locale={locale}
+                messages={studentMessages(locale, addressForm)}
+              >
+                <PauseProgram paused />
+              </NextIntlClientProvider>
+            </div>
+          ) : null}
           {finished ? (
             <p className={styles.lead}>
               {tt('finishedTotals', {
@@ -195,14 +228,14 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
         <>
           <section className={styles.section} aria-labelledby="today-title">
             <h2 id="today-title" className={styles.today}>
-              {selected === ready.today
+              {isTodayView
                 ? tt('title')
                 : tt('dayHeading', {
                     day: selected,
                     date: formatCalendarDate(selectedCell.date, locale).long,
                   })}
             </h2>
-            {selected !== ready.today ? (
+            {!isTodayView ? (
               <Link href="/study" className={styles.back}>
                 {tt('backToToday')}
               </Link>
@@ -212,7 +245,7 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
               tasks={tasksOf(selected)}
               locale={locale}
               addressForm={addressForm}
-              restLabel={selected === ready.today ? 'restToday' : 'rest'}
+              restLabel={isTodayView ? 'restToday' : 'rest'}
               logs={ready.logs.get(selected)}
               timers={
                 selected === ready.today && timer?.ok && ready.status === 'active' ? (
@@ -258,6 +291,14 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
             />
           </section>
         </>
+      ) : null}
+
+      {ready && !finished && ready.status === 'active' ? (
+        <div className={styles.section}>
+          <NextIntlClientProvider locale={locale} messages={studentMessages(locale, addressForm)}>
+            <PauseProgram paused={false} />
+          </NextIntlClientProvider>
+        </div>
       ) : null}
 
       {ready ? (

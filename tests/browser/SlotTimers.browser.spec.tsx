@@ -101,9 +101,7 @@ describe('SlotTimers (story 014)', () => {
     }))
     await renderTimers(stateOf([{ startedAt: started }, {}]))
 
-    await expect
-      .element(page.getByText('Минимум выполнен ✓'), { timeout: 6000 })
-      .toBeVisible()
+    await expect.element(page.getByText('Минимум выполнен ✓'), { timeout: 6000 }).toBeVisible()
     expect(playChime).toHaveBeenCalledTimes(1)
     expect(vibrate).toHaveBeenCalledTimes(1)
     expect(syncTimerAction).toHaveBeenCalled()

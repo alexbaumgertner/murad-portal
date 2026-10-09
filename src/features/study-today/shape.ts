@@ -2,7 +2,13 @@
 // the state of each day, and the progress numbers. Shared by the pages and unit tests.
 // No framework imports.
 
-import { daysBetween } from '@/features/enrollments/shape'
+import {
+  addDays,
+  dateOfProgramDay,
+  isPausedOn,
+  programDayOnDate,
+  type PauseRange,
+} from '@/features/enrollments/shape'
 import { PLAN_DAYS } from '@/features/program-plan/shape'
 
 export const DAY_STATES = [
@@ -46,11 +52,15 @@ export const totalDaysOf = (durationWeeks: number) => durationWeeks * PLAN_DAYS
 export const isOver = (programDay: number, durationWeeks: number) =>
   programDay > totalDaysOf(durationWeeks)
 
-/** `YYYY-MM-DD` of program day `programDay` when day 1 is `startDate`. */
-export function dateOfDay(startDate: string, programDay: number): string {
-  const [y = 1970, m = 1, d = 1] = startDate.slice(0, 10).split('-').map(Number)
-  return new Date(Date.UTC(y, m - 1, d + programDay - 1)).toISOString().slice(0, 10)
-}
+/**
+ * `YYYY-MM-DD` on which program day `programDay` is studied when day 1 is `startDate`; paused
+ * days (story 017) are skipped, so the date moves after every pause that began before it.
+ */
+export const dateOfDay = (
+  startDate: string,
+  programDay: number,
+  pauses: readonly PauseRange[] = [],
+): string => dateOfProgramDay(startDate, programDay, pauses)
 
 /** Weekday and day-of-month of a `YYYY-MM-DD` date, formatted for `locale` without time zones. */
 export function formatCalendarDate(date: string, locale: string) {
@@ -131,14 +141,15 @@ export function weekCells(input: {
   template: TemplateDay[]
   progress: ReadonlyMap<number, DayProgress>
   pausedDays?: ReadonlySet<number>
+  pauses?: readonly PauseRange[]
 }): WeekCell[] {
-  const { week, startDate, today, template, progress, pausedDays } = input
+  const { week, startDate, today, template, progress, pausedDays, pauses } = input
   return Array.from({ length: PLAN_DAYS }, (_, i) => {
     const programDay = firstDayOfWeek(week) + i
     return {
       programDay,
       day: i + 1,
-      date: dateOfDay(startDate, programDay),
+      date: dateOfDay(startDate, programDay, pauses),
       state: dayState({
         programDay,
         today,
@@ -175,6 +186,53 @@ export function trainingDaysIn(durationWeeks: number, template: TemplateDay[]): 
   return perWeek * durationWeeks
 }
 
-/** Days from `startDate` to the calendar date `date`, + 1: day number of any calendar date. */
-export const programDayOfDate = (startDate: string, date: string) =>
-  daysBetween(startDate, date) + 1
+/** Program day of any calendar date (story 017: paused days are not counted). */
+export const programDayOfDate = (
+  startDate: string,
+  date: string,
+  pauses: readonly PauseRange[] = [],
+) => programDayOnDate(startDate, date, pauses)
+
+/** A cell of the week grid: a program day, or a paused calendar day, which has no program day. */
+export type GridCell = {
+  /** `null` on a paused calendar day: it is shown with ‖ and is neither markable nor commentable. */
+  programDay: number | null
+  date: string
+  state: DayState
+}
+
+/**
+ * The calendar days of program week `week` (story 017, AC 3): its 7 program days with the paused
+ * calendar days between them. Paused days between two weeks belong to the later week, so every
+ * calendar day from day 1 on is in exactly one week. While `paused` is true, `today` is the day
+ * she will return to, not a day she is on.
+ */
+export function weekGrid(input: {
+  week: number
+  startDate: string
+  today: number
+  template: TemplateDay[]
+  progress: ReadonlyMap<number, DayProgress>
+  pauses: readonly PauseRange[]
+  paused?: boolean
+}): GridCell[] {
+  const { week, startDate, today, template, progress, pauses, paused } = input
+  const first = firstDayOfWeek(week)
+  const from = week === 1 ? startDate : addDays(dateOfDay(startDate, first - 1, pauses), 1)
+  const to = dateOfDay(startDate, first + PLAN_DAYS - 1, pauses)
+  const cells: GridCell[] = []
+  for (let date = from; date <= to; date = addDays(date, 1)) {
+    if (isPausedOn(pauses, date)) {
+      cells.push({ programDay: null, date, state: 'paused' })
+      continue
+    }
+    const day = programDayOnDate(startDate, date, pauses)
+    const state = dayState({ programDay: day, today, template, progress: progress.get(day) })
+    cells.push({
+      programDay: day,
+      date,
+      state: paused && state === 'today' ? 'upcoming' : state,
+    })
+  }
+  return cells
+}
