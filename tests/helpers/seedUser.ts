@@ -22,3 +22,12 @@ export async function cleanupTestUser(suffix: string): Promise<void> {
     where: { email: { equals: testUserEmail(suffix) } },
   })
 }
+
+export async function setAddressForm(email: string, addressForm: 'ty' | 'vy'): Promise<void> {
+  const payload = await getPayload({ config })
+  await payload.update({
+    collection: 'users',
+    where: { email: { equals: email } },
+    data: { addressForm },
+  })
+}

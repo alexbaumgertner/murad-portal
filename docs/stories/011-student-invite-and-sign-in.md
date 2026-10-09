@@ -1,7 +1,7 @@
 ---
 id: 011
 title: Murad invites a student, the student signs in by email code
-status: approved
+status: done
 ---
 
 # 011 — Murad invites a student; the student signs in by email code
@@ -77,6 +77,22 @@ Notes: Payload ignores writes to a field the caller may not touch (`role`, `invi
 Notes: the owner invites from "Invite a student" above the Users list in `/admin`; the flow reads only email and
 name and always creates `role: 'student'`. Any student creation (also via "Create new" with role Student) stamps
 `invitedAt` and sends the invite in the same transaction — a failed email rolls the account back. The invite holds
-only a link to `/login` (no code or token). Emails and `/login` use the «ты» form; «вы» comes in 011c.
+only a link to `/login` (no code or token). Emails and `/login` use the «ты» form here; «вы» arrived in 011c.
 `otp.ts` now returns error codes (`rate_limited`, `wrong_code`, `code_expired` …) instead of English sentences;
 the admin login maps them to its old English copy.
+
+### 011c — «ты»/«вы» and `/study/settings` (this PR)
+
+| #   | Test (file › name)                                                                                                                                                                                                                                                                                                                                                                                         | Layer            |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| 8   | `tests/int/study-settings.int.spec.ts` › `saves her choice and remembers it in a cookie for /login`; `switches back to «ты»`; `rejects anything but ty and vy…`; `changes only her own record…`; `refuses a signed-out visitor and the owner…`; `sends the code in «ты» by default` / `in «вы» after she switched`; `invites in «вы» when the owner presets it` / `in «ты» when the owner presets nothing` | int              |
+| 8   | `tests/unit/address-form.unit.spec.ts` › `covers exactly the student-facing namespaces…`; `leaves no «ты» form behind…`; `switches the copy to «вы»…`; `tests/unit/invite-email.unit.spec.ts` › `invites in the «вы» form`, `speaks Russian to a student, «ты» or «вы»`                                                                                                                                    | unit             |
+| 8   | `tests/browser/StudySettings.browser.spec.tsx` › `shows the current form selected`; `picks «вы», saves and confirms`; `speaks «вы» when the student chose it`; `translates an error code`; `tests/e2e/student.e2e.spec.ts` › `a student switches to «вы» on /study/settings and the texts follow`; `/study/settings sends a signed-out visitor to /login`                                                  | browser / e2e    |
+| 9   | `tests/unit/address-form.unit.spec.ts` › `gives the same English texts for «ты» and «вы»`; `tests/unit/invite-email.unit.spec.ts` › `does not change the English invite`, `does not change the English text for «вы»`; `tests/int/study-settings.int.spec.ts` › `keeps the English code email…`; `tests/e2e/student.e2e.spec.ts` › `English texts do not change for «вы»`                                  | unit / int / e2e |
+
+Notes: «вы» copy lives in `messages/ru-vy.json`: the student namespaces (`Login`, `Study`, `StudySettings`) only,
+each with every key of its `ru.json` twin, so the same-keys unit test stays meaningful. Student pages pick the
+catalog from `users.addressForm` (`src/i18n/address-form.ts`); the rest of the site is always «ты». A signed-out
+`/login` has no account to read, so an `address_form` cookie (set at sign-in and on save, httpOnly, no
+personal data) makes it speak «вы» to a returning «вы» student. Code emails to students are now Russian
+(«ты» or «вы») for the Russian login page; the owner's code email stays English. No collection change, no migration.

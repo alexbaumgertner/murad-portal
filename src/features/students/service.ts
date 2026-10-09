@@ -4,6 +4,8 @@ import type { Payload, TypedUser } from 'payload'
 
 import { captureServerError } from '@/lib/monitoring/server'
 
+import type { AddressForm } from '@/i18n/address-form'
+
 import { InviteEmailError } from './send-invite'
 import type { InviteInput } from './schema'
 
@@ -43,4 +45,23 @@ export async function inviteStudent(
     return { ok: false, error: 'mail_failed' }
   }
   return { ok: true, email: input.email }
+}
+
+/**
+ * Saves how the interface addresses the student. The write runs as her (`overrideAccess: false`),
+ * so Payload's own rule applies: a student can only update her own record.
+ */
+export async function updateAddressForm(
+  payload: Payload,
+  student: TypedUser,
+  addressForm: AddressForm,
+): Promise<void> {
+  await payload.update({
+    collection: 'users',
+    id: student.id,
+    data: { addressForm },
+    overrideAccess: false,
+    user: student,
+    depth: 0,
+  })
 }
