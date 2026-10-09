@@ -6,6 +6,7 @@ import * as migration_20261008_175101_user_roles from './20261008_175101_user_ro
 import * as migration_20261009_004331_study_programs from './20261009_004331_study_programs';
 import * as migration_20261009_065237_study_plan from './20261009_065237_study_plan';
 import * as migration_20261009_074618_enrollments from './20261009_074618_enrollments';
+import * as migration_20261009_083238_student_plan from './20261009_083238_student_plan';
 
 export const migrations = [
   {
@@ -46,6 +47,11 @@ export const migrations = [
   {
     up: migration_20261009_074618_enrollments.up,
     down: migration_20261009_074618_enrollments.down,
-    name: '20261009_074618_enrollments'
+    name: '20261009_074618_enrollments',
+  },
+  {
+    up: migration_20261009_083238_student_plan.up,
+    down: migration_20261009_083238_student_plan.down,
+    name: '20261009_083238_student_plan'
   },
 ];

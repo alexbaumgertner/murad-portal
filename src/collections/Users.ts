@@ -144,5 +144,14 @@ export const Users: CollectionConfig = {
         defaultColumns: ['program', 'status', 'assignedAt', 'startDate'],
       },
     },
+    {
+      // Story 018: the student's personal plan as a week × day grid; each task opens its editor.
+      name: 'studentPlan',
+      type: 'ui',
+      admin: {
+        condition: (data) => data?.role === 'student',
+        components: { Field: '/components/admin/StudentPlanGrid/StudentPlanGrid#StudentPlanGrid' },
+      },
+    },
   ],
 }

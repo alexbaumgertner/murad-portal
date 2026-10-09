@@ -42,6 +42,7 @@ export default async function StudyPage({ params }: PageProps) {
   const messages = messagesFor(locale, addressForm)
   const t = createTranslator({ locale, messages, namespace: 'Study' })
   const tp = createTranslator({ locale, messages, namespace: 'StudyProgram' })
+  const tw = createTranslator({ locale, messages, namespace: 'StudyPlan' })
   const view = await getStudyView(payload, student, locale)
 
   return (
@@ -88,6 +89,9 @@ export default async function StudyPage({ params }: PageProps) {
             {tp('levels', { from: view.program.levelFrom, to: view.program.levelTo })} ·{' '}
             {tp('dayOf', { day: view.day, total: view.totalDays })}
           </p>
+          <Link href="/study/weeks" className={styles.back}>
+            {tw('title')}
+          </Link>
         </section>
       ) : null}
 

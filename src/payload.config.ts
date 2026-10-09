@@ -17,6 +17,7 @@ import { Media } from './collections/Media'
 import { ProgramPlanItems } from './collections/ProgramPlanItems'
 import { Programs } from './collections/Programs'
 import { SlotTypes } from './collections/SlotTypes'
+import { StudentAssignments } from './collections/StudentAssignments'
 import { TaskPool } from './collections/TaskPool'
 import { Users } from './collections/Users'
 import { WaitlistSignups } from './collections/WaitlistSignups'
@@ -58,6 +59,7 @@ export default buildConfig({
     TaskPool,
     ProgramPlanItems,
     Enrollments,
+    StudentAssignments,
     AuthCodes,
   ],
   // Content locales (the admin UI itself stays English). Missing translations fall back to English.

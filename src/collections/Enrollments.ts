@@ -31,6 +31,7 @@ import {
 } from '@/features/enrollments/shape'
 import type { AnalyticsProps } from '@/lib/analytics'
 import { sendAssigned } from '@/features/enrollments/send-assigned'
+import { copyProgramPlan, deletePlan } from '@/features/student-plan/copy-plan'
 import { LEVELS } from '@/features/programs/shape'
 import { parseAddressForm } from '@/i18n/address-form'
 import type { Enrollment } from '@/payload-types'
@@ -259,6 +260,26 @@ const afterAssign: CollectionAfterChangeHook = async ({ doc, operation, previous
   return doc
 }
 
+// Story 018 (D-SP-5): assigning copies the program's default plan into the student's own plan, in
+// the assignment's transaction (`req`). Changing the program before the start replaces the copy;
+// later edits of the pool or the program plan never reach it.
+const copyPlanOnAssign: CollectionAfterChangeHook = async ({
+  doc,
+  operation,
+  previousDoc,
+  req,
+}) => {
+  const enrollment = doc as Enrollment
+  const programId = idOf(enrollment.program) as number
+  if (operation === 'create') {
+    await copyProgramPlan(req, enrollment.id, programId)
+  } else if (idOf((previousDoc as EnrollmentData | undefined)?.program) !== programId) {
+    await deletePlan(req, enrollment.id)
+    await copyProgramPlan(req, enrollment.id, programId)
+  }
+  return doc
+}
+
 export const Enrollments: CollectionConfig = {
   slug: 'enrollments',
   labels: { singular: 'Назначение', plural: 'Назначения' },
@@ -277,7 +298,9 @@ export const Enrollments: CollectionConfig = {
   hooks: {
     beforeOperation: [refuseForeignKeys],
     beforeValidate: [validateRules],
-    afterChange: [afterAssign],
+    afterChange: [copyPlanOnAssign, afterAssign],
+    // The plan's `enrollment` column is required: delete the plan before the database would null it.
+    beforeDelete: [({ id, req }) => deletePlan(req, Number(id))],
   },
   fields: [
     {
@@ -328,8 +351,7 @@ export const Enrollments: CollectionConfig = {
               required: true,
               label: 'Дата теста',
               admin: { date: { pickerAppearance: 'dayOnly', displayFormat: 'dd.MM.yyyy' } },
-              validate: (value: unknown) =>
-                isTakenAtValid(value) ? true : messages.takenAtFuture,
+              validate: (value: unknown) => (isTakenAtValid(value) ? true : messages.takenAtFuture),
             },
           ],
         },
@@ -410,7 +432,8 @@ export const Enrollments: CollectionConfig = {
       type: 'ui',
       admin: {
         components: {
-          Field: '/components/admin/PlacementLevelWarning/PlacementLevelWarning#PlacementLevelWarning',
+          Field:
+            '/components/admin/PlacementLevelWarning/PlacementLevelWarning#PlacementLevelWarning',
         },
       },
     },
@@ -460,4 +483,3 @@ export const Enrollments: CollectionConfig = {
     },
   ],
 }
-
