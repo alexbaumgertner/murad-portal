@@ -8,6 +8,7 @@ import * as migration_20261009_065237_study_plan from './20261009_065237_study_p
 import * as migration_20261009_074618_enrollments from './20261009_074618_enrollments';
 import * as migration_20261009_083238_student_plan from './20261009_083238_student_plan';
 import * as migration_20261009_094359_slot_timer from './20261009_094359_slot_timer';
+import * as migration_20261009_102257_day_comments from './20261009_102257_day_comments';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261009_094359_slot_timer.up,
     down: migration_20261009_094359_slot_timer.down,
-    name: '20261009_094359_slot_timer'
+    name: '20261009_094359_slot_timer',
+  },
+  {
+    up: migration_20261009_102257_day_comments.up,
+    down: migration_20261009_102257_day_comments.down,
+    name: '20261009_102257_day_comments'
   },
 ];

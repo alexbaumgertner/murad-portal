@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { createTranslator, hasLocale, NextIntlClientProvider } from 'next-intl'
 
+import { DayComment } from '@/components/DayComment/DayComment'
 import { DayContent } from '@/components/DayContent/DayContent'
 import { DayGrid } from '@/components/DayGrid/DayGrid'
 import { SlotTimers } from '@/components/SlotTimers/SlotTimers'
@@ -11,6 +12,7 @@ import { StartProgram } from '@/components/StartProgram/StartProgram'
 import { logoutAction } from '@/features/auth/actions'
 import { currentStudent } from '@/features/auth/current-user'
 import { getStudyView } from '@/features/enrollments/queries'
+import { getDayComments } from '@/features/day-comments/queries'
 import { getTimerState } from '@/features/slot-timer/service'
 import { trackCompleted } from '@/features/slot-timer/track'
 import { getStudentWeek } from '@/features/student-plan/queries'
@@ -108,6 +110,9 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
       days.find((day) => day.programDay === programDay)?.tasks.map((task) => task.text) ?? []
   }
   const selectedCell = grid.find((cell) => cell.programDay === selected)
+  // Her private comment on the shown day: today or a past day only, never a future one (story 016).
+  const commentable = ready != null && selectedCell != null && selected <= ready.today
+  const comments = commentable ? await getDayComments(payload, student) : null
 
   return (
     <div className={styles.page}>
@@ -225,6 +230,18 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
                 ) : undefined
               }
             />
+            {commentable && comments ? (
+              <NextIntlClientProvider
+                locale={locale}
+                messages={studentMessages(locale, addressForm)}
+              >
+                <DayComment
+                  key={selectedCell.date}
+                  date={selectedCell.date}
+                  initialText={comments.get(selectedCell.date) ?? ''}
+                />
+              </NextIntlClientProvider>
+            ) : null}
           </section>
 
           <section className={styles.section} aria-labelledby="grid-title">

@@ -282,5 +282,23 @@
       "program_over": "The program is already finished",
       "server": "That did not work. Please try again"
     }
+  },
+  "StudyComment": {
+    "label": "Comment on this day",
+    "hint": "Write what was unclear or hard — Murad reads it before your lesson. Only you and Murad can see it.",
+    "save": "Save",
+    "pending": "Saving…",
+    "saved": "Saved",
+    "deleted": "Comment deleted",
+    "counter": "{count} of {max}",
+    "errors": {
+      "too_long": "No more than 1000 characters",
+      "unauthorized": "Sign in again to save",
+      "invalid_input": "That did not work. Refresh the page and try again",
+      "no_program": "Program not found",
+      "future_day": "You can comment on today or a past day only",
+      "invalid_day": "That day is not in your program",
+      "server": "Could not save. Your text is still in the field — try again"
+    }
   }
 }
