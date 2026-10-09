@@ -1,11 +1,13 @@
 import {
   ValidationError,
+  type CollectionBeforeDeleteHook,
   type CollectionBeforeValidateHook,
   type CollectionConfig,
   type Validate,
 } from 'payload'
 
 import { owner, publishedForStudentsOrOwner } from '@/access'
+import { messages as planMessages } from '@/features/program-plan/shape'
 import {
   DEFAULT_DURATION_WEEKS,
   LEVELS,
@@ -20,7 +22,12 @@ import {
   messages,
 } from '@/features/programs/shape'
 
-type RuleData = { slug?: string; levelFrom?: string; levelTo?: string }
+type RuleData = {
+  slug?: string
+  levelFrom?: string
+  levelTo?: string
+  durationWeeks?: number
+}
 
 const fail = (path: string, message: string): never => {
   throw new ValidationError({ collection: 'programs', errors: [{ path, message }] })
@@ -48,7 +55,29 @@ const validateRules: CollectionBeforeValidateHook = async ({ data, originalDoc, 
     })
     if (totalDocs > 0) fail('slug', messages.slugTaken)
   }
+
+  // The default plan (story 010) must still fit when the program gets shorter.
+  if (id != null && typeof merged.durationWeeks === 'number') {
+    const { totalDocs } = await req.payload.count({
+      collection: 'program-plan-items',
+      where: { program: { equals: id }, week: { greater_than: merged.durationWeeks } },
+      overrideAccess: true,
+      req,
+    })
+    if (totalDocs > 0) fail('durationWeeks', planMessages.weeksAfter(merged.durationWeeks))
+  }
   return data
+}
+
+// A deleted program takes its default plan with it. Before the delete: the database would otherwise
+// null `program` on the items first, and the column is required.
+const deletePlan: CollectionBeforeDeleteHook = async ({ id, req }) => {
+  await req.payload.delete({
+    collection: 'program-plan-items',
+    where: { program: { equals: id } },
+    overrideAccess: true,
+    req,
+  })
 }
 
 const validateWeekTemplate: Validate = (value) =>
@@ -71,7 +100,7 @@ export const Programs: CollectionConfig = {
     update: owner,
     delete: owner,
   },
-  hooks: { beforeValidate: [validateRules] },
+  hooks: { beforeValidate: [validateRules], beforeDelete: [deletePlan] },
   fields: [
     { name: 'title', type: 'text', required: true, localized: true, maxLength: 80 },
     {
