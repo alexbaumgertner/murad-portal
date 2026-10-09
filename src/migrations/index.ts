@@ -4,6 +4,7 @@ import * as migration_20261001_144024_localize_changelog from './20261001_144024
 import * as migration_20261007_214306_challenges from './20261007_214306_challenges';
 import * as migration_20261008_175101_user_roles from './20261008_175101_user_roles';
 import * as migration_20261009_004331_study_programs from './20261009_004331_study_programs';
+import * as migration_20261009_065237_study_plan from './20261009_065237_study_plan';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20261009_004331_study_programs.up,
     down: migration_20261009_004331_study_programs.down,
-    name: '20261009_004331_study_programs'
+    name: '20261009_004331_study_programs',
+  },
+  {
+    up: migration_20261009_065237_study_plan.up,
+    down: migration_20261009_065237_study_plan.down,
+    name: '20261009_065237_study_plan'
   },
 ];

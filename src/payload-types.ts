@@ -75,6 +75,8 @@ export interface Config {
     'challenge-days': ChallengeDay;
     'slot-types': SlotType;
     programs: Program;
+    'task-pool': TaskPool;
+    'program-plan-items': ProgramPlanItem;
     'auth-codes': AuthCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -91,6 +93,8 @@ export interface Config {
     'challenge-days': ChallengeDaysSelect<false> | ChallengeDaysSelect<true>;
     'slot-types': SlotTypesSelect<false> | SlotTypesSelect<true>;
     programs: ProgramsSelect<false> | ProgramsSelect<true>;
+    'task-pool': TaskPoolSelect<false> | TaskPoolSelect<true>;
+    'program-plan-items': ProgramPlanItemsSelect<false> | ProgramPlanItemsSelect<true>;
     'auth-codes': AuthCodesSelect<false> | AuthCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -396,6 +400,49 @@ export interface Program {
   createdAt: string;
 }
 /**
+ * Задания, из которых собираются планы программ. Студенты видят копии, не эти записи.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "task-pool".
+ */
+export interface TaskPool {
+  id: number;
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+  /**
+   * К какому занятию относится задание (необязательно).
+   */
+  slotType?: (number | null) | SlotType;
+  /**
+   * Для списков Мурада, студентам не показывается.
+   */
+  title: string;
+  /**
+   * Изменения попадут только в новые планы
+   */
+  text: {
+    ru: string;
+    en?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Задания по неделям и дням. При назначении программы студенту план копируется ему (018).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "program-plan-items".
+ */
+export interface ProgramPlanItem {
+  id: number;
+  program: number | Program;
+  week: number;
+  day: number;
+  order: number;
+  task: number | TaskPool;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth-codes".
  */
@@ -466,6 +513,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'programs';
         value: number | Program;
+      } | null)
+    | ({
+        relationTo: 'task-pool';
+        value: number | TaskPool;
+      } | null)
+    | ({
+        relationTo: 'program-plan-items';
+        value: number | ProgramPlanItem;
       } | null)
     | ({
         relationTo: 'auth-codes';
@@ -659,6 +714,36 @@ export interface ProgramsSelect<T extends boolean = true> {
         id?: T;
       };
   status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "task-pool_select".
+ */
+export interface TaskPoolSelect<T extends boolean = true> {
+  level?: T;
+  slotType?: T;
+  title?: T;
+  text?:
+    | T
+    | {
+        ru?: T;
+        en?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "program-plan-items_select".
+ */
+export interface ProgramPlanItemsSelect<T extends boolean = true> {
+  program?: T;
+  week?: T;
+  day?: T;
+  order?: T;
+  task?: T;
   updatedAt?: T;
   createdAt?: T;
 }

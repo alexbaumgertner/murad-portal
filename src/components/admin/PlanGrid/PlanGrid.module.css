@@ -1,0 +1,108 @@
+/* Rendered inside the Payload admin: uses Payload's theme variables, not the site tokens. */
+.panel {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m, 6px);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.empty {
+  margin: 0;
+  color: var(--theme-elevation-600);
+}
+
+.programs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.programLink,
+.programCurrent {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 999px;
+  color: inherit;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.programCurrent {
+  border-color: var(--theme-elevation-800);
+  font-weight: 600;
+}
+
+.scroll {
+  max-height: 24rem;
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.table th,
+.table td {
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--theme-elevation-100);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--theme-bg);
+}
+
+.task {
+  display: block;
+  color: inherit;
+}
+
+.copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.copy :global(.btn) {
+  margin: 0;
+}
+
+.field {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.field input {
+  width: 6rem;
+}
+
+.error,
+.success {
+  flex-basis: 100%;
+  min-height: 1.25rem;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.error {
+  color: var(--theme-error-500);
+}
+
+.success {
+  color: var(--theme-success-600, var(--theme-elevation-800));
+}
