@@ -1,14 +1,15 @@
 'use server'
 
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { z } from 'zod'
 
-import { currentAdmin } from '@/features/auth/current-user'
-import { monitorAction } from '@/lib/monitoring/server'
+import { currentAdmin, currentStudent } from '@/features/auth/current-user'
+import { ADDRESS_FORM_COOKIE, addressFormCookieOptions } from '@/i18n/address-form'
+import { captureServerError, monitorAction } from '@/lib/monitoring/server'
 import { getPayloadClient } from '@/lib/payload'
 
-import { inviteSchema, type InviteState } from './schema'
-import { inviteStudent } from './service'
+import { inviteSchema, settingsSchema, type InviteState, type SettingsState } from './schema'
+import { inviteStudent, updateAddressForm } from './service'
 
 export async function inviteStudentAction(
   _prev: InviteState,
@@ -32,5 +33,32 @@ export async function inviteStudentAction(
     const result = await inviteStudent(payload, parsed.data, owner)
     if (!result.ok) return { status: 'error', error: result.error }
     return { status: 'success', email: result.email }
+  })
+}
+
+export async function saveStudySettingsAction(
+  _prev: SettingsState,
+  formData: FormData,
+): Promise<SettingsState> {
+  return monitorAction('saveStudySettingsAction', async () => {
+    const payload = await getPayloadClient()
+    const student = await currentStudent(payload, await headers())
+    if (!student) return { status: 'error', error: 'unauthorized' }
+
+    // Only `addressForm` is read: the record to change is always the signed-in student's own.
+    const parsed = settingsSchema.safeParse({
+      addressForm: String(formData.get('addressForm') ?? ''),
+    })
+    if (!parsed.success) return { status: 'error', error: 'invalid_form' }
+
+    try {
+      await updateAddressForm(payload, student, parsed.data.addressForm)
+    } catch (error) {
+      console.error('[students] saving settings failed', error)
+      await captureServerError(error, 'students-settings')
+      return { status: 'error', error: 'server' }
+    }
+    ;(await cookies()).set(ADDRESS_FORM_COOKIE, parsed.data.addressForm, addressFormCookieOptions())
+    return { status: 'success', addressForm: parsed.data.addressForm }
   })
 }

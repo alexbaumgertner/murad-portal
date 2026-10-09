@@ -62,7 +62,12 @@ export const Users: CollectionConfig = {
       // and rolls the create back, so nobody ends up with an account she never heard of.
       async ({ doc, operation, req }) => {
         if (operation === 'create' && doc.role === 'student') {
-          await sendInvite(req.payload, doc.email, doc.locale ?? undefined)
+          await sendInvite(
+            req.payload,
+            doc.email,
+            doc.locale ?? undefined,
+            doc.addressForm ?? undefined,
+          )
         }
         return doc
       },

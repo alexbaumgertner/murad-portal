@@ -165,6 +165,23 @@
     "greeting": "Hi, {name}!",
     "greetingAnonymous": "Hi!",
     "empty": "Your study plan will appear here. Murad assigns a program after the placement test.",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "settingsLink": "Settings"
+  },
+  "StudySettings": {
+    "title": "Settings",
+    "back": "Back to study",
+    "legend": "How should we address you?",
+    "ty": "Address me as «ты» (informal)",
+    "vy": "Address me as «вы» (formal)",
+    "hint": "This changes the Russian interface and emails. English texts stay the same.",
+    "save": "Save",
+    "pending": "Saving…",
+    "saved": "Saved",
+    "errors": {
+      "unauthorized": "Sign in to change your settings.",
+      "invalid_form": "Pick one of the two options.",
+      "server": "Could not save. Please try again."
+    }
   }
 }

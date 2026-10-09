@@ -43,7 +43,7 @@ to "I actually hear and recognize familiar words in live speech" — and where M
 
 ## Voice & copy
 
-- Russian first (audience), English second. Address the reader as «ты»? — **open question for Murad**.
+- Russian first (audience), English second. Public pages address the reader as «ты». Students choose «ты» or «вы» for their own pages and emails on `/study/settings` (default «ты», D-SP-8); the copy for «вы» lives in `messages/ru-vy.json`.
 - Plain, warm, encouraging, no hype. Short sentences. Teacher talking to a student, not a startup landing page.
 
 ## Open questions
