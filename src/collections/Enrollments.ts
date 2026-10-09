@@ -249,14 +249,17 @@ const afterAssign: CollectionAfterChangeHook = async ({ doc, operation, previous
       overrideAccess: true,
       req,
     })
-    // A failed email throws and rolls the assignment back, like the invite (story 011).
-    await sendAssigned(
-      req.payload,
-      student.email,
-      { from: program.levelFrom, to: program.levelTo },
-      student.locale === 'en' ? 'en' : 'ru',
-      parseAddressForm(student.addressForm),
-    )
+    // A failed email throws and rolls the assignment back, like the invite (story 011). The
+    // server-only `skipEmail` context is for the demo seed, whose students have no mailbox.
+    if (req.context.skipEmail !== true) {
+      await sendAssigned(
+        req.payload,
+        student.email,
+        { from: program.levelFrom, to: program.levelTo },
+        student.locale === 'en' ? 'en' : 'ru',
+        parseAddressForm(student.addressForm),
+      )
+    }
     await trackSafe(req, 'program_assigned', {
       programSlug: program.slug,
       levelFrom: program.levelFrom,

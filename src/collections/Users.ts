@@ -73,6 +73,9 @@ export const Users: CollectionConfig = {
       // Every new student gets the invite, however she was created. A failed email throws
       // and rolls the create back, so nobody ends up with an account she never heard of.
       async ({ doc, operation, req }) => {
+        // Server-only context (a request over HTTP cannot set it): the demo seed creates students
+        // whose addresses are not real mailboxes.
+        if (req.context.skipEmail === true) return doc
         if (operation === 'create' && doc.role === 'student') {
           await sendInvite(
             req.payload,

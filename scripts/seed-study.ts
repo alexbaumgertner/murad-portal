@@ -9,15 +9,14 @@
  * is an emailed code); the other two keep example.com addresses.
  */
 import 'dotenv/config'
-// The seeded accounts must not trigger real invitation emails.
-delete process.env.RESEND_API_KEY
 
 import type { Payload } from 'payload'
 
 import { seedDemoProgram } from './seed-programs'
 import { canSeedStudy } from './seed-guard'
 
-const context = { disableRevalidate: true }
+// `skipEmail`: the demo students have no real mailbox, so no invite or assignment email goes out.
+const context = { disableRevalidate: true, skipEmail: true }
 const DAY = 86_400_000
 const ANTHROPIC = 'https://www.youtube.com/channel/UCrDwWp7EBBv4NwvScIpBDOA'
 const CLAUDE = 'https://www.youtube.com/@claude'
