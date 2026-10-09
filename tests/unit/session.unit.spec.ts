@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
-import { issueToken, readSessionCookie, readToken, SESSION_COOKIE } from '@/features/auth/session'
+import {
+  issueToken,
+  readSessionCookie,
+  readToken,
+  SESSION_COOKIE,
+  SESSION_TTL_SECONDS,
+  STUDENT_SESSION_TTL_SECONDS,
+} from '@/features/auth/session'
 
 const SECRET = 'test-secret'
 
@@ -27,6 +34,17 @@ describe('session token', () => {
   it('expires', () => {
     const { token, maxAge } = issueToken(42, SECRET, now)
     expect(readToken(token, SECRET, now + maxAge * 1000 + 1000)).toBeNull()
+  })
+
+  it('lasts 7 days for the owner and 30 days for a student (D-SP-2)', () => {
+    const day = 24 * 60 * 60
+    expect(SESSION_TTL_SECONDS).toBe(7 * day)
+    expect(STUDENT_SESSION_TTL_SECONDS).toBe(30 * day)
+
+    const { token, maxAge } = issueToken(42, SECRET, now, STUDENT_SESSION_TTL_SECONDS)
+    expect(maxAge).toBe(30 * day)
+    expect(readToken(token, SECRET, now + 29 * day * 1000)).toBe('42')
+    expect(readToken(token, SECRET, now + 31 * day * 1000)).toBeNull()
   })
 
   it('refuses to work without a secret', () => {

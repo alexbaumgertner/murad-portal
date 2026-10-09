@@ -136,5 +136,35 @@
         "server": "Could not save. Please try again."
       }
     }
+  },
+  "Login": {
+    "title": "Student sign-in",
+    "description": "Sign in to the study tracker with a code from your email.",
+    "lead": "Enter the email address Murad invited — we will send you a sign-in code. No password needed.",
+    "emailLabel": "Email",
+    "send": "Get a code",
+    "sending": "Sending…",
+    "sent": "If this address is on the list, the code is already in your inbox",
+    "sentHint": "The 6-digit code is valid for 10 minutes.",
+    "codeLabel": "Code from the email",
+    "verify": "Sign in",
+    "verifying": "Checking…",
+    "resend": "Send a new code",
+    "restart": "Use another address",
+    "done": "Done, opening…",
+    "errors": {
+      "invalid_email": "Check the email address.",
+      "rate_limited": "Too many attempts, wait 15 minutes",
+      "mail_failed": "Could not send the email. Please try again a bit later.",
+      "wrong_code": "That code did not work. Check the email and try again.",
+      "code_expired": "The code has expired, request a new one"
+    }
+  },
+  "Study": {
+    "title": "Study",
+    "greeting": "Hi, {name}!",
+    "greetingAnonymous": "Hi!",
+    "empty": "Your study plan will appear here. Murad assigns a program after the placement test.",
+    "logout": "Sign out"
   }
 }

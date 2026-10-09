@@ -34,6 +34,13 @@ export default buildConfig({
     components: {
       beforeLogin: ['/components/admin/EmailCodeLogin/EmailCodeLogin#EmailCodeLogin'],
       logout: { Button: '/components/admin/LogoutButton/LogoutButton#LogoutButton' },
+      views: {
+        // A signed-in student has no admin access; Payload sends her here, we send her to /study.
+        unauthorized: {
+          Component: '/components/admin/StudentRedirect/StudentRedirect#StudentRedirect',
+          path: '/unauthorized',
+        },
+      },
     },
   },
   collections: [

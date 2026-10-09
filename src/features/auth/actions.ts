@@ -1,16 +1,26 @@
 'use server'
 
+import { hasLocale } from 'next-intl'
 import { cookies, headers } from 'next/headers'
 
 import { track } from '@/lib/analytics'
 import { captureServerError, monitorAction } from '@/lib/monitoring/server'
+import { localizedPath } from '@/i18n/alternates'
+import { routing } from '@/i18n/routing'
 import { getPayloadClient } from '@/lib/payload'
+import type { User } from '@/payload-types'
 
 import { loginCodeSender } from './email'
 import { requestCode, verifyCode, type OtpDeps } from './otp'
 import { safeRedirect } from './redirect'
 import type { LoginState } from './schema'
-import { issueToken, SESSION_COOKIE, sessionCookieOptions } from './session'
+import {
+  issueToken,
+  SESSION_COOKIE,
+  SESSION_TTL_SECONDS,
+  sessionCookieOptions,
+  STUDENT_SESSION_TTL_SECONDS,
+} from './session'
 import { payloadOtpStore } from './store'
 
 async function otpDeps(): Promise<OtpDeps> {
@@ -33,6 +43,19 @@ async function otpDeps(): Promise<OtpDeps> {
 async function clientIp(): Promise<string> {
   const h = await headers()
   return h.get('x-forwarded-for')?.split(',')[0]?.trim() || h.get('x-real-ip')?.trim() || 'unknown'
+}
+
+/**
+ * Where a fresh session goes. A student always lands on her study page, in the language of the
+ * form she used (else her saved one), and never follows `redirect`: /admin is not hers.
+ */
+function destination(user: Pick<User, 'role' | 'locale'>, formData: FormData): string {
+  if (user.role !== 'student') return safeRedirect(formData.get('redirect'))
+  const formLocale = formData.get('locale')
+  const locale = hasLocale(routing.locales, formLocale)
+    ? formLocale
+    : (user.locale ?? routing.defaultLocale)
+  return localizedPath('/study', locale)
 }
 
 export async function loginAction(prev: LoginState, formData: FormData): Promise<LoginState> {
@@ -63,10 +86,18 @@ async function handleLogin(prev: LoginState, formData: FormData): Promise<LoginS
     const result = await verifyCode(prev.email, code, deps)
     if (!result.ok) return { ...prev, error: result.error }
 
-    const { token, maxAge } = issueToken(result.userId, deps.secret)
+    const payload = await getPayloadClient()
+    const user = await payload.findByID({
+      collection: 'users',
+      id: result.userId,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const ttl = user.role === 'student' ? STUDENT_SESSION_TTL_SECONDS : SESSION_TTL_SECONDS
+    const { token, maxAge } = issueToken(result.userId, deps.secret, Date.now(), ttl)
     ;(await cookies()).set(SESSION_COOKIE, token, sessionCookieOptions(maxAge))
     await track('login_succeeded', {}, headers)
-    return { step: 'done', redirectTo: safeRedirect(formData.get('redirect')) }
+    return { step: 'done', redirectTo: destination(user, formData) }
   }
 
   return prev

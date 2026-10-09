@@ -2,6 +2,7 @@ import { APIError, type CollectionConfig, type FieldAccess } from 'payload'
 
 import { isOwner, owner } from '@/access'
 import { emailCodeStrategy } from '@/features/auth/strategy'
+import { sendInvite } from '@/features/students/send-invite'
 
 // Field-level twin of `owner`: students may not set `role` or `invitedAt`.
 const ownerOnly: FieldAccess = ({ req }) => isOwner(req.user)
@@ -11,6 +12,10 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role', 'name', 'invitedAt'],
+    components: {
+      // The invite flow: always creates a student and sends the invite email.
+      beforeListTable: ['/components/admin/InviteStudent/InviteStudent#InviteStudent'],
+    },
   },
   auth: {
     // No passwords: users sign in with a one-time code sent by email (features/auth).
@@ -45,6 +50,22 @@ export const Users: CollectionConfig = {
         }
         return data
       },
+      ({ data, operation }) => {
+        if (operation === 'create' && data.role === 'student') {
+          data.invitedAt ??= new Date().toISOString()
+        }
+        return data
+      },
+    ],
+    afterChange: [
+      // Every new student gets the invite, however she was created. A failed email throws
+      // and rolls the create back, so nobody ends up with an account she never heard of.
+      async ({ doc, operation, req }) => {
+        if (operation === 'create' && doc.role === 'student') {
+          await sendInvite(req.payload, doc.email, doc.locale ?? undefined)
+        }
+        return doc
+      },
     ],
   },
   fields: [
@@ -60,6 +81,10 @@ export const Users: CollectionConfig = {
       ],
       saveToJWT: false,
       index: true,
+      admin: {
+        description:
+          'Owner = full admin access. To add a student, use "Invite a student" above the users list.',
+      },
       access: { create: ownerOnly, update: ownerOnly },
     },
     { name: 'name', type: 'text', maxLength: 80 },

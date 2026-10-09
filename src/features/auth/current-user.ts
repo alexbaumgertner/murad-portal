@@ -17,3 +17,16 @@ export async function currentAdmin(payload: Payload, headers: Headers): Promise<
     return null
   }
 }
+
+/** The signed-in student behind a request, or null (the owner is not a student). */
+export async function currentStudent(
+  payload: Payload,
+  headers: Headers,
+): Promise<TypedUser | null> {
+  try {
+    const { user } = await payload.auth({ headers })
+    return user?.collection === 'users' && user.role === 'student' ? user : null
+  } catch {
+    return null
+  }
+}

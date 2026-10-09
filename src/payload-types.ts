@@ -137,6 +137,9 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  /**
+   * Owner = full admin access. To add a student, use "Invite a student" above the users list.
+   */
   role: 'owner' | 'student';
   name?: string | null;
   invitedAt?: string | null;
