@@ -15,6 +15,7 @@ delete process.env.RESEND_API_KEY
 import type { Payload } from 'payload'
 
 import { seedDemoProgram } from './seed-programs'
+import { canSeedStudy } from './seed-guard'
 
 const context = { disableRevalidate: true }
 const DAY = 86_400_000
@@ -348,8 +349,8 @@ export async function seedStudyDemo(payload: Payload) {
 }
 
 async function main() {
-  if (process.env.VERCEL_ENV === 'production') {
-    throw new Error('seed:study never runs against production')
+  if (!canSeedStudy(process.env)) {
+    throw new Error('seed:study runs only on a Vercel preview build or against a local database')
   }
   const { getPayload } = await import('payload')
   const { default: config } = await import('../src/payload.config')
