@@ -23,6 +23,7 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { PlanGrid as PlanGrid_0afb00fef8579313bbf1dc2508835e4c } from '../../../components/admin/PlanGrid/PlanGrid'
+import { PlacementLevelWarning as PlacementLevelWarning_98a8aaeae47a358a23bd987b33b30917 } from '../../../components/admin/PlacementLevelWarning/PlacementLevelWarning'
 import { LogoutButton as LogoutButton_647af2a43e315d3a24346d5969d6c056 } from '../../../components/admin/LogoutButton/LogoutButton'
 import { EmailCodeLogin as EmailCodeLogin_b02c100cd75d818a8210841bcb08196e } from '../../../components/admin/EmailCodeLogin/EmailCodeLogin'
 import { StudentRedirect as StudentRedirect_ae21cc5687bbc6a5df39879a23c4f3de } from '../../../components/admin/StudentRedirect/StudentRedirect'
@@ -56,6 +57,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/PlanGrid/PlanGrid#PlanGrid": PlanGrid_0afb00fef8579313bbf1dc2508835e4c,
+  "/components/admin/PlacementLevelWarning/PlacementLevelWarning#PlacementLevelWarning": PlacementLevelWarning_98a8aaeae47a358a23bd987b33b30917,
   "/components/admin/LogoutButton/LogoutButton#LogoutButton": LogoutButton_647af2a43e315d3a24346d5969d6c056,
   "/components/admin/EmailCodeLogin/EmailCodeLogin#EmailCodeLogin": EmailCodeLogin_b02c100cd75d818a8210841bcb08196e,
   "/components/admin/StudentRedirect/StudentRedirect#StudentRedirect": StudentRedirect_ae21cc5687bbc6a5df39879a23c4f3de,

@@ -1,0 +1,9 @@
+/* Rendered inside the Payload admin: uses Payload's theme variables, not the site tokens. */
+.warning {
+  margin: 0 0 1rem;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--theme-warning-500);
+  border-radius: var(--style-radius-m, 6px);
+  background: var(--theme-warning-100);
+  color: var(--theme-text);
+}

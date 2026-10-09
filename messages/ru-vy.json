@@ -45,5 +45,38 @@
       "invalid_form": "Выберите один из двух вариантов.",
       "server": "Не удалось сохранить. Попробуйте ещё раз."
     }
+  },
+  "StudyProgram": {
+    "placementTitle": "Ваш тест уровня",
+    "placementWithScore": "Тест: {test} {score} · уровень {cefr}",
+    "placementNoScore": "Тест: {test} · уровень {cefr}",
+    "testMurad": "Мурад (CEFR)",
+    "testOther": "другой тест",
+    "programTitle": "Ваша программа",
+    "levels": "{from} → {to}",
+    "weeks": "{count, plural, one {# неделя} few {# недели} many {# недель} other {# недели}}",
+    "materials": "Материалы",
+    "week": "Неделя занятий",
+    "weekHint": "Каждая неделя повторяет этот шаблон. День 1 — день, когда вы нажмёте «Начать».",
+    "day": "День {day}",
+    "rest": "Отдых",
+    "slot": "{name} — {minutes} мин",
+    "start": "Начать",
+    "confirm": "Начать {program} сегодня?",
+    "confirmYes": "Да, начать",
+    "cancel": "Отмена",
+    "pending": "Начинаем…",
+    "timezone": "Часовой пояс: {zone}",
+    "timezoneChange": "изменить",
+    "timezoneLabel": "Часовой пояс",
+    "almaty": "Алматы",
+    "today": "Сегодня",
+    "dayOf": "День {day} из {total}",
+    "errors": {
+      "unauthorized": "Войдите, чтобы начать программу.",
+      "invalid_timezone": "Выберите часовой пояс из списка.",
+      "not_found": "Программа не найдена. Обновите страницу.",
+      "server": "Не получилось начать. Попробуйте ещё раз."
+    }
   }
 }

@@ -36,6 +36,18 @@ export const Users: CollectionConfig = {
     delete: owner,
   },
   hooks: {
+    // AC 15 (story 012): a deleted student takes her enrollments with her. Before the delete:
+    // the database would otherwise null the required `student` column first.
+    beforeDelete: [
+      async ({ id, req }) => {
+        await req.payload.delete({
+          collection: 'enrollments',
+          where: { student: { equals: id } },
+          overrideAccess: true,
+          req,
+        })
+      },
+    ],
     beforeChange: [
       // `email` is the login identity: only the owner may change it, not a student on her own record.
       ({ data, originalDoc, req }) => {
@@ -117,6 +129,20 @@ export const Users: CollectionConfig = {
         { label: 'Ты', value: 'ty' },
         { label: 'Вы', value: 'vy' },
       ],
+    },
+    {
+      // Story 012: the student's programs on her page; «Create new» assigns one with her preset.
+      name: 'enrollments',
+      type: 'join',
+      collection: 'enrollments',
+      on: 'student',
+      label: 'Программы',
+      defaultSort: '-assignedAt',
+      access: { read: ownerOnly },
+      admin: {
+        condition: (data) => data?.role === 'student',
+        defaultColumns: ['program', 'status', 'assignedAt', 'startDate'],
+      },
     },
   ],
 }

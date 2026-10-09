@@ -183,5 +183,38 @@
       "invalid_form": "Pick one of the two options.",
       "server": "Could not save. Please try again."
     }
+  },
+  "StudyProgram": {
+    "placementTitle": "Your placement test",
+    "placementWithScore": "Test: {test} {score} · level {cefr}",
+    "placementNoScore": "Test: {test} · level {cefr}",
+    "testMurad": "Murad (CEFR)",
+    "testOther": "other test",
+    "programTitle": "Your program",
+    "levels": "{from} → {to}",
+    "weeks": "{count, plural, one {# week} other {# weeks}}",
+    "materials": "Materials",
+    "week": "Study week",
+    "weekHint": "Every week repeats this template. Day 1 is the day you press «Start».",
+    "day": "Day {day}",
+    "rest": "Rest",
+    "slot": "{name} — {minutes} min",
+    "start": "Start",
+    "confirm": "Start {program} today?",
+    "confirmYes": "Yes, start",
+    "cancel": "Cancel",
+    "pending": "Starting…",
+    "timezone": "Time zone: {zone}",
+    "timezoneChange": "change",
+    "timezoneLabel": "Time zone",
+    "almaty": "Almaty",
+    "today": "Today",
+    "dayOf": "Day {day} of {total}",
+    "errors": {
+      "unauthorized": "Sign in to start the program.",
+      "invalid_timezone": "Pick a time zone from the list.",
+      "not_found": "Program not found. Please reload the page.",
+      "server": "Could not start. Please try again."
+    }
   }
 }
