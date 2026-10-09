@@ -27,7 +27,7 @@ export const DAY_MARKERS: Record<DayState, string> = {
   upcoming: '',
 }
 
-/** What was logged on one program day (story 015 fills it; until then nothing is logged). */
+/** What was logged on one program day (from the slot logs, stories 014 and 015). */
 export type DayProgress = { done: boolean; minutes: number }
 
 export type TemplateDay = { slots: { minutes: number }[] }

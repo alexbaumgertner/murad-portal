@@ -79,6 +79,7 @@ export interface Config {
     'program-plan-items': ProgramPlanItem;
     enrollments: Enrollment;
     'student-assignments': StudentAssignment;
+    'slot-logs': SlotLog;
     'auth-codes': AuthCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -103,6 +104,7 @@ export interface Config {
     'program-plan-items': ProgramPlanItemsSelect<false> | ProgramPlanItemsSelect<true>;
     enrollments: EnrollmentsSelect<false> | EnrollmentsSelect<true>;
     'student-assignments': StudentAssignmentsSelect<false> | StudentAssignmentsSelect<true>;
+    'slot-logs': SlotLogsSelect<false> | SlotLogsSelect<true>;
     'auth-codes': AuthCodesSelect<false> | AuthCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -532,6 +534,30 @@ export interface StudentAssignment {
   createdAt: string;
 }
 /**
+ * Минуты ученика по слотам. Заполняется таймером ученика; здесь — для разбора.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "slot-logs".
+ */
+export interface SlotLog {
+  id: number;
+  enrollment: number | Enrollment;
+  date: string;
+  slotIndex: number;
+  /**
+   * Тип слота на момент записи (снимок).
+   */
+  slotType: number | SlotType;
+  minutes: number;
+  completed: boolean;
+  /**
+   * Пока таймер идёт. Пусто — таймер остановлен.
+   */
+  timerStartedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth-codes".
  */
@@ -618,6 +644,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'student-assignments';
         value: number | StudentAssignment;
+      } | null)
+    | ({
+        relationTo: 'slot-logs';
+        value: number | SlotLog;
       } | null)
     | ({
         relationTo: 'auth-codes';
@@ -895,6 +925,21 @@ export interface StudentAssignmentsSelect<T extends boolean = true> {
         en?: T;
       };
   editedByOwner?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "slot-logs_select".
+ */
+export interface SlotLogsSelect<T extends boolean = true> {
+  enrollment?: T;
+  date?: T;
+  slotIndex?: T;
+  slotType?: T;
+  minutes?: T;
+  completed?: T;
+  timerStartedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
