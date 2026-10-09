@@ -13,6 +13,8 @@ to "I actually hear and recognize familiar words in live speech" — and where M
 - **Learner** — Russian-speaking, learns English (often for IELTS / TOEFL / Cambridge), comes from Murad's YouTube
   channel. Anonymous by default; uses the site on a phone.
 - **Murad (owner)** — signs in to `/admin` with the email code. Writes content, logs his challenge days.
+- **Student** — Murad's student; accounts are invite-only (аккаунты учеников — только по приглашению, D-SP-1):
+  Murad invites her from `/admin`, she signs in on `/login` with an email code and studies on `/study`. No admin access.
 - **Visitor** — anyone watching the public challenge page, often from a link in a video or post.
 
 ## Core jobs to be done
@@ -23,24 +25,25 @@ to "I actually hear and recognize familiar words in live speech" — and where M
    what changes next time), and sees progress: minutes out of 8 100 (135 h), videos out of 6, sessions completed
    out of planned, countdown to the end. The page is public — accountability is part of the method.
 2. **Listening tools (Epic 2+, after a research spike):**
-   - *Phonetic Puzzle* — 10–20 real pronunciations of one word (different speakers, accents, speed, emotion), then
+   - _Phonetic Puzzle_ — 10–20 real pronunciations of one word (different speakers, accents, speed, emotion), then
      guess the word in fast or distorted speech.
-   - *3-Step Listening Player* — video + subtitles → word & grammar breakdown → audio playlist for background
+   - _3-Step Listening Player_ — video + subtitles → word & grammar breakdown → audio playlist for background
      re-listening, with listen counts and repetition reminders.
-   - *Level & Interest Matcher* — content picked by level + interests, split into scripted speech and live speech
+   - _Level & Interest Matcher_ — content picked by level + interests, split into scripted speech and live speech
      (podcasts, interviews, streams).
-   - *Active Listening Quizzer* — from any video, AI generates multiple choice, fill-in-the-blanks and dictation;
+   - _Active Listening Quizzer_ — from any video, AI generates multiple choice, fill-in-the-blanks and dictation;
      e.g. hide familiar words in the subtitles and check whether the learner hears them.
 
 ## What we deliberately don't do (for now)
 
-- Learner accounts, payments, courses, comments.
+- Public sign-up or self-learner accounts (student accounts are invite-only), payments, a public course catalog,
+  public comments (student day comments are private: student + owner, D-SP-1).
 - A general-purpose habit tracker: the tracker is built for one challenge format (90 × 90 × N videos).
 - Hosting video: we embed YouTube.
 
 ## Voice & copy
 
-- Russian first (audience), English second. Address the reader as «ты»? — **open question for Murad**.
+- Russian first (audience), English second. Public pages address the reader as «ты». Students choose «ты» or «вы» for their own pages and emails on `/study/settings` (default «ты», D-SP-8); the copy for «вы» lives in `messages/ru-vy.json`.
 - Plain, warm, encouraging, no hype. Short sentences. Teacher talking to a student, not a startup landing page.
 
 ## Open questions

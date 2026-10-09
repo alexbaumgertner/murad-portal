@@ -41,7 +41,7 @@ describe('EmailCodeLogin', () => {
     loginAction.mockImplementation(async (_prev, formData) => ({
       step: 'email',
       email: String(formData.get('email')),
-      error: 'Enter a valid email address.',
+      error: 'invalid_email',
     }))
     await render(<EmailCodeLogin />)
 

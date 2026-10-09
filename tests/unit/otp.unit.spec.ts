@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   BAD_CODE,
   BAD_EMAIL,
+  CODE_EXPIRED,
   CODE_RETENTION_MS,
   CODE_TTL_MS,
   MAIL_BROKEN,
@@ -88,6 +89,18 @@ function setup() {
   }
   return { deps, rows, sent, advance: (ms: number) => (t += ms) }
 }
+
+describe('error codes (story 011)', () => {
+  it('are codes for the UI to translate, not sentences', () => {
+    expect([BAD_EMAIL, TOO_MANY, MAIL_BROKEN, BAD_CODE, CODE_EXPIRED]).toEqual([
+      'invalid_email',
+      'rate_limited',
+      'mail_failed',
+      'wrong_code',
+      'code_expired',
+    ])
+  })
+})
 
 describe('requestCode', () => {
   it('emails a code to a known user and stores only its hash', async () => {
@@ -182,7 +195,7 @@ describe('verifyCode', () => {
     expect(await verifyCode('admin@example.com', '100 000', deps)).toEqual({ ok: true, userId: 7 })
     expect(await verifyCode('admin@example.com', '100000', deps)).toEqual({
       ok: false,
-      error: BAD_CODE,
+      error: CODE_EXPIRED,
     })
   })
 
@@ -200,7 +213,7 @@ describe('verifyCode', () => {
     advance(CODE_TTL_MS + 1)
     expect(await verifyCode('admin@example.com', '100000', deps)).toEqual({
       ok: false,
-      error: BAD_CODE,
+      error: CODE_EXPIRED,
     })
   })
 
@@ -208,13 +221,19 @@ describe('verifyCode', () => {
     const { deps } = setup()
     await requestCode('admin@example.com', '1.1.1.1', deps)
     for (let i = 0; i < 4; i += 1) {
-      expect((await verifyCode('admin@example.com', '999999', deps)).ok).toBe(false)
+      expect(await verifyCode('admin@example.com', '999999', deps)).toEqual({
+        ok: false,
+        error: BAD_CODE,
+      })
     }
     expect(await verifyCode('admin@example.com', '999999', deps)).toEqual({
       ok: false,
-      error: TOO_MANY,
+      error: CODE_EXPIRED,
     })
-    expect((await verifyCode('admin@example.com', '100000', deps)).ok).toBe(false)
+    expect(await verifyCode('admin@example.com', '100000', deps)).toEqual({
+      ok: false,
+      error: CODE_EXPIRED,
+    })
   })
 
   it('never signs in an unknown address, even with the stored code', async () => {

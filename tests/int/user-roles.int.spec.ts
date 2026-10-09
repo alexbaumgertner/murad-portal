@@ -194,6 +194,7 @@ describe('user roles (story 011a)', () => {
     })
 
     it('cannot promote herself or change her invitedAt (the fields are ignored)', async () => {
+      const before = await payload.findByID({ collection: 'users', id: anna.id })
       const result = await payload.update({
         collection: 'users',
         id: anna.id,
@@ -202,7 +203,9 @@ describe('user roles (story 011a)', () => {
         user: anna,
       })
       expect(result.role).toBe('student')
-      expect(result.invitedAt).toBeNull()
+      // Stamped when she was created (011b invite), and not hers to change.
+      expect(result.invitedAt).toBe(before.invitedAt)
+      expect(result.invitedAt).not.toBe('2020-01-01T00:00:00.000Z')
       const after = await payload.findByID({ collection: 'users', id: anna.id })
       expect(after.role).toBe('student')
     })
