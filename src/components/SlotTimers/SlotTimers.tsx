@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { ManualMark } from '@/components/ManualMark/ManualMark'
 import { startTimerAction, stopTimerAction, syncTimerAction } from '@/features/slot-timer/actions'
 import type { TimerActionState, TimerError } from '@/features/slot-timer/schema'
 import { MAX_TIMER_MINUTES, type TimerState } from '@/features/slot-timer/shape'
@@ -12,7 +13,12 @@ import styles from './SlotTimers.module.css'
 
 export type TimerSlot = { index: number; name: string; description: string | null; minutes: number }
 
-type Props = { slots: TimerSlot[]; initial: TimerState }
+type Props = {
+  slots: TimerSlot[]
+  initial: TimerState
+  /** Program day of today: «Отметить вручную» names it (story 015). */
+  programDay: number
+}
 
 const MINUTE = 60_000
 
@@ -52,7 +58,7 @@ function markPlayed(slot: number, startedAt: string): void {
  * anyway. At the minimum the browser plays a signal once; when the browser blocks audio (AC 9) a
  * visible banner stands in and «Проверить звук» is there to allow it.
  */
-export function SlotTimers({ slots, initial }: Props) {
+export function SlotTimers({ slots, initial, programDay }: Props) {
   const t = useTranslations('StudyTimer')
   const [state, setState] = useState<TimerState>(initial)
   const [now, setNow] = useState(() => Date.parse(initial.serverNow))
@@ -221,6 +227,13 @@ export function SlotTimers({ slots, initial }: Props) {
                   </button>
                 )}
               </div>
+              <ManualMark
+                programDay={programDay}
+                slotIndex={slot.index}
+                slotName={slot.name}
+                minutes={saved}
+                onSaved={(next) => apply({ status: 'success', state: next })}
+              />
             </li>
           )
         })}
