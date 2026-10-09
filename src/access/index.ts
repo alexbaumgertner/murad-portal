@@ -1,4 +1,4 @@
-import type { Access, TypedUser } from 'payload'
+import type { Access, AccessResult, TypedUser } from 'payload'
 
 export const anyone: Access = () => true
 
@@ -22,3 +22,15 @@ export const publicChallengeOrOwner =
     if (isOwner(req.user)) return true
     return { [path]: { equals: true } }
   }
+
+// Signed-in users (owner and students) only; anonymous visitors are refused with 403.
+export const authenticated: Access = ({ req }) => Boolean(req.user)
+
+// Study programs: the owner reads everything, a signed-in student only published programs, and an
+// anonymous caller nothing. A query that matches no row (not `false`) keeps list calls empty
+// instead of failing with 403.
+export const publishedForStudentsOrOwner: Access = ({ req }): AccessResult => {
+  if (isOwner(req.user)) return true
+  if (req.user) return { status: { equals: 'published' } }
+  return { id: { exists: false } }
+}

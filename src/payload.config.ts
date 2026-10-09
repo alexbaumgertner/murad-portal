@@ -13,6 +13,8 @@ import { ChallengeDays } from './collections/ChallengeDays'
 import { Challenges } from './collections/Challenges'
 import { ChangelogEntries } from './collections/ChangelogEntries'
 import { Media } from './collections/Media'
+import { Programs } from './collections/Programs'
+import { SlotTypes } from './collections/SlotTypes'
 import { Users } from './collections/Users'
 import { WaitlistSignups } from './collections/WaitlistSignups'
 import { siteConfig } from './config/site'
@@ -41,6 +43,8 @@ export default buildConfig({
     WaitlistSignups,
     Challenges,
     ChallengeDays,
+    SlotTypes,
+    Programs,
     AuthCodes,
   ],
   // Content locales (the admin UI itself stays English). Missing translations fall back to English.
