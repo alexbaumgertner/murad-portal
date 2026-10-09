@@ -2,6 +2,8 @@ import 'server-only'
 
 import { z } from 'zod'
 
+import { MINUTES_BUCKETS } from '@/features/slot-timer/shape'
+
 /**
  * Provider-agnostic product analytics for server code (Server Actions).
  *
@@ -37,6 +39,12 @@ export const analyticsEvents = {
     levelFrom: cefr,
     levelTo: cefr,
     daysFromAssignToStart: z.number().int().min(0),
+  }),
+  // Story 014. A slot type is a catalog entry, not a person; minutes are bucketed, never exact.
+  slot_completed: z.strictObject({
+    slotTypeId: z.number().int().min(1),
+    minutesBucket: z.enum(MINUTES_BUCKETS),
+    viaTimer: z.boolean(),
   }),
 } satisfies Record<string, z.ZodType<Record<string, string | number | boolean>>>
 

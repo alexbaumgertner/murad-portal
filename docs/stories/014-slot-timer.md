@@ -1,7 +1,7 @@
 ---
 id: 014
 title: Slot timer that plays a sound when the minimum is reached
-status: approved
+status: done
 ---
 
 # 014 — Slot timer with a sound at the minimum
@@ -35,3 +35,34 @@ status: approved
 
 ## Notes
 - Depends on 013. Migration required. D-SP-4, D-SP-7 (done only at the minimum). Sound file: short, self-hosted, ≤ 50 KB; new dependency only with justification.
+
+## Verification
+
+| #   | Test (file › name)                                                                                                                                                  | Layer   |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| 1   | `slot-timer.int.spec.ts` › 1. «Старт» saves timerStartedAt and the state carries the running timer                                                                  | int     |
+| 1   | `SlotTimers.browser.spec.tsx` › 1. «Старт» sends only the slot and shows a running mm:ss counter                                                                    | browser |
+| 1   | `slot-timer.e2e.spec.ts` › 1/3/4/10. start, a double tap, stop … (counter `25:xx`, kept on reload)                                                                  | e2e     |
+| 2   | `slot-timer.int.spec.ts` › 2. at the minimum the slot is completed once and the timer keeps running                                                                 | int     |
+| 2   | `SlotTimers.browser.spec.tsx` › 2. reaching the minimum plays the signal once, vibrates, and shows «Минимум выполнен ✓»                                              | browser |
+| 2   | `slot-timer-shape.unit.spec.ts` › 2. the minimum is reached when saved + elapsed hits it, not before                                                                | unit    |
+| 3   | `slot-timer.int.spec.ts` › 3/4. «Стоп» adds whole minutes … · 3. a stop after 30–59 seconds adds one minute, after 10 seconds none                                  | int     |
+| 3   | `slot-timer-shape.unit.spec.ts` › 3. whole minutes round down; at least 1 from 30 seconds                                                                           | unit    |
+| 4   | `slot-timer.int.spec.ts` › 3/4. … 25 of 40 stays not done and the next start continues                                                                              | int     |
+| 4   | `SlotTimers.browser.spec.tsx` › 4. a stop at 25 of 40 minutes shows «25 из 40 мин»                                                                                  | browser |
+| 4   | `slot-timer.e2e.spec.ts` › 1/3/4/10 … (a saved 25 of 40 is shown and continues from 25:00)                                                                          | e2e     |
+| 5   | `slot-timer.int.spec.ts` › 5. reopening later: the state is computed from timerStartedAt and completion is saved once                                               | int     |
+| 5   | `SlotTimers.browser.spec.tsx` › 5. reopened after the minimum passed while closed: counter is correct and sounds once                                               | browser |
+| 5   | `slot-timer.e2e.spec.ts` › 2/5/9. the minimum passed while closed … (30:xx, «✓», saved as completed, no second attempt on reload)                                   | e2e     |
+| 6   | `slot-timer.int.spec.ts` › 6. starting slot B stops and saves slot A first: one timer at a time                                                                     | int     |
+| 7   | `slot-timer.int.spec.ts` › 7. a timer over 240 minutes is stopped with 240 minutes added · a stop long after the cap also adds only 240 minutes                     | int     |
+| 7   | `slot-timer-shape.unit.spec.ts` › 7. a timer over 4 hours counts as exactly 240 minutes                                                                             | unit    |
+| 8   | `slot-timer.int.spec.ts` › 8. across midnight in the enrollment zone the minutes belong to the day it started · a timer still running after midnight is carried over | int     |
+| 8   | `SlotTimers.browser.spec.tsx` › a timer carried over from yesterday can be stopped                                                                                  | browser |
+| 9   | `SlotTimers.browser.spec.tsx` › 9. blocked audio falls back to a visible banner; «Проверить звук» retries                                                           | browser |
+| 9   | `slot-timer.e2e.spec.ts` › 2/5/9 … (locked audio → banner «Минимум выполнен», «Проверить звук» plays, no page errors)                                              | e2e     |
+| 10  | `SlotTimers.browser.spec.tsx` › 10. a double tap on «Старт» sends one request                                                                                       | browser |
+| 10  | `slot-timer.int.spec.ts` › 10. a double tap changes state once                                                                                                      | int     |
+| 11  | `slot-timer.int.spec.ts` › 11. a student cannot write logs through the API: other enrollment, future date or her own · 11. a student reads only her own logs         | int     |
+| —   | `slot-timer.int.spec.ts` › 013 progress: logs now drive the day states and totals · `slot-timer.e2e.spec.ts` › 10. 360 px … (partial day counts minutes, not done)  | int/e2e |
+| —   | `address-form.unit.spec.ts` › «вы» catalog (new namespace `StudyTimer` in `STUDENT_NAMESPACES`)                                                                      | unit    |

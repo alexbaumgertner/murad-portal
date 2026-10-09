@@ -3,6 +3,8 @@ import 'server-only'
 import type { Payload, TypedUser } from 'payload'
 
 import { programDay } from '@/features/enrollments/shape'
+import { getSlotLogs } from '@/features/slot-timer/queries'
+import type { LoggedSlot } from '@/features/slot-timer/shape'
 import { contentDefaultLocale } from '@/i18n/locales'
 import type { Enrollment, Program, SlotType } from '@/payload-types'
 
@@ -28,8 +30,10 @@ export type StudyOverview =
       today: number
       /** The 7 template days with their slots, the same for every week. */
       template: { slots: SlotView[] }[]
-      /** Logged days by program day; empty until marking arrives (story 015). */
+      /** Logged days by program day (story 014: from `slot-logs`). */
       progress: Map<number, DayProgress>
+      /** The logged slots of each program day: «25 из 40 мин» on a past day. */
+      logs: Map<number, LoggedSlot[]>
     }
 
 function templateOf(program: Program): { slots: SlotView[] }[] {
@@ -91,6 +95,14 @@ export async function getStudyOverview(
     status = 'finished'
   }
 
+  const template = templateOf(program)
+  const startDate = enrollment.startDate.slice(0, 10)
+  const { progress, byDay } = await getSlotLogs(payload, student, {
+    id: enrollment.id,
+    startDate,
+    template,
+  })
+
   return {
     kind: 'ready',
     status,
@@ -99,9 +111,10 @@ export async function getStudyOverview(
     levelTo: program.levelTo,
     durationWeeks: program.durationWeeks,
     totalDays: totalDaysOf(program.durationWeeks),
-    startDate: enrollment.startDate.slice(0, 10),
+    startDate,
     today,
-    template: templateOf(program),
-    progress: new Map(),
+    template,
+    progress,
+    logs: byDay,
   }
 }

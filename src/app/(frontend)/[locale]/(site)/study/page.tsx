@@ -5,11 +5,14 @@ import { createTranslator, hasLocale, NextIntlClientProvider } from 'next-intl'
 
 import { DayContent } from '@/components/DayContent/DayContent'
 import { DayGrid } from '@/components/DayGrid/DayGrid'
+import { SlotTimers } from '@/components/SlotTimers/SlotTimers'
 import { ProgramCard } from '@/components/ProgramCard/ProgramCard'
 import { StartProgram } from '@/components/StartProgram/StartProgram'
 import { logoutAction } from '@/features/auth/actions'
 import { currentStudent } from '@/features/auth/current-user'
 import { getStudyView } from '@/features/enrollments/queries'
+import { getTimerState } from '@/features/slot-timer/service'
+import { trackCompleted } from '@/features/slot-timer/track'
 import { getStudentWeek } from '@/features/student-plan/queries'
 import { getStudyOverview } from '@/features/study-today/queries'
 import {
@@ -63,6 +66,10 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
   const tt = createTranslator({ locale, messages, namespace: 'StudyToday' })
   const view = await getStudyView(payload, student, locale)
   // An assigned program shows the start card; otherwise a started (or just finished) one shows «Сегодня».
+  // A timer left running is settled first (4-hour cap, minimum reached while the tab was closed),
+  // so the numbers below already include it.
+  const timer = view.kind === 'assigned' ? null : await getTimerState(payload, student, new Date())
+  if (timer?.ok) await trackCompleted(timer.completedNow, true)
   const overview =
     view.kind === 'assigned'
       ? ({ kind: 'none' } as const)
@@ -201,6 +208,22 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
               locale={locale}
               addressForm={addressForm}
               restLabel={selected === ready.today ? 'restToday' : 'rest'}
+              logs={ready.logs.get(selected)}
+              timers={
+                selected === ready.today && timer?.ok && ready.status === 'active' ? (
+                  <NextIntlClientProvider
+                    locale={locale}
+                    messages={studentMessages(locale, addressForm)}
+                  >
+                    <SlotTimers
+                      slots={(ready.template[templateDayOf(selected) - 1]?.slots ?? []).map(
+                        (slot, index) => ({ ...slot, index }),
+                      )}
+                      initial={timer.state}
+                    />
+                  </NextIntlClientProvider>
+                ) : undefined
+              }
             />
           </section>
 
