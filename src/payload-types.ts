@@ -73,6 +73,8 @@ export interface Config {
     'waitlist-signups': WaitlistSignup;
     challenges: Challenge;
     'challenge-days': ChallengeDay;
+    'slot-types': SlotType;
+    programs: Program;
     'auth-codes': AuthCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -87,6 +89,8 @@ export interface Config {
     'waitlist-signups': WaitlistSignupsSelect<false> | WaitlistSignupsSelect<true>;
     challenges: ChallengesSelect<false> | ChallengesSelect<true>;
     'challenge-days': ChallengeDaysSelect<false> | ChallengeDaysSelect<true>;
+    'slot-types': SlotTypesSelect<false> | SlotTypesSelect<true>;
+    programs: ProgramsSelect<false> | ProgramsSelect<true>;
     'auth-codes': AuthCodesSelect<false> | AuthCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -316,6 +320,82 @@ export interface ChallengeDay {
   createdAt: string;
 }
 /**
+ * Kinds of daily activity (Anki, series …) that programs are built from.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "slot-types".
+ */
+export interface SlotType {
+  id: number;
+  name: string;
+  description?: string | null;
+  /**
+   * Minimum time for the slot to count as done, unless a program overrides it.
+   */
+  defaultMinMinutes: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "programs".
+ */
+export interface Program {
+  id: number;
+  title: string;
+  /**
+   * Lowercase letters, digits and hyphens, e.g. "a2-b1".
+   */
+  slug: string;
+  levelFrom: 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
+  levelTo: 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+  durationWeeks: number;
+  summary?: string | null;
+  /**
+   * Textbooks and resources for the program.
+   */
+  materials?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Exactly 7 days, repeated every week. Day 1 is the day the student starts.
+   */
+  weekTemplate: {
+    /**
+     * Up to 5 activities. Leave empty for a rest day.
+     */
+    slots?:
+      | {
+          slotType: number | SlotType;
+          /**
+           * Empty = the slot type's default minimum.
+           */
+          minMinutes?: number | null;
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  /**
+   * Students see only published programs.
+   */
+  status: 'draft' | 'published';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth-codes".
  */
@@ -378,6 +458,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'challenge-days';
         value: number | ChallengeDay;
+      } | null)
+    | ({
+        relationTo: 'slot-types';
+        value: number | SlotType;
+      } | null)
+    | ({
+        relationTo: 'programs';
+        value: number | Program;
       } | null)
     | ({
         relationTo: 'auth-codes';
@@ -532,6 +620,45 @@ export interface ChallengeDaysSelect<T extends boolean = true> {
   minutes?: T;
   notes?: T;
   closedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "slot-types_select".
+ */
+export interface SlotTypesSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  defaultMinMinutes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "programs_select".
+ */
+export interface ProgramsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  levelFrom?: T;
+  levelTo?: T;
+  durationWeeks?: T;
+  summary?: T;
+  materials?: T;
+  weekTemplate?:
+    | T
+    | {
+        slots?:
+          | T
+          | {
+              slotType?: T;
+              minMinutes?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { seedDemoChallenge } from './seed-challenge'
+import { seedDemoProgram } from './seed-programs'
 
 import { getPayload } from 'payload'
 
@@ -133,6 +134,7 @@ async function seed() {
   }
 
   await seedDemoChallenge(payload)
+  await seedDemoProgram(payload)
   payload.logger.info('Seed complete')
   await payload.destroy()
 }
