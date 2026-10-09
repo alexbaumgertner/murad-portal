@@ -223,7 +223,7 @@ export interface Enrollment {
   startDate?: string | null;
   timezone?: string | null;
   /**
-   * Паузы появятся в истории 017.
+   * Паузы ученика: первый день и последний день (пусто, пока пауза идёт). Ставит и снимает только ученик.
    */
   pauses?:
     | {

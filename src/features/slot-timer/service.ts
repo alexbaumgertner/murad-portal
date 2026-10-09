@@ -2,7 +2,14 @@ import 'server-only'
 
 import type { Payload, TypedUser } from 'payload'
 
-import { dateOnlyToISO, programDay, todayIn } from '@/features/enrollments/shape'
+import {
+  dateOnlyToISO,
+  isPausedOn,
+  programDay,
+  resolvePauses,
+  todayIn,
+  type PauseRange,
+} from '@/features/enrollments/shape'
 import { contentDefaultLocale } from '@/i18n/locales'
 import type { Enrollment, Program, SlotLog, SlotType } from '@/payload-types'
 import { dateOfDay, isOver, programDayOfDate, templateDayOf } from '@/features/study-today/shape'
@@ -40,6 +47,14 @@ type Context = {
   /** The 7 template days with their slots. */
   template: SlotDef[][]
 }
+
+/** The pauses of her enrollment as calendar ranges, an open one through today (story 017). */
+const pausesOf = (ctx: Context, now: Date): PauseRange[] =>
+  resolvePauses(ctx.enrollment.pauses, todayIn(ctx.timezone, now))
+
+/** Program day of today: paused days are not counted. */
+const dayOfToday = (ctx: Context, now: Date) =>
+  programDay(ctx.startDate, ctx.timezone, now, ctx.enrollment.pauses)
 
 const idOf = (value: number | { id: number }) => (typeof value === 'object' ? value.id : value)
 
@@ -92,14 +107,14 @@ async function loadContext(
   return null
 }
 
-/** Starting needs a running program; stopping and reading also work on a paused or just finished one. */
+/** Starting needs a running program (a paused one answers `paused`); stopping and reading also work on a paused or just finished one. */
 const forStart = (payload: Payload, student: TypedUser) =>
-  loadContext(payload, student, [['active']])
+  loadContext(payload, student, [['active', 'paused']])
 const forAny = (payload: Payload, student: TypedUser) =>
   loadContext(payload, student, [['active', 'paused'], ['finished']])
 
-const slotsOnDate = (ctx: Context, date: string) =>
-  ctx.template[templateDayOf(programDayOfDate(ctx.startDate, date)) - 1] ?? []
+const slotsOnDate = (ctx: Context, date: string, now: Date) =>
+  ctx.template[templateDayOf(programDayOfDate(ctx.startDate, date, pausesOf(ctx, now))) - 1] ?? []
 
 async function findRunning(payload: Payload, ctx: Context): Promise<SlotLog | undefined> {
   const { docs } = await payload.find({
@@ -132,7 +147,7 @@ async function settleRunning(
   const startedAt = log?.timerStartedAt
   if (!log || !startedAt) return []
   const date = log.date.slice(0, 10)
-  const minimum = slotsOnDate(ctx, date)[log.slotIndex]?.minutes ?? Infinity
+  const minimum = slotsOnDate(ctx, date, now)[log.slotIndex]?.minutes ?? Infinity
   const guard = { id: { equals: log.id }, timerStartedAt: { equals: startedAt } }
 
   if (stop || isExpired(startedAt, now)) {
@@ -165,9 +180,11 @@ async function settleRunning(
 
 async function buildState(payload: Payload, ctx: Context, now: Date): Promise<TimerState> {
   const today = todayIn(ctx.timezone, now)
-  const todayDay = programDay(ctx.startDate, ctx.timezone, now)
-  const open = !isOver(todayDay, ctx.durationWeeks) && todayDay >= 1
-  const slots = open ? slotsOnDate(ctx, today) : []
+  const todayDay = dayOfToday(ctx, now)
+  // No slots to run on a paused day (story 017, AC 7).
+  const open =
+    ctx.enrollment.status !== 'paused' && !isOver(todayDay, ctx.durationWeeks) && todayDay >= 1
+  const slots = open ? slotsOnDate(ctx, today, now) : []
 
   const { docs } = await payload.find({
     collection: 'slot-logs',
@@ -195,7 +212,8 @@ async function buildState(payload: Payload, ctx: Context, now: Date): Promise<Ti
     }),
     carried: carriedLog?.timerStartedAt
       ? {
-          name: slotsOnDate(ctx, carriedLog.date.slice(0, 10))[carriedLog.slotIndex]?.name ?? '',
+          name:
+            slotsOnDate(ctx, carriedLog.date.slice(0, 10), now)[carriedLog.slotIndex]?.name ?? '',
           startedAt: carriedLog.timerStartedAt,
         }
       : null,
@@ -230,12 +248,13 @@ export async function startTimer(
 ): Promise<TimerResult> {
   const ctx = await forStart(payload, student)
   if (!ctx) return { ok: false, error: 'no_program' }
-  const day = programDay(ctx.startDate, ctx.timezone, now)
+  if (ctx.enrollment.status === 'paused') return { ok: false, error: 'paused' }
+  const day = dayOfToday(ctx, now)
   if (isOver(day, ctx.durationWeeks)) return { ok: false, error: 'program_over' }
   const today = todayIn(ctx.timezone, now)
   const slot =
     Number.isInteger(slotIndex) && slotIndex >= 0 && slotIndex <= MAX_SLOT_INDEX
-      ? slotsOnDate(ctx, today)[slotIndex]
+      ? slotsOnDate(ctx, today, now)[slotIndex]
       : undefined
   if (!slot) return { ok: false, error: 'invalid_slot' }
 
@@ -328,7 +347,7 @@ export async function markSlot(
   const ctx = await forAny(payload, student)
   if (!ctx) return { ok: false, error: 'no_program' }
   if (ctx.enrollment.status === 'paused') return { ok: false, error: 'paused' }
-  const today = programDay(ctx.startDate, ctx.timezone, now)
+  const today = dayOfToday(ctx, now)
   if (ctx.enrollment.status === 'finished' || isOver(today, ctx.durationWeeks)) {
     return { ok: false, error: 'program_over' }
   }
@@ -337,10 +356,13 @@ export async function markSlot(
   if (!Number.isInteger(day) || day < 1 || day > today) return { ok: false, error: 'forbidden' }
   if (!Number.isInteger(minutes) || minutes < 0) return { ok: false, error: 'forbidden' }
   if (minutes > MAX_SLOT_MINUTES) return { ok: false, error: 'too_many_minutes' }
-  const date = dateOfDay(ctx.startDate, day)
+  const ranges = pausesOf(ctx, now)
+  const date = dateOfDay(ctx.startDate, day, ranges)
+  // A program day is never a paused calendar day; the check keeps it so if the mapping changes.
+  if (isPausedOn(ranges, date)) return { ok: false, error: 'paused' }
   const slot =
     Number.isInteger(slotIndex) && slotIndex >= 0 && slotIndex <= MAX_SLOT_INDEX
-      ? slotsOnDate(ctx, date)[slotIndex]
+      ? slotsOnDate(ctx, date, now)[slotIndex]
       : undefined
   if (!slot) return { ok: false, error: 'invalid_slot' }
 

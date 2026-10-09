@@ -2,7 +2,7 @@ import 'server-only'
 
 import type { Payload, TypedUser } from 'payload'
 
-import { dateOnlyToISO, todayIn } from '@/features/enrollments/shape'
+import { dateOnlyToISO, resolvePauses, todayIn } from '@/features/enrollments/shape'
 import { totalDaysOf } from '@/features/study-today/shape'
 import type { Enrollment, Program } from '@/payload-types'
 
@@ -15,7 +15,7 @@ import { checkDay, MAX_COMMENT_LENGTH } from './shape'
  * collection) — every call first derives the enrollment and checks the day.
  */
 
-export type SaveError = 'no_program' | 'future_day' | 'invalid_day' | 'too_long'
+export type SaveError = 'no_program' | 'future_day' | 'invalid_day' | 'paused_day' | 'too_long'
 export type SaveResult = { ok: true; saved: boolean } | { ok: false; error: SaveError }
 
 /** Her started program: the running one, else the one just finished (a past day stays commentable). */
@@ -52,11 +52,13 @@ export async function saveDayComment(
   if (!found) return { ok: false, error: 'no_program' }
   const { enrollment, program } = found
 
+  const today = todayIn(enrollment.timezone!, now)
   const day = checkDay({
     date: input.date,
     startDate: enrollment.startDate!.slice(0, 10),
-    today: todayIn(enrollment.timezone!, now),
+    today,
     totalDays: totalDaysOf(program.durationWeeks),
+    pauses: resolvePauses(enrollment.pauses, today),
   })
   if (day !== 'ok') return { ok: false, error: day }
 

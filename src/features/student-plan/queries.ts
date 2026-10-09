@@ -34,7 +34,7 @@ export async function getStudentWeek(
     sort: '-assignedAt',
     limit: 1,
     depth: 1,
-    select: { program: true, startDate: true, timezone: true },
+    select: { program: true, startDate: true, timezone: true, pauses: true },
     populate: { programs: { durationWeeks: true } },
     overrideAccess: false,
     user: student,
@@ -45,7 +45,12 @@ export async function getStudentWeek(
   const totalWeeks = enrollment.program.durationWeeks
   const currentWeek =
     enrollment.startDate && enrollment.timezone
-      ? Math.min(totalWeeks, weekOfDay(programDay(enrollment.startDate, enrollment.timezone)))
+      ? Math.min(
+          totalWeeks,
+          weekOfDay(
+            programDay(enrollment.startDate, enrollment.timezone, new Date(), enrollment.pauses),
+          ),
+        )
       : null
   const asked = week != null && Number.isInteger(week) ? week : (currentWeek ?? 1)
   const shown = Math.min(Math.max(asked, 1), totalWeeks)

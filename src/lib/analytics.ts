@@ -46,6 +46,9 @@ export const analyticsEvents = {
     minutesBucket: z.enum(MINUTES_BUCKETS),
     viaTimer: z.boolean(),
   }),
+  // Story 017. Only the program's slug: never an id, a date or a name.
+  program_paused: z.strictObject({ programSlug: slug }),
+  program_resumed: z.strictObject({ programSlug: slug }),
 } satisfies Record<string, z.ZodType<Record<string, string | number | boolean>>>
 
 export type AnalyticsEvent = keyof typeof analyticsEvents

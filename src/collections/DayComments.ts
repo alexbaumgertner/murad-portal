@@ -2,6 +2,7 @@ import type { Access, CollectionBeforeChangeHook, CollectionConfig, FieldHook } 
 
 import { isOwner, owner } from '@/access'
 import { MAX_COMMENT_LENGTH } from '@/features/day-comments/shape'
+import { DEFAULT_TIMEZONE, resolvePauses, todayIn } from '@/features/enrollments/shape'
 import { programDayOfDate } from '@/features/study-today/shape'
 import type { Enrollment } from '@/payload-types'
 
@@ -127,6 +128,7 @@ export const DayComments: CollectionConfig = {
             return programDayOfDate(
               enrollment.startDate.slice(0, 10),
               String(siblingData.date).slice(0, 10),
+              resolvePauses(enrollment.pauses, todayIn(enrollment.timezone ?? DEFAULT_TIMEZONE)),
             )
           },
         ],

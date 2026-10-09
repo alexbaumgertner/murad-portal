@@ -83,13 +83,26 @@ const startOwnOrOwner: Access = ({ req }) => {
   return false
 }
 
+/**
+ * «Пауза» / «Продолжить» (story 017) are written by `features/program-pause/service.ts`, which
+ * derives the enrollment from the signed-in student and sets this flag in the Local API `context`
+ * — a request over HTTP cannot set it. Even so the hook allows only the two transitions and
+ * nothing else: a student never writes `pauses` or `status` on her own (AC 4, access tests).
+ */
+const PAUSE_TRANSITIONS: Record<string, string> = { active: 'paused', paused: 'active' }
+const PAUSE_KEYS = new Set(['status', 'pauses'])
+
 /** What a student may send when she starts; anything else is refused with 403, not ignored. */
 const STUDENT_KEYS = new Set(['status', 'timezone', 'startDate'])
 
 // Runs on the raw input, before field access silently drops what the student may not write.
 const refuseForeignKeys: CollectionBeforeOperationHook = ({ args, operation, req }) => {
-  if (operation !== 'update' || !req.user || isOwner(req.user)) return args
   const data = (args as { data?: Record<string, unknown> }).data ?? {}
+  if (operation === 'update' && req.context.pauseTransition === true) {
+    if (Object.keys(data).some((key) => !PAUSE_KEYS.has(key))) throw new Forbidden(req.t)
+    return args
+  }
+  if (operation !== 'update' || !req.user || isOwner(req.user)) return args
   if (Object.keys(data).some((key) => !STUDENT_KEYS.has(key))) throw new Forbidden(req.t)
   return args
 }
@@ -122,6 +135,12 @@ const validateRules: CollectionBeforeValidateHook = async ({
 }) => {
   const incoming = (data ?? {}) as EnrollmentData
   const original = originalDoc as EnrollmentData | undefined
+
+  if (operation === 'update' && req.context.pauseTransition === true) {
+    // The raw keys were checked in `refuseForeignKeys`; Payload merges the rest of the document in.
+    if (PAUSE_TRANSITIONS[original?.status ?? ''] !== incoming.status) throw new Forbidden(req.t)
+    return incoming
+  }
 
   if (!isOwner(req.user) && req.user) {
     // Collection access already limits a student to her own, still assigned enrollment.
@@ -481,7 +500,11 @@ export const Enrollments: CollectionConfig = {
       name: 'pauses',
       type: 'array',
       access: { create: ownerOnly, update: ownerOnly },
-      admin: { readOnly: true, description: 'Паузы появятся в истории 017.' },
+      admin: {
+        readOnly: true,
+        description:
+          'Паузы ученика: первый день и последний день (пусто, пока пауза идёт). Ставит и снимает только ученик.',
+      },
       fields: [
         { name: 'from', type: 'date', required: true },
         { name: 'to', type: 'date' },

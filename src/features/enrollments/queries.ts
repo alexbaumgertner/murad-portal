@@ -93,7 +93,7 @@ export async function getStudyView(
   return {
     kind: 'active',
     program,
-    day: programDay(enrollment.startDate, enrollment.timezone),
+    day: programDay(enrollment.startDate, enrollment.timezone, new Date(), enrollment.pauses),
     totalDays: program.durationWeeks * 7,
   }
 }

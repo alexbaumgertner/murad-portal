@@ -2,7 +2,7 @@ import 'server-only'
 
 import type { Payload, TypedUser } from 'payload'
 
-import { programDay } from '@/features/enrollments/shape'
+import { programDay, resolvePauses, todayIn, type PauseRange } from '@/features/enrollments/shape'
 import { getSlotLogs } from '@/features/slot-timer/queries'
 import type { LoggedSlot } from '@/features/slot-timer/shape'
 import { contentDefaultLocale } from '@/i18n/locales'
@@ -28,6 +28,12 @@ export type StudyOverview =
       startDate: string
       /** Program day of today in the enrollment's zone; may exceed `totalDays`. */
       today: number
+      /** The pauses as calendar ranges; an open one lasts through `todayDate` (story 017). */
+      pauses: PauseRange[]
+      /** `YYYY-MM-DD` of today in the enrollment's zone. */
+      todayDate: string
+      /** First day of the pause she is in now; `null` when she is not paused. */
+      pausedSince: string | null
       /** The 7 template days with their slots, the same for every week. */
       template: { slots: SlotView[] }[]
       /** Logged days by program day (story 014: from `slot-logs`). */
@@ -87,10 +93,13 @@ export async function getStudyOverview(
   if (!enrollment.startDate || !enrollment.timezone) return { kind: 'none' }
 
   const program = enrollment.program
-  const today = programDay(enrollment.startDate, enrollment.timezone, now)
+  const today = programDay(enrollment.startDate, enrollment.timezone, now, enrollment.pauses)
+  const todayDate = todayIn(enrollment.timezone, now)
+  const pauses = resolvePauses(enrollment.pauses, todayDate)
   let status: 'active' | 'paused' | 'finished' = enrollment.status as
     'active' | 'paused' | 'finished'
-  if (status !== 'finished' && isOver(today, program.durationWeeks)) {
+  // `today` already leaves out the paused days; a paused enrollment is never closed here (story 017).
+  if (status === 'active' && isOver(today, program.durationWeeks)) {
     await finishEnrollment(payload, enrollment.id)
     status = 'finished'
   }
@@ -101,6 +110,7 @@ export async function getStudyOverview(
     id: enrollment.id,
     startDate,
     template,
+    pauses,
   })
 
   return {
@@ -113,6 +123,12 @@ export async function getStudyOverview(
     totalDays: totalDaysOf(program.durationWeeks),
     startDate,
     today,
+    pauses,
+    todayDate,
+    pausedSince:
+      status === 'paused'
+        ? (enrollment.pauses?.findLast((pause) => !pause.to)?.from.slice(0, 10) ?? null)
+        : null,
     template,
     progress,
     logs: byDay,

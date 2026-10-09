@@ -20,6 +20,7 @@ export type CommentError =
   | 'no_program'
   | 'future_day'
   | 'invalid_day'
+  | 'paused_day'
   | 'server'
 
 export type CommentActionState =

@@ -56,7 +56,9 @@ describe('StudySettings', () => {
 
     await page.getByRole('button', { name: 'Сохранить' }).click()
 
-    await expect.element(page.getByRole('alert')).toHaveTextContent('Войди, чтобы изменить настройки.')
+    await expect
+      .element(page.getByRole('alert'))
+      .toHaveTextContent('Войди, чтобы изменить настройки.')
   })
 
   test('is in English for an English student, «вы» or not', async () => {

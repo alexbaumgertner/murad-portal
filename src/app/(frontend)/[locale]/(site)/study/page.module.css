@@ -89,3 +89,12 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+
+/* «На паузе с …» and «Продолжить» (story 017): a bordered block, the dashed marker is in the grid too. */
+.paused {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px dashed var(--color-text-muted);
+  border-radius: var(--radius-sm);
+}
