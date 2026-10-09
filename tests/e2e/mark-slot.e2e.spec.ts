@@ -140,7 +140,7 @@ test.describe('Mark a slot manually (story 015)', () => {
       // 1/2. Anki 30 of 20 → done, the day is ½
       await page.getByRole('button', { name: `Отметить вручную: ${ankiName}` }).click()
       await page.getByLabel(`Минут: ${ankiName}`).fill('30')
-      await page.getByRole('button', { name: 'Сохранить' }).click()
+      await slot(ankiName).getByRole('button', { name: 'Сохранить' }).click()
       await expect(slot(ankiName).getByText('Минимум выполнен ✓')).toBeVisible()
       await expect(cell).toHaveAccessibleName(/День 10, .*: Выполнено частично/)
       expect(await logs(enrollment.id)).toMatchObject([
@@ -150,25 +150,25 @@ test.describe('Mark a slot manually (story 015)', () => {
       // 4. 601 is refused in the form, nothing changes
       await page.getByRole('button', { name: `Отметить вручную: ${seriesName}` }).click()
       await page.getByLabel(`Минут: ${seriesName}`).fill('601')
-      await page.getByRole('button', { name: 'Сохранить' }).click()
+      await slot(seriesName).getByRole('button', { name: 'Сохранить' }).click()
       await expect(page.getByRole('alert').filter({ hasText: 'Не больше 600 минут' })).toBeVisible()
       expect(await logs(enrollment.id)).toHaveLength(1)
 
       // 2. Series 25 of 40 → still not done (D-SP-7); 40 → the day is ✓
       await page.getByLabel(`Минут: ${seriesName}`).fill('25')
-      await page.getByRole('button', { name: 'Сохранить' }).click()
+      await slot(seriesName).getByRole('button', { name: 'Сохранить' }).click()
       await expect(slot(seriesName).getByText('25 из 40 мин')).toBeVisible()
       await expect(cell).toHaveAccessibleName(/День 10, .*: Выполнено частично/)
       await page.getByRole('button', { name: `Отметить вручную: ${seriesName}` }).click()
       await page.getByLabel(`Минут: ${seriesName}`).fill('40')
-      await page.getByRole('button', { name: 'Сохранить' }).click()
+      await slot(seriesName).getByRole('button', { name: 'Сохранить' }).click()
       await expect(cell).toHaveAccessibleName(/День 10, .*: Выполнено$/)
 
       // 3. marking again updated the same record; 0 resets the slot and the day goes back to ½
       expect(await logs(enrollment.id)).toHaveLength(2)
       await page.getByRole('button', { name: `Отметить вручную: ${seriesName}` }).click()
       await page.getByLabel(`Минут: ${seriesName}`).fill('0')
-      await page.getByRole('button', { name: 'Сохранить' }).click()
+      await slot(seriesName).getByRole('button', { name: 'Сохранить' }).click()
       await expect(cell).toHaveAccessibleName(/День 10, .*: Выполнено частично/)
       expect(await logs(enrollment.id)).toMatchObject([
         { slotIndex: 0, minutes: 30, completed: true },
@@ -191,6 +191,7 @@ test.describe('Mark a slot manually (story 015)', () => {
       const { enrollment } = await enrollAtDay11(email, program.id)
       const payload = await getPayload({ config })
       await studentSignsIn(page, email)
+      const slot = (name: string) => page.getByRole('listitem').filter({ hasText: name })
 
       // Day 17 is next week, not in the grid; a hand-made ?day=14 (a rest day ahead) has no slots.
       await page.goto('/study?day=14')
@@ -218,7 +219,7 @@ test.describe('Mark a slot manually (story 015)', () => {
       await expect(page.getByRole('timer').first()).toBeVisible()
       await page.getByRole('button', { name: `Отметить вручную: Anki ${suffix}` }).click()
       await page.getByLabel(`Минут: Anki ${suffix}`).fill('15')
-      await page.getByRole('button', { name: 'Сохранить' }).click()
+      await slot(`Anki ${suffix}`).getByRole('button', { name: 'Сохранить' }).click()
       await expect(page.getByText('15 из 20 мин')).toBeVisible()
       await expect(page.getByRole('timer')).toHaveCount(0)
       expect(await logs(enrollment.id)).toMatchObject([
