@@ -152,10 +152,7 @@ export async function logoutAction(): Promise<void> {
  * Owner-only: lets a user who ran into the login limits (3 codes per 15 minutes, 5 wrong attempts)
  * request a fresh code right away. Takes the user id, never an email, so only a real account is touched.
  */
-export async function unblockLoginAction(
-  userId: string | number,
-  _prev: UnblockState,
-): Promise<UnblockState> {
+export async function unblockLoginAction(userId: string | number): Promise<UnblockState> {
   return monitorAction('unblockLoginAction', async () => {
     const payload = await getPayloadClient()
     const owner = await currentAdmin(payload, await headers())

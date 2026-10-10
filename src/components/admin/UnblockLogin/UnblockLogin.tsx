@@ -1,10 +1,10 @@
 'use client'
 
 import { useDocumentInfo } from '@payloadcms/ui'
-import { useActionState } from 'react'
+import { useState, useTransition } from 'react'
 
 import { unblockLoginAction } from '@/features/auth/actions'
-import { initialUnblockState, type UnblockError } from '@/features/auth/schema'
+import { initialUnblockState, type UnblockError, type UnblockState } from '@/features/auth/schema'
 
 import styles from './UnblockLogin.module.css'
 
@@ -22,24 +22,26 @@ const errorMessages: Record<UnblockError, string> = {
  */
 export function UnblockLogin() {
   const { id } = useDocumentInfo()
-  const [state, formAction, isPending] = useActionState(
-    unblockLoginAction.bind(null, id ?? ''),
-    initialUnblockState,
-  )
+  const [state, setState] = useState<UnblockState>(initialUnblockState)
+  const [isPending, startTransition] = useTransition()
 
   if (!id) return null
 
   return (
     <div className={styles.panel}>
-      <form action={formAction}>
-        <button
-          type="submit"
-          className="btn btn--style-secondary btn--size-medium"
-          disabled={isPending}
-        >
-          {isPending ? 'Resetting…' : 'Reset login limits'}
-        </button>
-      </form>
+      {/* A plain button: this field sits inside Payload's own <form>, and forms cannot nest. */}
+      <button
+        type="button"
+        className="btn btn--style-secondary btn--size-medium"
+        disabled={isPending}
+        onClick={() =>
+          startTransition(async () => {
+            setState(await unblockLoginAction(id))
+          })
+        }
+      >
+        {isPending ? 'Resetting…' : 'Reset login limits'}
+      </button>
       <p className={styles.hint}>
         Use when the user cannot sign in: too many codes requested or too many wrong attempts. They
         can ask for a new code right away.
