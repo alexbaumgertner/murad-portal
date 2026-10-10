@@ -107,6 +107,15 @@ export const Users: CollectionConfig = {
       },
       access: { create: ownerOnly, update: ownerOnly },
     },
+    {
+      // Lifts the login limits (codes per window, burned attempts): see features/auth/actions.
+      name: 'unblockLogin',
+      type: 'ui',
+      admin: {
+        condition: (data) => Boolean(data?.id),
+        components: { Field: '/components/admin/UnblockLogin/UnblockLogin#UnblockLogin' },
+      },
+    },
     { name: 'name', type: 'text', maxLength: 80 },
     {
       name: 'invitedAt',

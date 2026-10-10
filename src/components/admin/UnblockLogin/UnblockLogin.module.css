@@ -1,0 +1,29 @@
+/* Rendered inside the Payload admin: uses Payload's theme variables, not the site tokens. */
+.panel {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.panel :global(.btn) {
+  margin: 0;
+}
+
+.hint,
+.error,
+.success {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.hint {
+  color: var(--theme-elevation-600);
+}
+
+.error {
+  color: var(--theme-error-500);
+}
+
+.success {
+  color: var(--theme-success-500);
+}

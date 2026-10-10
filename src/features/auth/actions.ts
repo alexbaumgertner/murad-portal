@@ -20,7 +20,8 @@ import type { CodeEmailStyle } from './code-email'
 import { loginCodeSender } from './email'
 import { requestCode, verifyCode, type OtpDeps } from './otp'
 import { safeRedirect } from './redirect'
-import type { LoginState } from './schema'
+import { currentAdmin } from './current-user'
+import type { LoginState, UnblockState } from './schema'
 import {
   issueToken,
   SESSION_COOKIE,
@@ -28,7 +29,7 @@ import {
   sessionCookieOptions,
   STUDENT_SESSION_TTL_SECONDS,
 } from './session'
-import { payloadOtpStore } from './store'
+import { clearLoginCodes, payloadOtpStore } from './store'
 
 /**
  * How the code email speaks. Only called after the address belongs to a user, so it leaks nothing.
@@ -144,5 +145,34 @@ async function handleLogin(prev: LoginState, formData: FormData): Promise<LoginS
 export async function logoutAction(): Promise<void> {
   return monitorAction('logoutAction', async () => {
     ;(await cookies()).set(SESSION_COOKIE, '', sessionCookieOptions(0))
+  })
+}
+
+/**
+ * Owner-only: lets a user who ran into the login limits (3 codes per 15 minutes, 5 wrong attempts)
+ * request a fresh code right away. Takes the user id, never an email, so only a real account is touched.
+ */
+export async function unblockLoginAction(
+  userId: string | number,
+  _prev: UnblockState,
+): Promise<UnblockState> {
+  return monitorAction('unblockLoginAction', async () => {
+    const payload = await getPayloadClient()
+    if (!(await currentAdmin(payload, await headers()))) {
+      return { status: 'error', error: 'forbidden' }
+    }
+
+    const user = await payload
+      .findByID({ collection: 'users', id: userId, depth: 0, overrideAccess: true })
+      .catch(() => null)
+    if (!user) return { status: 'error', error: 'not_found' }
+
+    try {
+      return { status: 'success', cleared: await clearLoginCodes(payload, user.email) }
+    } catch (error) {
+      console.error('[auth] unblocking login failed', error)
+      await captureServerError(error, 'auth-unblock')
+      return { status: 'error', error: 'server' }
+    }
   })
 }

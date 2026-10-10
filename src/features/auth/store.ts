@@ -89,3 +89,17 @@ export function payloadOtpStore(payload: Payload): OtpStore {
     },
   }
 }
+
+/**
+ * Forgets every login code of one address, which resets its "3 codes per 15 minutes" limit and any
+ * burned attempts. The owner's way to let a student back in without waiting out the window.
+ * Returns how many rows went away.
+ */
+export async function clearLoginCodes(payload: Payload, email: string): Promise<number> {
+  const { docs } = await payload.delete({
+    collection: 'auth-codes',
+    where: { email: { equals: email } },
+    ...internal,
+  })
+  return docs.length
+}

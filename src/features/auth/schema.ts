@@ -25,3 +25,12 @@ export type LoginState =
   | { step: 'done'; redirectTo: string }
 
 export const initialLoginState: LoginState = { step: 'email' }
+
+export type UnblockError = 'forbidden' | 'not_found' | 'server'
+
+export type UnblockState =
+  | { status: 'idle' }
+  | { status: 'success'; cleared: number }
+  | { status: 'error'; error: UnblockError }
+
+export const initialUnblockState: UnblockState = { status: 'idle' }

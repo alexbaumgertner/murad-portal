@@ -4,7 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { requestCode, verifyCode, type OtpDeps } from '@/features/auth/otp'
 import { issueToken, SESSION_COOKIE } from '@/features/auth/session'
-import { payloadOtpStore } from '@/features/auth/store'
+import { clearLoginCodes, payloadOtpStore } from '@/features/auth/store'
 
 let payload: Payload
 let deps: OtpDeps
@@ -102,5 +102,14 @@ describe('email-code auth against Postgres', () => {
       headers: new Headers({ cookie: `${SESSION_COOKIE}=${docs[0]!.id}.9999999999.forged` }),
     })
     expect(forged.user).toBeNull()
+  })
+
+  it('lets the owner lift the limits: clearing codes frees a rate-limited address', async () => {
+    for (let i = 0; i < 3; i++) await requestCode(USER_EMAIL, `198.51.100.${10 + i}`, deps)
+    const limited = await requestCode(USER_EMAIL, '198.51.100.20', deps)
+    expect(limited).toEqual({ ok: false, error: 'rate_limited' })
+
+    expect(await clearLoginCodes(payload, USER_EMAIL)).toBe(3)
+    expect((await requestCode(USER_EMAIL, '198.51.100.20', deps)).ok).toBe(true)
   })
 })
