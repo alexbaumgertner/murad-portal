@@ -128,7 +128,12 @@
       "section": "Exam section",
       "score": "Example score",
       "overall": "Overall",
-      "tableCaption": "* Format matches real student certificates. Numbers shown are illustrative."
+      "tableCaption": "* Format matches real student certificates. Numbers shown are illustrative.",
+      "sections": {
+        "readingWriting": "Reading & Writing",
+        "listening": "Listening",
+        "speaking": "Speaking"
+      }
     },
     "benefits": {
       "label": "Outcome",

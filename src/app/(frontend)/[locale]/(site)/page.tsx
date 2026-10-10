@@ -33,9 +33,9 @@ const RESOURCES = [
   { key: 'extra', confirm: 'confirmList' },
 ] as const
 const SCORES = [
-  { section: 'Reading & Writing', score: '133/150*' },
-  { section: 'Listening', score: '128/150*' },
-  { section: 'Speaking', score: '141/150*' },
+  { key: 'readingWriting', score: '133/150*' },
+  { key: 'listening', score: '128/150*' },
+  { key: 'speaking', score: '141/150*' },
 ] as const
 const EVERYDAY = ['news', 'health', 'culture'] as const
 const ABROAD_EXAMS = [
@@ -320,9 +320,9 @@ export default async function HomePage({ params }: PageProps) {
                 </tr>
               </thead>
               <tbody>
-                {SCORES.map(({ section, score }) => (
-                  <tr key={section}>
-                    <td>{section}</td>
+                {SCORES.map(({ key, score }) => (
+                  <tr key={key}>
+                    <td>{t(`proof.sections.${key}`)}</td>
                     <td>{score}</td>
                   </tr>
                 ))}
