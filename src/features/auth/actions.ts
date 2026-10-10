@@ -21,7 +21,7 @@ import { loginCodeSender } from './email'
 import { requestCode, verifyCode, type OtpDeps } from './otp'
 import { safeRedirect } from './redirect'
 import { currentAdmin } from './current-user'
-import type { LoginState, UnblockState } from './schema'
+import { unblockInputSchema, type LoginState, type UnblockState } from './schema'
 import {
   issueToken,
   SESSION_COOKIE,
@@ -158,12 +158,21 @@ export async function unblockLoginAction(
 ): Promise<UnblockState> {
   return monitorAction('unblockLoginAction', async () => {
     const payload = await getPayloadClient()
-    if (!(await currentAdmin(payload, await headers()))) {
-      return { status: 'error', error: 'forbidden' }
-    }
+    const owner = await currentAdmin(payload, await headers())
+    if (!owner) return { status: 'error', error: 'forbidden' }
 
+    const parsed = unblockInputSchema.safeParse({ userId })
+    if (!parsed.success) return { status: 'error', error: 'invalid_input' }
+
+    // Read as the owner, not around access control; only the auth-codes cleanup is internal.
     const user = await payload
-      .findByID({ collection: 'users', id: userId, depth: 0, overrideAccess: true })
+      .findByID({
+        collection: 'users',
+        id: parsed.data.userId,
+        depth: 0,
+        user: owner,
+        overrideAccess: false,
+      })
       .catch(() => null)
     if (!user) return { status: 'error', error: 'not_found' }
 

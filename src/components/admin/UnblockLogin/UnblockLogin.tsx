@@ -11,6 +11,7 @@ import styles from './UnblockLogin.module.css'
 // The admin UI is English-only, so its copy stays here rather than in messages/*.
 const errorMessages: Record<UnblockError, string> = {
   forbidden: 'Only the owner can do this.',
+  invalid_input: 'Invalid user.',
   not_found: 'This user no longer exists.',
   server: 'Could not reset the login limits. Try again later.',
 }
