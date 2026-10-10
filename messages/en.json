@@ -13,8 +13,7 @@
     "materials": "Materials",
     "exams": "Exams",
     "faq": "FAQ",
-    "signIn": "Sign in",
-    "contact": "Message"
+    "signIn": "Sign in"
   },
   "LocaleSwitcher": {
     "label": "Language",
@@ -35,7 +34,8 @@
       "a2b2": "A2 to B2",
       "b1c1": "B1 to C1",
       "illustrationAlt": "An open door leading to a globe and a world of opportunity: study, career, culture, science and technology",
-      "photo": "Murad's photo"
+      "photo": "Murad's photo",
+      "eyebrow": "English with Murad"
     },
     "about": {
       "title": "About me",

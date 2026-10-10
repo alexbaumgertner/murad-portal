@@ -65,27 +65,9 @@
   background: var(--color-surface-muted);
 }
 
-.cta {
-  display: inline-block;
-  margin-left: 0.5rem;
-  padding: 0.5rem 1.125rem;
-  border-radius: 999px;
-  background: var(--color-button);
-  color: #fff;
-  font-size: 0.9063rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background-color 150ms ease;
-}
-
-.cta:hover {
-  background: var(--color-button-hover);
-}
-
-/* In-page anchors need the room on desktop only; the CTA already sits in the hero. */
+/* In-page anchors need the room on desktop only. */
 @media (max-width: 860px) {
-  .section,
-  .cta {
+  .section {
     display: none;
   }
 }

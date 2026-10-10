@@ -72,35 +72,32 @@ export default async function HomePage({ params }: PageProps) {
   return (
     <div className={styles.landing}>
       <section className={`${styles.section} ${styles.hero}`}>
-        <div className={`${styles.wrap} ${styles.heroGrid}`}>
-          <div>
-            <h1 className={styles.heroTitle}>{t('hero.title')}</h1>
-            <p className={`${styles.heroLead} ${styles.measure}`}>{t('hero.lead')}</p>
-            <div className={styles.heroActions}>
-              {telegram(`${styles.btnCta} ${styles.btnLarge}`)}
-            </div>
-            <div className={styles.heroStat}>
-              <p className={styles.heroStatNum}>54</p>
-              <p className={styles.heroStatLabel}>{t('hero.statLabel')}</p>
-              <ul className={styles.breakdown}>
-                {BREAKDOWN.map(({ key, count }) => (
-                  <li key={key}>
-                    <span>{t(`hero.${key}`)}</span>
-                    <b>{count}</b>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <div className={`${styles.wrap} ${styles.heroInner}`}>
+          <p className={styles.eyebrow}>{t('hero.eyebrow')}</p>
+          <h1 className={styles.heroTitle}>{t('hero.title')}</h1>
+          <p className={styles.heroLead}>{t('hero.lead')}</p>
+          <div className={styles.heroActions}>
+            {telegram(`${styles.btnCta} ${styles.btnLarge}`)}
           </div>
-          <div className={styles.heroVisual}>
-            <Image
-              src={heroWorld}
-              alt={t('hero.illustrationAlt')}
-              className={styles.heroImage}
-              sizes="(max-width: 860px) 100vw, 560px"
-              priority
-            />
+          <div className={styles.heroStat}>
+            <p className={styles.heroStatNum}>54</p>
+            <p className={styles.heroStatLabel}>{t('hero.statLabel')}</p>
+            <ul className={styles.breakdown}>
+              {BREAKDOWN.map(({ key, count }) => (
+                <li key={key}>
+                  <span>{t(`hero.${key}`)}</span>
+                  <b>{count}</b>
+                </li>
+              ))}
+            </ul>
           </div>
+          <Image
+            src={heroWorld}
+            alt={t('hero.illustrationAlt')}
+            className={styles.heroImage}
+            sizes="(max-width: 960px) 100vw, 896px"
+            priority
+          />
         </div>
       </section>
 

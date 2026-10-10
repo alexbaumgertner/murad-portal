@@ -45,9 +45,6 @@ export function SiteHeader() {
             </li>
           </ul>
           <LocaleSwitcher />
-          <a href={siteConfig.telegramUrl} target="_blank" rel="noopener" className={styles.cta}>
-            {t('contact')}
-          </a>
         </nav>
       </div>
     </header>
