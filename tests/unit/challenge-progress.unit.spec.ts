@@ -215,6 +215,15 @@ describe('checkChallengeShape', () => {
     )
   })
 
+  it('says how many videos to add or remove', () => {
+    expect(checkChallengeShape({ durationDays: 90, blockDays: 15, videosCount: 1 })).toMatch(
+      /Add 5 more/,
+    )
+    expect(checkChallengeShape({ durationDays: 90, blockDays: 15, videosCount: 8 })).toMatch(
+      /Remove 2/,
+    )
+  })
+
   it('rejects non-positive or non-integer values', () => {
     expect(checkChallengeShape({ durationDays: 90, blockDays: 0, videosCount: 0 })).not.toBeNull()
     expect(

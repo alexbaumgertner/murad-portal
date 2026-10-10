@@ -37,7 +37,9 @@ export function checkChallengeShape({
   }
   const expected = durationDays / blockDays
   if (videosCount !== expected) {
-    return `A ${durationDays}-day challenge in ${blockDays}-day blocks needs exactly ${expected} videos (one per block), but has ${videosCount}.`
+    const diff = expected - videosCount
+    const fix = diff > 0 ? `Add ${diff} more.` : `Remove ${-diff}.`
+    return `A ${durationDays}-day challenge in ${blockDays}-day blocks needs exactly ${expected} videos (one per block), but has ${videosCount}. ${fix} Each video needs a title.`
   }
   return null
 }

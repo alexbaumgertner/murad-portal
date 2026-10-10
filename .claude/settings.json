@@ -14,11 +14,7 @@
       "Bash(git diff:*)",
       "Bash(git log:*)"
     ],
-    "deny": [
-      // "Read(./.env)",
-      // "Read(./.env.*)",
-      // "Bash(vercel --prod:*)"
-    ]
+    "deny": []
   },
   "hooks": {
     "SessionStart": [
