@@ -356,11 +356,13 @@ export default async function HomePage({ params }: PageProps) {
       <section aria-labelledby="method-title" className={styles.section}>
         <div className={styles.wrap}>
           <span className={styles.label}>{t('method.label')}</span>
-          <h2 id="method-title" className={styles.h2Medium}>
+          <h2 id="method-title" className={`${styles.h2Medium} ${styles.methodTitle}`}>
             {t('method.title')}
           </h2>
-          <p className={`${styles.measure} ${styles.leadSmall}`}>{t('method.lead')}</p>
-          <ol className={styles.reasonGrid}>
+          <p className={`${styles.measure} ${styles.leadSmall} ${styles.methodLead}`}>
+            {t('method.lead')}
+          </p>
+          <ol className={`${styles.reasonGrid} ${styles.reasonsLarge}`}>
             {NUMBERED.map((n) => (
               <li key={n} className={styles.reasonItem}>
                 <span className={styles.reasonNum} aria-hidden="true">
@@ -370,7 +372,7 @@ export default async function HomePage({ params }: PageProps) {
               </li>
             ))}
           </ol>
-          <p className={styles.footnote}>{t('method.footnote')}</p>
+          <p className={`${styles.footnote} ${styles.footnoteLarge}`}>{t('method.footnote')}</p>
         </div>
       </section>
 

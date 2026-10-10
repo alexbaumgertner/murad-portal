@@ -18,8 +18,8 @@
   color: var(--color-ink);
 }
 
-.landing ul,
-.landing ol {
+:where(.landing) ul,
+:where(.landing) ol {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1089,4 +1089,43 @@
     opacity: 0;
     transform: scale(2.9);
   }
+}
+
+/* ---------- "Как я учу": the method gets more room and larger type ---------- */
+.methodTitle {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+}
+
+.methodLead {
+  font-size: 1.1875rem;
+}
+
+.reasonsLarge {
+  gap: 2.5rem 3.5rem;
+  margin-top: 3rem;
+}
+
+.reasonsLarge .reasonItem {
+  gap: 1.25rem;
+}
+
+.reasonsLarge .reasonNum {
+  width: 3rem;
+  height: 3rem;
+  background: var(--color-brass);
+  color: #fff;
+  font-size: 1.25rem;
+}
+
+.reasonsLarge .reasonItem p {
+  padding-top: 0.125rem;
+  color: var(--color-ink);
+  font-size: 1.1875rem;
+  line-height: 1.5;
+}
+
+.footnoteLarge {
+  max-width: 62ch;
+  margin-top: 3rem;
+  font-size: 1.1875rem;
 }
