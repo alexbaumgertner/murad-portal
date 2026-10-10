@@ -3,9 +3,9 @@ import 'server-only'
 import type { Payload, TypedUser } from 'payload'
 
 import type { PauseRange } from '@/features/enrollments/shape'
-import { programDayOfDate, type DayProgress } from '@/features/study-today/shape'
+import type { DayProgress } from '@/features/study-today/shape'
 
-import { dayProgressOf, type LoggedSlot } from './shape'
+import { groupSlotLogs, type LoggedSlot } from './shape'
 
 export type SlotLogs = {
   /** What was logged by program day, in the shape story 013's day states read. */
@@ -39,26 +39,5 @@ export async function getSlotLogs(
     user: student,
   })
 
-  const byDay = new Map<number, LoggedSlot[]>()
-  for (const doc of docs) {
-    const day = programDayOfDate(enrollment.startDate, doc.date, enrollment.pauses)
-    const logged = byDay.get(day) ?? []
-    // A pause that began after some work leaves two dates with the same number: one slot, summed.
-    const same = logged.find((entry) => entry.slotIndex === doc.slotIndex)
-    if (same) {
-      same.minutes += doc.minutes
-      same.completed ||= doc.completed
-    } else {
-      logged.push({ slotIndex: doc.slotIndex, minutes: doc.minutes, completed: doc.completed })
-    }
-    byDay.set(day, logged)
-  }
-
-  const progress = new Map<number, DayProgress>()
-  for (const [day, logged] of byDay) {
-    const slots = enrollment.template[(day - 1) % enrollment.template.length]?.slots ?? []
-    const entry = dayProgressOf(slots, logged)
-    if (entry) progress.set(day, entry)
-  }
-  return { progress, byDay }
+  return groupSlotLogs(docs, enrollment)
 }

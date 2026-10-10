@@ -1,7 +1,8 @@
 // Pure rules of the slot timer (story 014, D-SP-4 / D-SP-7): elapsed time, the 4-hour cap, when a
 // slot counts as done. Shared by the service, the client timer and unit tests. No framework imports.
 
-import type { DayProgress } from '@/features/study-today/shape'
+import type { PauseRange } from '@/features/enrollments/shape'
+import { programDayOfDate, type DayProgress } from '@/features/study-today/shape'
 
 export const MAX_TIMER_MINUTES = 240
 export const MAX_SLOT_MINUTES = 600
@@ -87,4 +88,41 @@ export type TimerState = {
   serverNow: string
   slots: TimerSlotState[]
   carried: CarriedTimer | null
+}
+
+/**
+ * Slot logs grouped by program day (stories 014 and 019): what each day looks like for the day
+ * states, and the logged slots of each day. A pause that began after some work leaves two dates
+ * with the same number: one slot, summed.
+ */
+export function groupSlotLogs(
+  docs: readonly { date: string; slotIndex: number; minutes: number; completed: boolean }[],
+  enrollment: {
+    startDate: string
+    template: { slots: { minutes: number }[] }[]
+    /** Resolved pauses (story 017): a paused day has the number of the day it interrupted. */
+    pauses?: readonly PauseRange[]
+  },
+): { progress: Map<number, DayProgress>; byDay: Map<number, LoggedSlot[]> } {
+  const byDay = new Map<number, LoggedSlot[]>()
+  for (const doc of docs) {
+    const day = programDayOfDate(enrollment.startDate, doc.date, enrollment.pauses)
+    const logged = byDay.get(day) ?? []
+    const same = logged.find((entry) => entry.slotIndex === doc.slotIndex)
+    if (same) {
+      same.minutes += doc.minutes
+      same.completed ||= doc.completed
+    } else {
+      logged.push({ slotIndex: doc.slotIndex, minutes: doc.minutes, completed: doc.completed })
+    }
+    byDay.set(day, logged)
+  }
+
+  const progress = new Map<number, DayProgress>()
+  for (const [day, logged] of byDay) {
+    const slots = enrollment.template[(day - 1) % enrollment.template.length]?.slots ?? []
+    const entry = dayProgressOf(slots, logged)
+    if (entry) progress.set(day, entry)
+  }
+  return { progress, byDay }
 }

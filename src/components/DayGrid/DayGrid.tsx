@@ -20,6 +20,8 @@ type Props = {
   selected: number
   locale: Locale
   addressForm: AddressForm
+  /** The owner's view (story 019): the same cells, but no link, nothing to open or mark. */
+  readOnly?: boolean
 }
 
 /** A pause longer than this many days is one wide cell instead of a wall of ‖ (story 017, Q6: no limit). */
@@ -47,7 +49,7 @@ function group(cells: GridCell[]): Item[] {
  * calendar days (story 017) show ‖ and are not links: they have no program day to open, mark or
  * comment on.
  */
-export function DayGrid({ cells, week, selected, locale, addressForm }: Props) {
+export function DayGrid({ cells, week, selected, locale, addressForm, readOnly = false }: Props) {
   const t = createTranslator({
     locale,
     messages: messagesFor(locale, addressForm),
@@ -109,29 +111,41 @@ export function DayGrid({ cells, week, selected, locale, addressForm }: Props) {
           const programDay = cell.programDay!
           const date = formatCalendarDate(cell.date, locale)
           const isToday = cell.state === 'today'
+          const label = t('cellLabel', {
+            day: programDay,
+            date: date.long,
+            state: t(`states.${cell.state}`),
+          })
+          const content = (
+            <>
+              <span className={styles.weekday} aria-hidden="true">
+                {date.weekday}
+              </span>
+              <span className={styles.date} aria-hidden="true">
+                {date.dayOfMonth}
+              </span>
+              <span className={styles.mark} aria-hidden="true">
+                {DAY_MARKERS[cell.state] || ' '}
+              </span>
+            </>
+          )
           return (
             <li key={cell.date} className={styles.item}>
-              <Link
-                href={isToday ? '/study' : { pathname: '/study', query: { day: programDay } }}
-                className={styles.cell}
-                data-state={cell.state}
-                aria-current={programDay === selected ? 'date' : undefined}
-                aria-label={t('cellLabel', {
-                  day: programDay,
-                  date: date.long,
-                  state: t(`states.${cell.state}`),
-                })}
-              >
-                <span className={styles.weekday} aria-hidden="true">
-                  {date.weekday}
-                </span>
-                <span className={styles.date} aria-hidden="true">
-                  {date.dayOfMonth}
-                </span>
-                <span className={styles.mark} aria-hidden="true">
-                  {DAY_MARKERS[cell.state] || ' '}
-                </span>
-              </Link>
+              {readOnly ? (
+                <div className={styles.cell} data-state={cell.state} role="img" aria-label={label}>
+                  {content}
+                </div>
+              ) : (
+                <Link
+                  href={isToday ? '/study' : { pathname: '/study', query: { day: programDay } }}
+                  className={styles.cell}
+                  data-state={cell.state}
+                  aria-current={programDay === selected ? 'date' : undefined}
+                  aria-label={label}
+                >
+                  {content}
+                </Link>
+              )}
             </li>
           )
         })}

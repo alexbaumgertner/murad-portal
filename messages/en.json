@@ -332,5 +332,33 @@
       "not_paused": "The program is already running. Refresh the page",
       "server": "That did not work. Try again"
     }
+  },
+  "OwnerProgress": {
+    "title": "Students",
+    "description": "Student progress and their day comments.",
+    "lead": "Who is on track, who is behind and what was hard. Read-only: plans are edited in the admin.",
+    "empty": "No students with an assigned program yet.",
+    "status": {
+      "assigned": "Assigned",
+      "active": "In progress",
+      "paused": "Paused",
+      "finished": "Finished"
+    },
+    "dayOf": "Day {day} of {total}",
+    "notStarted": "Not started yet",
+    "statDone": "Days done",
+    "statMissed": "Days missed",
+    "statMinutes": "Minutes in total",
+    "lastStudy": "Last study day: {date}",
+    "noStudy": "No study days yet",
+    "levels": "{from} → {to}",
+    "open": "Open: {name}",
+    "back": "← All students",
+    "weekTitle": "Week {week}",
+    "weeksTitle": "Two weeks",
+    "commentsTitle": "Day comments",
+    "noComments": "No comments yet.",
+    "commentMeta": "{date} · day {day}",
+    "commentMetaNoDay": "{date}"
   }
 }

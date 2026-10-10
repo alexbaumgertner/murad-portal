@@ -30,3 +30,13 @@ export async function currentStudent(
     return null
   }
 }
+
+/** Whoever is signed in behind a request (owner or student), or null: lets a page tell «not signed in» from «not allowed». */
+export async function currentUser(payload: Payload, headers: Headers): Promise<TypedUser | null> {
+  try {
+    const { user } = await payload.auth({ headers })
+    return user?.collection === 'users' ? user : null
+  } catch {
+    return null
+  }
+}
