@@ -4,6 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { requestCode, verifyCode, type OtpDeps } from '@/features/auth/otp'
 import { issueToken, SESSION_COOKIE } from '@/features/auth/session'
+import { Users } from '@/collections/Users'
 import { clearLoginCodes, payloadOtpStore } from '@/features/auth/store'
 
 let payload: Payload
@@ -111,5 +112,14 @@ describe('email-code auth against Postgres', () => {
 
     expect(await clearLoginCodes(payload, USER_EMAIL)).toBe(3)
     expect((await requestCode(USER_EMAIL, '198.51.100.20', deps)).ok).toBe(true)
+  })
+
+  it("hides Payload's Force Unlock, which cannot work without passwords", async () => {
+    const unlock = Users.access?.unlock
+    expect(
+      await unlock?.({ req: { user: null } } as unknown as Parameters<
+        NonNullable<typeof unlock>
+      >[0]),
+    ).toBe(false)
   })
 })
