@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { hasLocale, NextIntlClientProvider } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist, Geist_Mono, IBM_Plex_Sans, Newsreader } from 'next/font/google'
 import { notFound } from 'next/navigation'
 import type { ReactNode } from 'react'
 
@@ -16,6 +16,18 @@ import '../globals.css'
 
 const geistSans = Geist({ subsets: ['latin', 'cyrillic'], variable: '--font-geist-sans' })
 const geistMono = Geist_Mono({ subsets: ['latin', 'cyrillic'], variable: '--font-geist-mono' })
+// Landing typography. Newsreader has no Cyrillic: Russian headings fall back to Georgia.
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  weight: ['400', '500', '600'],
+  variable: '--font-newsreader',
+})
+const plexSans = IBM_Plex_Sans({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['400', '500', '600'],
+  variable: '--font-plex-sans',
+})
 
 type LayoutProps = { children: ReactNode; params: Promise<{ locale: string }> }
 
@@ -46,7 +58,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   if (!hasLocale(routing.locales, locale)) notFound()
 
   return (
-    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html
+      lang={locale}
+      className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} ${plexSans.variable}`}
+    >
       <body>
         <NextIntlClientProvider>
           <SiteHeader />
