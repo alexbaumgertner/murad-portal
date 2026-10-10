@@ -26,7 +26,9 @@ export default defineConfig({
   ],
   webServer: {
     command: `pnpm exec cross-env NODE_OPTIONS=--no-deprecation PAYLOAD_DB_PUSH=true next dev --port ${PORT}`,
-    url: baseURL,
+    // Must be a page that initialises Payload: the first request pushes the dev schema, which
+    // global setup needs. The landing page no longer queries the CMS.
+    url: `${baseURL}/changelog`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

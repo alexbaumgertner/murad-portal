@@ -6,6 +6,14 @@ import { Link } from '@/i18n/navigation'
 
 import styles from './SiteHeader.module.css'
 
+const SECTION_LINKS = [
+  { key: 'about', id: 'about' },
+  { key: 'approach', id: 'approach' },
+  { key: 'materials', id: 'materials' },
+  { key: 'exams', id: 'audience' },
+  { key: 'faq', id: 'faq' },
+] as const
+
 export function SiteHeader() {
   const t = useTranslations('Header')
 
@@ -13,29 +21,32 @@ export function SiteHeader() {
     <header className={styles.header}>
       <div className={styles.inner}>
         <Link href="/" className={styles.brand} aria-label={t('home', { name: siteConfig.name })}>
-          <span className={styles.logo} aria-hidden="true" />
-          <span className={styles.brandName}>{siteConfig.name}</span>
+          {siteConfig.name}
         </Link>
         <nav aria-label={t('nav')} className={styles.navArea}>
           <ul className={styles.nav}>
-            <li>
-              <Link href="/#tools" className={styles.link}>
-                {t('tools')}
-              </Link>
-            </li>
+            {SECTION_LINKS.map(({ key, id }) => (
+              <li key={key} className={styles.section}>
+                <Link href={`/#${id}`} className={styles.link}>
+                  {t(key)}
+                </Link>
+              </li>
+            ))}
             <li>
               <Link href="/challenge" className={styles.link}>
                 {t('challenge')}
               </Link>
             </li>
             <li>
-              {/* The admin is not localized: a plain link keeps it out of locale routing. */}
-              <a href="/admin" className={styles.link}>
-                {t('admin')}
-              </a>
+              <Link href="/login" className={styles.link}>
+                {t('signIn')}
+              </Link>
             </li>
           </ul>
           <LocaleSwitcher />
+          <a href={siteConfig.telegramUrl} target="_blank" rel="noopener" className={styles.cta}>
+            {t('contact')}
+          </a>
         </nav>
       </div>
     </header>

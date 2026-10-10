@@ -1,15 +1,20 @@
 {
   "Metadata": {
     "siteName": "Murad",
-    "description": "Learn to hear familiar English words in real speech with Murad, an English teacher. Follow his 90-day YouTube challenge and discover upcoming listening tools."
+    "description": "English for work and study abroad: an honest diagnostic and preparation for IELTS, TOEFL and Cambridge exams with Murad Uzhakhov."
   },
   "Header": {
     "home": "{name} home",
     "nav": "Main",
     "changelog": "Changelog",
-    "admin": "Admin",
-    "tools": "Tools",
-    "challenge": "Challenge"
+    "challenge": "Challenge",
+    "about": "About",
+    "approach": "Approach",
+    "materials": "Materials",
+    "exams": "Exams",
+    "faq": "FAQ",
+    "signIn": "Sign in",
+    "contact": "Message"
   },
   "LocaleSwitcher": {
     "label": "Language",
@@ -17,34 +22,209 @@
     "ru": "Русский"
   },
   "Footer": {
-    "stack": "English with Murad · Listening practice"
+    "title": "Murad Uzhakhov · English teacher",
+    "changelog": "Site updates"
   },
   "Home": {
-    "eyebrow": "English with Murad",
-    "title": "Hear the English you already know.",
-    "lead": "I’m Murad, an English teacher. I help learners recognize familiar words in real speech, across accents and speaking speeds.",
-    "challenge": "Follow the 90–90–1 challenge",
-    "toolsTitle": "Tools — coming soon",
-    "tools": {
-      "puzzle": {
-        "title": "Phonetic Puzzle",
-        "body": "Hear one word pronounced by different speakers, then recognize it in fast speech."
+    "hero": {
+      "title": "English for work at international companies and study at top universities",
+      "lead": "For IT professionals job-hunting or already working at international companies, and students applying to top universities. An honest diagnostic using official materials, then work toward your actual exam, interview, or workplace communication.",
+      "cta": "Message on Telegram",
+      "statLabel": "students reached their goal",
+      "a1b1": "A1 to B1",
+      "a2b2": "A2 to B2",
+      "b1c1": "B1 to C1",
+      "illustrationAlt": "Line illustration of an open door with a certificate seal, revealing a university building and an office tower beyond it",
+      "photo": "Murad's photo"
+    },
+    "about": {
+      "title": "About me",
+      "lead": "I've long consumed information only in English — research, fiction, journalism. Combined with years living and working in the US and a C2 certificate, that gives me native-level command of the language.",
+      "education": "Education",
+      "educationValue": "Translation and education degree, MA in Linguistics",
+      "certificate": "Certification",
+      "certificateValue": "CELTA — international teaching certificate",
+      "level": "Language level",
+      "levelValue": "C2 / TOEFL 110",
+      "experience": "Experience",
+      "experienceValue": "16 years teaching, one-on-one only",
+      "mentorTitle": "A mentor, not a motivator",
+      "mentorBody": "I'll always offer moral support when it's needed. The exams are standard — the programme isn't: I choose materials and pace around how each student actually learns.",
+      "benefitTitle": "What's in it for me?",
+      "benefitBody": "It's simple: every certificate you earn is my result too. That's how I see my real contribution to your life — and it's exactly why I teach."
+    },
+    "approach": {
+      "label": "Approach",
+      "title": "Objective diagnosis",
+      "body": "I test using official materials, not guesswork. That shows where a student actually stands — and how far they can realistically move, based on their zone of proximal development.",
+      "diagramAlt": "Three concentric circles representing what a learner can do alone, the zone of proximal development, and what is not yet possible",
+      "inner": "Can do alone",
+      "middle": "Zone of proximal development — with a mentor's help",
+      "outer": "Not yet possible",
+      "quote": "A student once came to me — told his level was A2. A couple of weeks of testing later: almost B2.",
+      "cite": "I show the real starting point — whatever it turns out to be."
+    },
+    "method": {
+      "label": "Method",
+      "title": "How I teach",
+      "lead": "I teach through preparation for international exams. Why this way?",
+      "reasons": {
+        "1": "It gives us both a clear target, which shortens study time and makes it more effective.",
+        "2": "It builds a healthy relationship between teacher and student: each of us owns our part of the result.",
+        "3": "Your result is literally my result too — so my investment in it is guaranteed.",
+        "4": "Exams test every language skill at once, so you learn to spot your weak points and work on them.",
+        "5": "It gives an objective picture of how fast you're progressing — and a reason to adjust the programme in time."
       },
-      "player": {
-        "title": "3-Step Listening Player",
-        "body": "Watch with subtitles, explore the words and grammar, then listen again as an audio playlist."
-      },
-      "matcher": {
-        "title": "Level & Interest Matcher",
-        "body": "Find videos, podcasts and interviews that fit a learning level and personal interests."
-      },
-      "quizzer": {
-        "title": "Active Listening Quizzer",
-        "body": "Practice with questions, missing words and dictation based on a video."
+      "footnote": "After preparation, every student sits an international exam at an accredited centre and receives a certificate upon passing."
+    },
+    "bridge": {
+      "label": "Method",
+      "title": "Every student has their own breaking point",
+      "body": "The exact place they used to get stuck. My job is to find it and build a bridge across it, with materials and pace built around you.",
+      "now": "now",
+      "footnote": "* Scores are a format example. Murad will fill in a real student's actual results."
+    },
+    "materials": {
+      "label": "What I use",
+      "title": "Official materials, recognised by exam centres",
+      "lead": "Every book and test is standard, and you can check it yourself.",
+      "confirmTitle": "exact title — to confirm with Murad",
+      "confirmList": "list — to confirm with Murad",
+      "items": {
+        "prep": {
+          "type": "official prep",
+          "name": "[Cambridge / IELTS practice tests]"
+        },
+        "grammar": {
+          "type": "grammar",
+          "name": "[grammar reference]"
+        },
+        "skills": {
+          "type": "skill-specific",
+          "name": "Reading / Listening / Speaking / Writing"
+        },
+        "extra": {
+          "type": "extra materials",
+          "name": "articles, podcasts, books"
+        }
       }
     },
-    "latestTitle": "Latest updates",
-    "fullChangelog": "All updates →"
+    "proof": {
+      "statLabel": "documented stories — from the first test to a passed exam",
+      "label": "Proof",
+      "video": {
+        "title": "Video walkthrough",
+        "body": "How a student moves from their current level to the exam — step by step, no embellishment.",
+        "tag": "video placeholder"
+      },
+      "certificates": {
+        "title": "Level certificates",
+        "body": "Real results from real students — B2, C1, C2 from accredited centers.",
+        "tag": "certificates placeholder"
+      },
+      "chartTitle": "Score progress — example",
+      "chartAlt": "Line chart showing an example of rising exam scores across four years",
+      "chartCaption": "Example visualisation. Real charts available per case, with each student's consent.",
+      "section": "Exam section",
+      "score": "Example score",
+      "overall": "Overall",
+      "tableCaption": "* Format matches real student certificates. Numbers shown are illustrative."
+    },
+    "benefits": {
+      "label": "Outcome",
+      "title": "Why the certificate matters",
+      "items": {
+        "1": "You become genuinely more competitive — easier to get into a university abroad, relocate, or land a job.",
+        "2": "You know for certain the time was well spent — the result is documented.",
+        "3": "Learning further gets easier: each exam you pass builds confidence — in the language and in life generally.",
+        "4": "Past B2–C1, you can stop studying the language on purpose and simply use it.",
+        "5": "And yes — it's genuinely a good memory and a positive feeling."
+      }
+    },
+    "guarantee": {
+      "title": "If I say you're ready, you'll pass",
+      "body": "My internal test decides whether you're ready to sit the exam. If I judge you ready and the result doesn't come — I cover your resit."
+    },
+    "everyday": {
+      "label": "Beyond the exam",
+      "title": "English changes where your information comes from",
+      "items": {
+        "news": {
+          "title": "News",
+          "body": "You read sources directly, instead of a delayed retelling filtered through translation."
+        },
+        "health": {
+          "title": "Physical and mental health",
+          "body": "Most current research and clinical guidance is published in English before any translation appears — sometimes without one at all."
+        },
+        "culture": {
+          "title": "Science and culture",
+          "body": "Papers, books, podcasts — in the original, without distortion from retelling."
+        }
+      }
+    },
+    "audience": {
+      "label": "Exams I prepare for",
+      "title": "Career and study first",
+      "abroadTitle": "Career and study abroad",
+      "schoolTitle": "School exams",
+      "schoolExams": "ЕГЭ / ОГЭ / ЕНТ",
+      "schoolLevels": "A2–B2 for school students"
+    },
+    "pricing": {
+      "label": "Pricing",
+      "range": "from ____ to ____ ₽",
+      "note": "per lesson · exact range confirmed at the first meeting",
+      "cta": "Ask about pricing"
+    },
+    "blog": {
+      "label": "Blog",
+      "title": "English as the language of science and culture",
+      "lead": "Notes on the books and articles Murad is currently reading, plus student case studies — no need to leave the page to see them.",
+      "soon": "soon",
+      "items": {
+        "book": {
+          "title": "Chapter notes: [book]",
+          "body": "What Murad's reading, and how it connects to real-world English."
+        },
+        "case": {
+          "title": "Case study: A1 to C1 in four years",
+          "body": "The full story behind one of the 54 — breaking point included."
+        },
+        "science": {
+          "title": "Why science speaks English",
+          "body": "English as lingua franca — and what it means for your career."
+        }
+      }
+    },
+    "faq": {
+      "label": "FAQ",
+      "title": "Common questions",
+      "items": {
+        "low": {
+          "q": "What if my level is very low?",
+          "a": "That's fine — the diagnosis exists precisely to find your honest starting point, whatever it is."
+        },
+        "it": {
+          "q": "Do you only work with IT professionals?",
+          "a": "No, but IT careers and study abroad are where I have the most documented success stories."
+        },
+        "group": {
+          "q": "Are there group classes?",
+          "a": "No, one-on-one only — that way everyone owns their own result, which speeds up progress."
+        },
+        "fail": {
+          "q": "What if I don't pass the exam?",
+          "a": "If I've sent you to sit the exam, I've judged you ready. If you don't pass — I cover the resit."
+        }
+      }
+    },
+    "contact": {
+      "title": "Ready to find your breaking point?",
+      "body": "Message me on Telegram — I'll walk you through what's next and when we can run your first diagnostic.",
+      "cta": "Message on Telegram",
+      "ps": "P.S. The island of sanity is open for visits — no appointment needed."
+    }
   },
   "Waitlist": {
     "emailLabel": "Email address",
