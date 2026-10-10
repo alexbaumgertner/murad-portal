@@ -97,53 +97,80 @@ export default async function HomePage({ params }: PageProps) {
                 role="img"
                 aria-label={t('hero.illustrationAlt')}
               >
-                <rect x="0" y="0" width="400" height="320" fill="#F4F0E6" />
-                <circle cx="300" cy="90" r="24" fill="none" stroke="#A9723C" strokeWidth="1.4" />
+                <rect x="0" y="0" width="400" height="320" className={styles.fillFrame} />
+                <circle
+                  cx="300"
+                  cy="90"
+                  r="24"
+                  fill="none"
+                  className={styles.strokeAccent}
+                  strokeWidth="1.4"
+                />
                 <path
                   d="M270 258 L270 188 M282 258 L282 188 M294 258 L294 188 M306 258 L306 188"
-                  stroke="#20242B"
+                  className={styles.strokeInk}
                   strokeWidth="1.1"
                 />
                 <path
                   d="M262 188 L314 188 L288 162 Z"
                   fill="none"
-                  stroke="#20242B"
+                  className={styles.strokeInk}
                   strokeWidth="1.1"
                 />
-                <line x1="256" y1="258" x2="320" y2="258" stroke="#20242B" strokeWidth="1.1" />
+                <line
+                  x1="256"
+                  y1="258"
+                  x2="320"
+                  y2="258"
+                  className={styles.strokeInk}
+                  strokeWidth="1.1"
+                />
                 <rect
                   x="335"
                   y="150"
                   width="28"
                   height="108"
                   fill="none"
-                  stroke="#3F5C58"
+                  className={styles.strokeSoft}
                   strokeWidth="1"
                   opacity="0.7"
                 />
                 <path
                   d="M120 44 L120 296 L258 296 L258 44 Z"
                   fill="none"
-                  stroke="#20242B"
+                  className={styles.strokeInk}
                   strokeWidth="1.6"
                 />
                 <path
                   d="M120 44 L233 62 L233 284 L120 296 Z"
-                  fill="#F4F0E6"
-                  stroke="#20242B"
+                  className={`${styles.fillFrame} ${styles.strokeInk}`}
                   strokeWidth="1.4"
                 />
-                <circle cx="144" cy="172" r="3" fill="#20242B" />
-                <circle cx="150" cy="222" r="12" fill="none" stroke="#A9723C" strokeWidth="1.3" />
+                <circle cx="144" cy="172" r="3" className={styles.fillInk} />
+                <circle
+                  cx="150"
+                  cy="222"
+                  r="12"
+                  fill="none"
+                  className={styles.strokeAccent}
+                  strokeWidth="1.3"
+                />
                 <path
                   d="M145 222 l4 4 l7 -8"
                   fill="none"
-                  stroke="#A9723C"
+                  className={styles.strokeAccent}
                   strokeWidth="1.3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                <line x1="0" y1="272" x2="400" y2="272" stroke="#20242B" strokeWidth="1" />
+                <line
+                  x1="0"
+                  y1="272"
+                  x2="400"
+                  y2="272"
+                  className={styles.strokeInk}
+                  strokeWidth="1"
+                />
               </svg>
             </div>
             <div className={styles.photoSlot}>
@@ -210,9 +237,15 @@ export default async function HomePage({ params }: PageProps) {
           <div>
             <div className={styles.zpd}>
               <svg viewBox="0 0 300 300" role="img" aria-label={t('approach.diagramAlt')}>
-                <circle cx="150" cy="150" r="135" fill="#E1D9C6" stroke="#20242B" strokeWidth="1" />
-                <circle cx="150" cy="150" r="92" fill="#A9723C" opacity="0.4" />
-                <circle cx="150" cy="150" r="46" fill="#20242B" />
+                <circle
+                  cx="150"
+                  cy="150"
+                  r="135"
+                  className={`${styles.fillDeep} ${styles.strokeInk}`}
+                  strokeWidth="1"
+                />
+                <circle cx="150" cy="150" r="92" className={styles.fillAccent} opacity="0.4" />
+                <circle cx="150" cy="150" r="46" className={styles.fillInk} />
               </svg>
               <ul className={styles.zpdLegend}>
                 <li>
@@ -331,7 +364,7 @@ export default async function HomePage({ params }: PageProps) {
               <polyline
                 points="80,145 220,115 360,80 500,35"
                 fill="none"
-                stroke="#A9723C"
+                className={styles.strokeAccent}
                 strokeWidth="2"
               />
               {(
@@ -343,7 +376,7 @@ export default async function HomePage({ params }: PageProps) {
                 ] as const
               ).map(([x, y, score, year]) => (
                 <g key={year}>
-                  <circle cx={x} cy={y} r="4" fill="#A9723C" />
+                  <circle cx={x} cy={y} r="4" className={styles.fillAccent} />
                   <text x={x} y={y - 12} fontSize="12" fill="currentColor" textAnchor="middle">
                     {score}
                   </text>

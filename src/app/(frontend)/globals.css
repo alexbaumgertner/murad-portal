@@ -26,20 +26,20 @@
   --space-page: clamp(1rem, 4vw, 2rem);
   --width-content: 72rem;
 
-  /* Landing palette ("paper"); the tracker tokens above are the same family. */
-  --color-paper: #ede8dd;
-  --color-paper-deep: #e1d9c6;
-  --color-paper-frame: #f4f0e6;
-  --color-ink: #20242b;
-  --color-ink-soft: #565d66;
-  --color-ink-line: rgb(32 36 43 / 15%);
-  --color-forest: #1c2521;
-  --color-forest-line: rgb(237 232 221 / 16%);
-  --color-forest-heading: #ede8dd;
-  --color-forest-text: #c9cfc7;
-  --color-forest-muted: #9aa39b;
-  --color-brass: #a9723c;
-  --color-brass-strong: #8f5d2f;
+  /* Landing palette: the site tokens above, so light and dark themes follow automatically. */
+  --color-paper: var(--color-bg);
+  --color-paper-deep: var(--color-accent-soft);
+  --color-paper-frame: var(--color-surface);
+  --color-ink: var(--color-text);
+  --color-ink-soft: var(--color-text-muted);
+  --color-ink-line: var(--color-border);
+  --color-brass: var(--color-accent);
+  --color-brass-strong: var(--color-accent-strong);
+  --color-forest: #1b1a17;
+  --color-forest-line: rgb(255 255 255 / 14%);
+  --color-forest-heading: #f3f1ec;
+  --color-forest-text: #d8d4ca;
+  --color-forest-muted: #a8a399;
 
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-serif: var(--font-newsreader), Georgia, serif;
@@ -60,14 +60,6 @@
     --color-accent-soft: #2e1d12;
     --color-success: #5cc98a;
     --color-danger: #ff6b6b;
-    --color-paper: #151412;
-    --color-paper-deep: #1d1b18;
-    --color-paper-frame: #1b1a18;
-    --color-ink: #efeae0;
-    --color-ink-soft: #a8a399;
-    --color-ink-line: rgb(239 234 224 / 15%);
-    --color-brass: #c79a6c;
-    --color-brass-strong: #d6ab7e;
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
     --shadow-md: 0 8px 30px rgb(0 0 0 / 35%);
   }

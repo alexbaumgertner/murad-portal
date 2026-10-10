@@ -245,7 +245,7 @@
   height: 8.25rem;
   margin: -3.625rem 0.75rem 0 auto;
   border: 1px solid var(--color-ink);
-  background: linear-gradient(160deg, #2c332f, #4c5650 60%, #7c8a7f);
+  background: linear-gradient(160deg, #3a2a20, #8a4a22 60%, var(--color-brass));
   box-shadow: 6px 6px 0 var(--color-paper-deep);
 }
 
@@ -514,7 +514,7 @@
 
 .resourceType {
   margin-bottom: 0.625rem;
-  color: var(--color-tracker-teal);
+  color: var(--color-brass-strong);
   font-size: 0.72rem;
 }
 
@@ -581,9 +581,9 @@
   display: inline-block;
   margin-top: 0.75rem;
   padding: 0.1875rem 0.5rem;
-  border: 1px dashed var(--color-tracker-teal);
+  border: 1px dashed var(--color-brass-strong);
   border-radius: 0.75rem;
-  color: var(--color-tracker-teal);
+  color: var(--color-brass-strong);
   font-size: 0.72rem;
 }
 
@@ -761,9 +761,9 @@
   display: inline-block;
   margin-bottom: 0.75rem;
   padding: 0.125rem 0.5rem;
-  border: 1px solid var(--color-tracker-teal);
+  border: 1px solid var(--color-brass-strong);
   border-radius: 0.625rem;
-  color: var(--color-tracker-teal);
+  color: var(--color-brass-strong);
   font-size: 0.66rem;
   letter-spacing: 0.03em;
 }
@@ -882,4 +882,33 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ---------- svg colours (attributes can't read tokens) ---------- */
+.fillFrame {
+  fill: var(--color-paper-frame);
+}
+
+.fillDeep {
+  fill: var(--color-paper-deep);
+}
+
+.fillInk {
+  fill: var(--color-ink);
+}
+
+.fillAccent {
+  fill: var(--color-brass);
+}
+
+.strokeInk {
+  stroke: var(--color-ink);
+}
+
+.strokeAccent {
+  stroke: var(--color-brass);
+}
+
+.strokeSoft {
+  stroke: var(--color-ink-soft);
 }
