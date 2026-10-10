@@ -35,6 +35,9 @@
   --color-ink-line: var(--color-border);
   --color-brass: var(--color-accent);
   --color-brass-strong: var(--color-accent-strong);
+  /* Filled buttons: dark enough for white text (AA) in both themes. */
+  --color-button: #c2410c;
+  --color-button-hover: #9a3412;
   --color-forest: #1b1a17;
   --color-forest-line: rgb(255 255 255 / 14%);
   --color-forest-heading: #f3f1ec;
