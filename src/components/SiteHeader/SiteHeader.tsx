@@ -21,7 +21,8 @@ export function SiteHeader() {
     <header className={styles.header}>
       <div className={styles.inner}>
         <Link href="/" className={styles.brand} aria-label={t('home', { name: siteConfig.name })}>
-          {siteConfig.name}
+          <span className={styles.logo} aria-hidden="true" />
+          <span>{siteConfig.name}</span>
         </Link>
         <nav aria-label={t('nav')} className={styles.navArea}>
           <ul className={styles.nav}>

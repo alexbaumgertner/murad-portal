@@ -18,11 +18,20 @@
 }
 
 .brand {
-  font-family: var(--font-serif);
-  font-size: 1.1875rem;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-weight: 650;
   text-decoration: none;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
+}
+
+.logo {
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
+  box-shadow: var(--shadow-sm);
 }
 
 .navArea {

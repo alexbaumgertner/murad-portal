@@ -52,8 +52,6 @@
   --color-forest-muted: #a8a399;
 
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
-  --font-serif: var(--font-newsreader), Georgia, serif;
-  --font-plex: var(--font-plex-sans), Arial, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
