@@ -34,6 +34,9 @@ export const Users: CollectionConfig = {
     update: ({ req }) =>
       isOwner(req.user) ? true : req.user ? { id: { equals: req.user.id } } : false,
     delete: owner,
+    // Payload's "Force Unlock" cannot work without passwords (always 403); hiding it leaves
+    // "Reset login limits" as the only way to let someone back in.
+    unlock: () => false,
   },
   hooks: {
     // AC 15 (story 012): a deleted student takes her enrollments with her. Before the delete:
@@ -106,6 +109,15 @@ export const Users: CollectionConfig = {
           'Owner = full admin access. To add a student, use "Invite a student" above the users list.',
       },
       access: { create: ownerOnly, update: ownerOnly },
+    },
+    {
+      // Lifts the login limits (codes per window, burned attempts): see features/auth/actions.
+      name: 'unblockLogin',
+      type: 'ui',
+      admin: {
+        condition: (data) => Boolean(data?.id),
+        components: { Field: '/components/admin/UnblockLogin/UnblockLogin#UnblockLogin' },
+      },
     },
     { name: 'name', type: 'text', maxLength: 80 },
     {

@@ -25,3 +25,15 @@ export type LoginState =
   | { step: 'done'; redirectTo: string }
 
 export const initialLoginState: LoginState = { step: 'email' }
+
+/** The id of the user to unblock: Postgres ids are positive integers, a form may deliver them as text. */
+export const unblockInputSchema = z.object({ userId: z.coerce.number().int().positive() })
+
+export type UnblockError = 'forbidden' | 'invalid_input' | 'not_found' | 'server'
+
+export type UnblockState =
+  | { status: 'idle' }
+  | { status: 'success'; cleared: number }
+  | { status: 'error'; error: UnblockError }
+
+export const initialUnblockState: UnblockState = { status: 'idle' }
