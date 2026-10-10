@@ -65,6 +65,13 @@
   background: var(--color-surface-muted);
 }
 
+/* In-page anchors need the room on desktop only. */
+@media (max-width: 860px) {
+  .section {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
   .link {
     padding: 0.375rem 0.5rem;

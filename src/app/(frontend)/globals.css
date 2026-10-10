@@ -26,6 +26,31 @@
   --space-page: clamp(1rem, 4vw, 2rem);
   --width-content: 72rem;
 
+  /* Landing palette: the site tokens above, so light and dark themes follow automatically. */
+  --color-paper: var(--color-bg);
+  --color-paper-deep: var(--color-accent-soft);
+  --color-paper-frame: var(--color-surface);
+  --color-ink: var(--color-text);
+  --color-ink-soft: var(--color-text-muted);
+  --color-ink-line: var(--color-border);
+  --color-brass: var(--color-accent);
+  --color-brass-strong: var(--color-accent-strong);
+  /* Filled buttons: dark enough for white text (AA) in both themes. */
+  --color-button: #c2410c;
+  --color-button-hover: #9a3412;
+  /* Zone-of-proximal-development legend; matches the illustration. */
+  --color-zone-inner: #b8f5c0;
+  --color-zone-inner-line: #22a84a;
+  --color-zone-mid: #fcd34d;
+  --color-zone-mid-line: #f5a623;
+  --color-zone-outer: #a6d5fa;
+  --color-zone-outer-line: #1d7be8;
+  --color-forest: #1b1a17;
+  --color-forest-line: rgb(255 255 255 / 14%);
+  --color-forest-heading: #f3f1ec;
+  --color-forest-text: #d8d4ca;
+  --color-forest-muted: #a8a399;
+
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }

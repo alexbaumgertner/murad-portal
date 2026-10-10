@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 
-import { siteConfig } from '@/config/site'
+import { Link } from '@/i18n/navigation'
 
 import styles from './SiteFooter.module.css'
 
@@ -11,9 +11,11 @@ export function SiteFooter() {
     <footer className={styles.footer}>
       <div className={styles.inner}>
         <p>
-          © {new Date().getFullYear()} {siteConfig.name}
+          {t('title')} · © {new Date().getFullYear()}
         </p>
-        <p className={styles.muted}>{t('stack')}</p>
+        <Link href="/changelog" className={styles.muted}>
+          {t('changelog')}
+        </Link>
       </div>
     </footer>
   )
