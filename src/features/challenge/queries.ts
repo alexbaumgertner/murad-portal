@@ -1,5 +1,6 @@
 import 'server-only'
 import type { Payload } from 'payload'
+import { summarize } from '@/features/challenge/progress'
 import type { locales } from '@/i18n/locales'
 
 /** Anonymous reads only; do not forward the current admin session to this public page. */
@@ -28,4 +29,40 @@ export async function getPublicChallenge(
     overrideAccess: false,
   })
   return { challenge, days }
+}
+
+/** Public challenges, newest start first, each with its progress summary. Anonymous reads only. */
+export async function listPublicChallenges(
+  payload: Payload,
+  locale: (typeof locales)[number],
+  now = new Date(),
+) {
+  const { docs } = await payload.find({
+    collection: 'challenges',
+    where: { isPublic: { equals: true } },
+    sort: '-startDate',
+    locale,
+    fallbackLocale: 'en',
+    limit: 100,
+    depth: 0,
+    overrideAccess: false,
+  })
+  if (docs.length === 0) return []
+  const { docs: days } = await payload.find({
+    collection: 'challenge-days',
+    where: { challenge: { in: docs.map((challenge) => challenge.id) } },
+    limit: 0,
+    pagination: false,
+    depth: 0,
+    overrideAccess: false,
+  })
+  return docs.map((challenge) => ({
+    challenge,
+    slug: challenge.slug,
+    summary: summarize(
+      challenge,
+      days.filter((day) => day.challenge === challenge.id),
+      now,
+    ),
+  }))
 }

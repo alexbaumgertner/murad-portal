@@ -135,7 +135,12 @@
         "not_found": "Не удалось найти челлендж.",
         "server": "Не удалось сохранить. Попробуй ещё раз."
       }
-    }
+    },
+    "listTitle": "Челленджи",
+    "listEmpty": "Челлендж скоро появится",
+    "statusNotStarted": "Ещё не начался",
+    "dayOf": "День {day} из {total}",
+    "minutesShort": "{done} / {target} мин"
   },
   "Login": {
     "title": "Вход для учеников",

@@ -135,7 +135,12 @@
         "not_found": "This challenge could not be found.",
         "server": "Could not save. Please try again."
       }
-    }
+    },
+    "listTitle": "Challenges",
+    "listEmpty": "A challenge is coming soon",
+    "statusNotStarted": "Not started yet",
+    "dayOf": "Day {day} of {total}",
+    "minutesShort": "{done} / {target} min"
   },
   "Login": {
     "title": "Student sign-in",
