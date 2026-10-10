@@ -90,7 +90,7 @@ describe('SlotTimers (story 014)', () => {
     }))
     await renderTimers(stateOf([{}, {}]))
 
-    await expect.element(page.getByText('мин. 40 мин')).toBeVisible()
+    await expect.element(page.getByText('минимум 40 мин')).toBeVisible()
     await page.getByRole('button', { name: 'Старт' }).nth(1).click()
 
     expect(startTimerAction).toHaveBeenCalledExactlyOnceWith({ slotIndex: 1 })

@@ -149,8 +149,8 @@ test.describe('The student opens «Сегодня» (story 013)', () => {
       // 2. today's slots and tasks
       const today = page.getByRole('region', { name: 'Сегодня' })
       await expect(today.getByText(`Anki ${suffix}`)).toBeVisible()
-      await expect(today.getByText('мин. 20 мин')).toBeVisible()
-      await expect(today.getByText('мин. 40 мин')).toBeVisible()
+      await expect(today.getByText('минимум 20 мин')).toBeVisible()
+      await expect(today.getByText('минимум 40 мин')).toBeVisible()
       await expect(today.getByText(`Карточки ${suffix}`)).toBeVisible()
       await expect(today.getByText(`Напиши отзыв ${suffix}`)).toBeVisible()
       await expect(today.getByText(`Эссе о городе ${suffix}`)).toBeVisible()
