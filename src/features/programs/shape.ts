@@ -20,6 +20,7 @@ export const messages = {
   slugTaken: 'Такой адрес уже занят',
   slugShape: 'Только строчные латинские буквы, цифры и дефисы, например «a2-b1»',
   typeInUse: 'Тип используется в программах: ',
+  assigned: 'Программа назначена ученикам — её нельзя удалить. Сними её с публикации.',
 } as const
 
 export const isLevel = (value: unknown): value is Level =>

@@ -2,6 +2,8 @@ import 'server-only'
 
 import { z } from 'zod'
 
+import { MINUTES_BUCKETS } from '@/features/slot-timer/shape'
+
 /**
  * Provider-agnostic product analytics for server code (Server Actions).
  *
@@ -17,12 +19,36 @@ const slug = z
   .string()
   .max(64)
   .regex(/^[a-z0-9-]+$/)
+const cefr = z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
 
 export const analyticsEvents = {
   waitlist_joined: z.strictObject({ source: slug }),
   login_code_requested: z.strictObject({ resend: z.boolean() }),
   login_succeeded: z.strictObject({}),
   challenge_day_closed: z.strictObject({ updated: z.boolean() }),
+  // Story 012. Never the exact score or the owner's placement note.
+  program_assigned: z.strictObject({
+    programSlug: slug,
+    levelFrom: cefr,
+    levelTo: cefr,
+    placementTest: slug,
+    placementCefr: cefr,
+  }),
+  program_started: z.strictObject({
+    programSlug: slug,
+    levelFrom: cefr,
+    levelTo: cefr,
+    daysFromAssignToStart: z.number().int().min(0),
+  }),
+  // Story 014. A slot type is a catalog entry, not a person; minutes are bucketed, never exact.
+  slot_completed: z.strictObject({
+    slotTypeId: z.number().int().min(1),
+    minutesBucket: z.enum(MINUTES_BUCKETS),
+    viaTimer: z.boolean(),
+  }),
+  // Story 017. Only the program's slug: never an id, a date or a name.
+  program_paused: z.strictObject({ programSlug: slug }),
+  program_resumed: z.strictObject({ programSlug: slug }),
 } satisfies Record<string, z.ZodType<Record<string, string | number | boolean>>>
 
 export type AnalyticsEvent = keyof typeof analyticsEvents

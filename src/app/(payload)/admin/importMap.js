@@ -1,3 +1,4 @@
+import { StudentPlanGrid as StudentPlanGrid_94cb85c11b8dd9fb739a3f7fa9981d9f } from '../../../components/admin/StudentPlanGrid/StudentPlanGrid'
 import { InviteStudent as InviteStudent_4e6c4a2781c608b8af4bf1bfea259aba } from '../../../components/admin/InviteStudent/InviteStudent'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -23,6 +24,7 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { PlanGrid as PlanGrid_0afb00fef8579313bbf1dc2508835e4c } from '../../../components/admin/PlanGrid/PlanGrid'
+import { PlacementLevelWarning as PlacementLevelWarning_98a8aaeae47a358a23bd987b33b30917 } from '../../../components/admin/PlacementLevelWarning/PlacementLevelWarning'
 import { LogoutButton as LogoutButton_647af2a43e315d3a24346d5969d6c056 } from '../../../components/admin/LogoutButton/LogoutButton'
 import { EmailCodeLogin as EmailCodeLogin_b02c100cd75d818a8210841bcb08196e } from '../../../components/admin/EmailCodeLogin/EmailCodeLogin'
 import { StudentRedirect as StudentRedirect_ae21cc5687bbc6a5df39879a23c4f3de } from '../../../components/admin/StudentRedirect/StudentRedirect'
@@ -31,6 +33,7 @@ import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "/components/admin/StudentPlanGrid/StudentPlanGrid#StudentPlanGrid": StudentPlanGrid_94cb85c11b8dd9fb739a3f7fa9981d9f,
   "/components/admin/InviteStudent/InviteStudent#InviteStudent": InviteStudent_4e6c4a2781c608b8af4bf1bfea259aba,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -56,6 +59,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/PlanGrid/PlanGrid#PlanGrid": PlanGrid_0afb00fef8579313bbf1dc2508835e4c,
+  "/components/admin/PlacementLevelWarning/PlacementLevelWarning#PlacementLevelWarning": PlacementLevelWarning_98a8aaeae47a358a23bd987b33b30917,
   "/components/admin/LogoutButton/LogoutButton#LogoutButton": LogoutButton_647af2a43e315d3a24346d5969d6c056,
   "/components/admin/EmailCodeLogin/EmailCodeLogin#EmailCodeLogin": EmailCodeLogin_b02c100cd75d818a8210841bcb08196e,
   "/components/admin/StudentRedirect/StudentRedirect#StudentRedirect": StudentRedirect_ae21cc5687bbc6a5df39879a23c4f3de,

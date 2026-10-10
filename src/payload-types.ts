@@ -77,13 +77,21 @@ export interface Config {
     programs: Program;
     'task-pool': TaskPool;
     'program-plan-items': ProgramPlanItem;
+    enrollments: Enrollment;
+    'student-assignments': StudentAssignment;
+    'slot-logs': SlotLog;
+    'day-comments': DayComment;
     'auth-codes': AuthCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    users: {
+      enrollments: 'enrollments';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -95,6 +103,10 @@ export interface Config {
     programs: ProgramsSelect<false> | ProgramsSelect<true>;
     'task-pool': TaskPoolSelect<false> | TaskPoolSelect<true>;
     'program-plan-items': ProgramPlanItemsSelect<false> | ProgramPlanItemsSelect<true>;
+    enrollments: EnrollmentsSelect<false> | EnrollmentsSelect<true>;
+    'student-assignments': StudentAssignmentsSelect<false> | StudentAssignmentsSelect<true>;
+    'slot-logs': SlotLogsSelect<false> | SlotLogsSelect<true>;
+    'day-comments': DayCommentsSelect<false> | DayCommentsSelect<true>;
     'auth-codes': AuthCodesSelect<false> | AuthCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -149,6 +161,11 @@ export interface User {
   invitedAt?: string | null;
   locale?: ('ru' | 'en') | null;
   addressForm?: ('ty' | 'vy') | null;
+  enrollments?: {
+    docs?: (number | Enrollment)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -168,6 +185,131 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * Программа ученика после теста уровня. Назначайте со страницы ученика (Users → ученик).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enrollments".
+ */
+export interface Enrollment {
+  id: number;
+  student: number | User;
+  placement: {
+    test: 'murad' | 'ielts' | 'toefl' | 'cambridge' | 'duolingo' | 'pte' | 'efset' | 'other';
+    /**
+     * Вводится вручную, без автоматического пересчёта.
+     */
+    cefr: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+    takenAt: string;
+    testName?: string | null;
+    scoreText?: string | null;
+    exam?: ('KET' | 'PET' | 'FCE' | 'CAE' | 'CPE') | null;
+    score?: number | null;
+    note?: string | null;
+  };
+  /**
+   * Только опубликованные. Сменить можно, пока ученик не начал.
+   */
+  program: number | Program;
+  /**
+   * Начинает ученик («Начать»). Владелец может только завершить.
+   */
+  status: 'assigned' | 'active' | 'paused' | 'finished';
+  assignedAt?: string | null;
+  /**
+   * День 1 — день, когда ученик нажал «Начать».
+   */
+  startDate?: string | null;
+  timezone?: string | null;
+  /**
+   * Паузы ученика: первый день и последний день (пусто, пока пауза идёт). Ставит и снимает только ученик.
+   */
+  pauses?:
+    | {
+        from: string;
+        to?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "programs".
+ */
+export interface Program {
+  id: number;
+  title: string;
+  /**
+   * Lowercase letters, digits and hyphens, e.g. "a2-b1".
+   */
+  slug: string;
+  levelFrom: 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
+  levelTo: 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+  durationWeeks: number;
+  summary?: string | null;
+  /**
+   * Textbooks and resources for the program.
+   */
+  materials?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Exactly 7 days, repeated every week. Day 1 is the day the student starts.
+   */
+  weekTemplate: {
+    /**
+     * Up to 5 activities. Leave empty for a rest day.
+     */
+    slots?:
+      | {
+          slotType: number | SlotType;
+          /**
+           * Empty = the slot type's default minimum.
+           */
+          minMinutes?: number | null;
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  /**
+   * Students see only published programs.
+   */
+  status: 'draft' | 'published';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Kinds of daily activity (Anki, series …) that programs are built from.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "slot-types".
+ */
+export interface SlotType {
+  id: number;
+  name: string;
+  description?: string | null;
+  /**
+   * Minimum time for the slot to count as done, unless a program overrides it.
+   */
+  defaultMinMinutes: number;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -324,82 +466,6 @@ export interface ChallengeDay {
   createdAt: string;
 }
 /**
- * Kinds of daily activity (Anki, series …) that programs are built from.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "slot-types".
- */
-export interface SlotType {
-  id: number;
-  name: string;
-  description?: string | null;
-  /**
-   * Minimum time for the slot to count as done, unless a program overrides it.
-   */
-  defaultMinMinutes: number;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "programs".
- */
-export interface Program {
-  id: number;
-  title: string;
-  /**
-   * Lowercase letters, digits and hyphens, e.g. "a2-b1".
-   */
-  slug: string;
-  levelFrom: 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
-  levelTo: 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
-  durationWeeks: number;
-  summary?: string | null;
-  /**
-   * Textbooks and resources for the program.
-   */
-  materials?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Exactly 7 days, repeated every week. Day 1 is the day the student starts.
-   */
-  weekTemplate: {
-    /**
-     * Up to 5 activities. Leave empty for a rest day.
-     */
-    slots?:
-      | {
-          slotType: number | SlotType;
-          /**
-           * Empty = the slot type's default minimum.
-           */
-          minMinutes?: number | null;
-          id?: string | null;
-        }[]
-      | null;
-    id?: string | null;
-  }[];
-  /**
-   * Students see only published programs.
-   */
-  status: 'draft' | 'published';
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * Задания, из которых собираются планы программ. Студенты видят копии, не эти записи.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -439,6 +505,75 @@ export interface ProgramPlanItem {
   day: number;
   order: number;
   task: number | TaskPool;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Личный план ученика: копия плана программы на момент назначения. Правки меняют только этого ученика. Сетка — на странице ученика (Users → ученик → «План ученика»).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "student-assignments".
+ */
+export interface StudentAssignment {
+  id: number;
+  enrollment: number | Enrollment;
+  week: number;
+  day: number;
+  order: number;
+  /**
+   * Выбери задание из пула — его текст скопируется. Пусто — своё задание (текст ниже).
+   */
+  sourceTask?: (number | null) | TaskPool;
+  /**
+   * Копия, не ссылка: правки пула сюда не попадают.
+   */
+  text?: {
+    ru?: string | null;
+    en?: string | null;
+  };
+  editedByOwner?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Минуты ученика по слотам. Заполняется таймером ученика; здесь — для разбора.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "slot-logs".
+ */
+export interface SlotLog {
+  id: number;
+  enrollment: number | Enrollment;
+  date: string;
+  slotIndex: number;
+  /**
+   * Тип слота на момент записи (снимок).
+   */
+  slotType: number | SlotType;
+  minutes: number;
+  completed: boolean;
+  /**
+   * Пока таймер идёт. Пусто — таймер остановлен.
+   */
+  timerStartedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Что ученики пишут к своим дням. Пишет только сам ученик, на сайте; здесь — читать.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "day-comments".
+ */
+export interface DayComment {
+  id: number;
+  studentName?: string | null;
+  programTitle?: string | null;
+  programDay?: number | null;
+  enrollment: number | Enrollment;
+  student?: (number | null) | User;
+  date: string;
+  text: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -523,6 +658,22 @@ export interface PayloadLockedDocument {
         value: number | ProgramPlanItem;
       } | null)
     | ({
+        relationTo: 'enrollments';
+        value: number | Enrollment;
+      } | null)
+    | ({
+        relationTo: 'student-assignments';
+        value: number | StudentAssignment;
+      } | null)
+    | ({
+        relationTo: 'slot-logs';
+        value: number | SlotLog;
+      } | null)
+    | ({
+        relationTo: 'day-comments';
+        value: number | DayComment;
+      } | null)
+    | ({
         relationTo: 'auth-codes';
         value: number | AuthCode;
       } | null);
@@ -578,6 +729,7 @@ export interface UsersSelect<T extends boolean = true> {
   invitedAt?: T;
   locale?: T;
   addressForm?: T;
+  enrollments?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -744,6 +896,89 @@ export interface ProgramPlanItemsSelect<T extends boolean = true> {
   day?: T;
   order?: T;
   task?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enrollments_select".
+ */
+export interface EnrollmentsSelect<T extends boolean = true> {
+  student?: T;
+  placement?:
+    | T
+    | {
+        test?: T;
+        cefr?: T;
+        takenAt?: T;
+        testName?: T;
+        scoreText?: T;
+        exam?: T;
+        score?: T;
+        note?: T;
+      };
+  program?: T;
+  status?: T;
+  assignedAt?: T;
+  startDate?: T;
+  timezone?: T;
+  pauses?:
+    | T
+    | {
+        from?: T;
+        to?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "student-assignments_select".
+ */
+export interface StudentAssignmentsSelect<T extends boolean = true> {
+  enrollment?: T;
+  week?: T;
+  day?: T;
+  order?: T;
+  sourceTask?: T;
+  text?:
+    | T
+    | {
+        ru?: T;
+        en?: T;
+      };
+  editedByOwner?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "slot-logs_select".
+ */
+export interface SlotLogsSelect<T extends boolean = true> {
+  enrollment?: T;
+  date?: T;
+  slotIndex?: T;
+  slotType?: T;
+  minutes?: T;
+  completed?: T;
+  timerStartedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "day-comments_select".
+ */
+export interface DayCommentsSelect<T extends boolean = true> {
+  studentName?: T;
+  programTitle?: T;
+  programDay?: T;
+  enrollment?: T;
+  student?: T;
+  date?: T;
+  text?: T;
   updatedAt?: T;
   createdAt?: T;
 }

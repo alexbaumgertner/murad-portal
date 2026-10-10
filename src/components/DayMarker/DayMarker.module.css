@@ -1,0 +1,28 @@
+.marker {
+  display: inline-block;
+  min-width: 1em;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1;
+}
+
+.marker[data-state='done'] {
+  color: var(--color-success);
+}
+
+.marker[data-state='missed'] {
+  color: var(--color-danger);
+}
+
+.marker[data-state='today'] {
+  color: var(--color-accent-strong);
+}
+
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

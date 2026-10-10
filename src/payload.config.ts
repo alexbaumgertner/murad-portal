@@ -12,10 +12,14 @@ import { AuthCodes } from './collections/AuthCodes'
 import { ChallengeDays } from './collections/ChallengeDays'
 import { Challenges } from './collections/Challenges'
 import { ChangelogEntries } from './collections/ChangelogEntries'
+import { Enrollments } from './collections/Enrollments'
 import { Media } from './collections/Media'
 import { ProgramPlanItems } from './collections/ProgramPlanItems'
 import { Programs } from './collections/Programs'
+import { DayComments } from './collections/DayComments'
+import { SlotLogs } from './collections/SlotLogs'
 import { SlotTypes } from './collections/SlotTypes'
+import { StudentAssignments } from './collections/StudentAssignments'
 import { TaskPool } from './collections/TaskPool'
 import { Users } from './collections/Users'
 import { WaitlistSignups } from './collections/WaitlistSignups'
@@ -56,6 +60,10 @@ export default buildConfig({
     Programs,
     TaskPool,
     ProgramPlanItems,
+    Enrollments,
+    StudentAssignments,
+    SlotLogs,
+    DayComments,
     AuthCodes,
   ],
   // Content locales (the admin UI itself stays English). Missing translations fall back to English.

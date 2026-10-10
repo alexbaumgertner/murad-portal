@@ -36,6 +36,18 @@ export const Users: CollectionConfig = {
     delete: owner,
   },
   hooks: {
+    // AC 15 (story 012): a deleted student takes her enrollments with her. Before the delete:
+    // the database would otherwise null the required `student` column first.
+    beforeDelete: [
+      async ({ id, req }) => {
+        await req.payload.delete({
+          collection: 'enrollments',
+          where: { student: { equals: id } },
+          overrideAccess: true,
+          req,
+        })
+      },
+    ],
     beforeChange: [
       // `email` is the login identity: only the owner may change it, not a student on her own record.
       ({ data, originalDoc, req }) => {
@@ -61,6 +73,9 @@ export const Users: CollectionConfig = {
       // Every new student gets the invite, however she was created. A failed email throws
       // and rolls the create back, so nobody ends up with an account she never heard of.
       async ({ doc, operation, req }) => {
+        // Server-only context (a request over HTTP cannot set it): the demo seed creates students
+        // whose addresses are not real mailboxes.
+        if (req.context.skipEmail === true) return doc
         if (operation === 'create' && doc.role === 'student') {
           await sendInvite(
             req.payload,
@@ -117,6 +132,29 @@ export const Users: CollectionConfig = {
         { label: 'Ты', value: 'ty' },
         { label: 'Вы', value: 'vy' },
       ],
+    },
+    {
+      // Story 012: the student's programs on her page; «Create new» assigns one with her preset.
+      name: 'enrollments',
+      type: 'join',
+      collection: 'enrollments',
+      on: 'student',
+      label: 'Программы',
+      defaultSort: '-assignedAt',
+      access: { read: ownerOnly },
+      admin: {
+        condition: (data) => data?.role === 'student',
+        defaultColumns: ['program', 'status', 'assignedAt', 'startDate'],
+      },
+    },
+    {
+      // Story 018: the student's personal plan as a week × day grid; each task opens its editor.
+      name: 'studentPlan',
+      type: 'ui',
+      admin: {
+        condition: (data) => data?.role === 'student',
+        components: { Field: '/components/admin/StudentPlanGrid/StudentPlanGrid#StudentPlanGrid' },
+      },
     },
   ],
 }

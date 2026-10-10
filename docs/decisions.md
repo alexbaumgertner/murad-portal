@@ -325,3 +325,14 @@ Payload's REST/GraphQL stays available for admin and future integrations, but pr
 - graphql 16: Payload 3 peer range is `^16.8.1`.
 - Next.js ≥16.3.3: minimum supported by Payload 3.90 on the 16.x line.
   Revisit on each Payload minor release (`pnpm outdated`).
+
+## Slot timer signal is synthesized, not a sound file (story 014)
+
+The «minimum reached» signal is two notes made with the Web Audio API (`src/lib/chime.ts`): no asset to host or cache, no request, no third-party origin, so the CSP is unchanged. Browsers keep audio locked until a tap, so «Старт» primes it and a blocked signal falls back to a visible banner plus «Проверить звук».
+Students never write `slot-logs` directly (owner-only create/update/delete); the Server Actions write with the Local API after deriving the enrollment, date and minutes themselves, so no minutes are trusted from the browser.
+Revisit if: Murad wants a custom sound (then host a file ≤ 50 KB in `public/` and play it with `new Audio()`).
+
+## Pauses are written by the server, not by the student (story 017)
+
+A student has no write access to `enrollments.status` or `enrollments.pauses`. «Пауза» and «Продолжить» are Server Actions that derive the enrollment from the session and write with the Local API and the `pauseTransition` context, which the collection hooks accept only for `status` + `pauses` and only active ⇄ paused (a request over HTTP cannot set a context).
+A pause begins today (that day is paused too) and ends yesterday on resume, so the program day stands still. Known limit: work logged on the day a pause begins is counted toward that program day, while the timer on the resume day starts from 0.
