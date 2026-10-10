@@ -42,7 +42,7 @@ export type StudyOverview =
       logs: Map<number, LoggedSlot[]>
     }
 
-function templateOf(program: Program): { slots: SlotView[] }[] {
+export function templateOf(program: Program): { slots: SlotView[] }[] {
   return program.weekTemplate.map((day) => ({
     slots: (day.slots ?? []).flatMap((slot) => {
       const type = slot.slotType as SlotType | number
