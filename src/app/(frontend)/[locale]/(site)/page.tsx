@@ -309,8 +309,26 @@ export default async function HomePage({ params }: PageProps) {
                   className={`${styles.fillDeep} ${styles.strokeInk}`}
                   strokeWidth="1"
                 />
-                <circle cx="150" cy="150" r="92" className={styles.fillAccent} opacity="0.4" />
-                <circle cx="150" cy="150" r="46" className={styles.fillInk} />
+                <circle
+                  cx="150"
+                  cy="150"
+                  r="92"
+                  className={`${styles.fillAccent} ${styles.zpdMiddle}`}
+                />
+                <circle
+                  cx="150"
+                  cy="150"
+                  r="46"
+                  fill="none"
+                  className={`${styles.strokeAccent} ${styles.zpdRipple}`}
+                  strokeWidth="1.5"
+                />
+                <circle
+                  cx="150"
+                  cy="150"
+                  r="46"
+                  className={`${styles.fillInk} ${styles.zpdCore}`}
+                />
               </svg>
               <ul className={styles.zpdLegend}>
                 <li>

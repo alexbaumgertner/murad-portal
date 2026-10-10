@@ -1028,3 +1028,65 @@
     transform: translateY(-6px);
   }
 }
+
+/* ---------- zone of proximal development: the known core grows into the zone with help ---------- */
+.zpdMiddle {
+  opacity: 0.4;
+}
+
+.zpdMiddle,
+.zpdCore,
+.zpdRipple {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.zpdRipple {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .zpdMiddle {
+    animation: zpd-breathe 4.5s ease-in-out infinite alternate;
+  }
+
+  .zpdCore {
+    animation: zpd-grow 4.5s ease-in-out infinite alternate;
+  }
+
+  .zpdRipple {
+    animation: zpd-ripple 4.5s ease-out infinite;
+  }
+}
+
+@keyframes zpd-breathe {
+  from {
+    transform: scale(0.93);
+  }
+
+  to {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes zpd-grow {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.45);
+  }
+}
+
+@keyframes zpd-ripple {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(2.9);
+  }
+}
