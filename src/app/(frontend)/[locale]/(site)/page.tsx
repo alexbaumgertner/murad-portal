@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import { hasLocale } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
+import Image from 'next/image'
 
+import heroWorld from '@/assets/hero-world.webp'
 import { siteConfig } from '@/config/site'
 import { alternatesFor } from '@/i18n/alternates'
 import { routing } from '@/i18n/routing'
@@ -90,157 +92,13 @@ export default async function HomePage({ params }: PageProps) {
             </div>
           </div>
           <div className={styles.heroVisual}>
-            <div className={styles.windowFrame}>
-              <svg
-                viewBox="0 0 400 320"
-                width="100%"
-                role="img"
-                aria-label={t('hero.illustrationAlt')}
-              >
-                <rect x="0" y="0" width="400" height="320" className={styles.fillFrame} />
-                <circle
-                  cx="300"
-                  cy="90"
-                  r="24"
-                  fill="none"
-                  className={styles.strokeAccent}
-                  strokeWidth="1.4"
-                />
-                <path
-                  d="M270 258 L270 188 M282 258 L282 188 M294 258 L294 188 M306 258 L306 188"
-                  className={styles.strokeInk}
-                  strokeWidth="1.1"
-                />
-                <path
-                  d="M262 188 L314 188 L288 162 Z"
-                  fill="none"
-                  className={styles.strokeInk}
-                  strokeWidth="1.1"
-                />
-                <line
-                  x1="256"
-                  y1="258"
-                  x2="320"
-                  y2="258"
-                  className={styles.strokeInk}
-                  strokeWidth="1.1"
-                />
-                <rect
-                  x="335"
-                  y="150"
-                  width="28"
-                  height="108"
-                  fill="none"
-                  className={styles.strokeSoft}
-                  strokeWidth="1"
-                  opacity="0.7"
-                />
-                <path
-                  d="M120 44 L120 296 L258 296 L258 44 Z"
-                  fill="none"
-                  className={styles.strokeInk}
-                  strokeWidth="1.6"
-                />
-                <defs>
-                  <clipPath id="doorway">
-                    <rect x="120" y="44" width="138" height="252" />
-                  </clipPath>
-                  <radialGradient id="doorway-glow" cx="50%" cy="60%" r="65%">
-                    <stop offset="0%" className={styles.glowStart} />
-                    <stop offset="100%" className={styles.glowEnd} />
-                  </radialGradient>
-                </defs>
-                <g clipPath="url(#doorway)">
-                  <rect x="120" y="44" width="138" height="252" fill="url(#doorway-glow)" />
-                  {/* New worlds behind the door: a university, an office, the globe. */}
-                  <g className={`${styles.world} ${styles.worldFirst}`}>
-                    <path
-                      d="M150 176 L228 176 L189 142 Z M158 176 L158 252 M173 176 L173 252 M189 176 L189 252 M205 176 L205 252 M220 176 L220 252 M148 252 L230 252 M142 262 L236 262"
-                      fill="none"
-                      className={styles.strokeAccent}
-                      strokeWidth="1.5"
-                    />
-                  </g>
-                  <g className={`${styles.world} ${styles.worldSecond}`}>
-                    <path
-                      d="M150 252 L150 160 L172 160 L172 252 M178 252 L178 120 L204 120 L204 252 M210 252 L210 178 L228 178 L228 252 M142 252 L236 252 M184 134 L198 134 M184 150 L198 150 M184 166 L198 166 M184 182 L198 182"
-                      fill="none"
-                      className={styles.strokeAccent}
-                      strokeWidth="1.5"
-                    />
-                  </g>
-                  <g className={`${styles.world} ${styles.worldThird}`}>
-                    <circle
-                      cx="189"
-                      cy="190"
-                      r="46"
-                      fill="none"
-                      className={styles.strokeAccent}
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M143 190 L235 190 M189 144 A20 46 0 0 1 189 236 A20 46 0 0 1 189 144 M156 160 Q189 172 222 160 M156 220 Q189 208 222 220"
-                      fill="none"
-                      className={styles.strokeAccent}
-                      strokeWidth="1.2"
-                    />
-                  </g>
-                  <circle
-                    cx="148"
-                    cy="78"
-                    r="2"
-                    className={`${styles.fillAccent} ${styles.spark}`}
-                  />
-                  <circle
-                    cx="230"
-                    cy="96"
-                    r="2.4"
-                    className={`${styles.fillAccent} ${styles.spark} ${styles.sparkLate}`}
-                  />
-                  <circle
-                    cx="214"
-                    cy="64"
-                    r="1.6"
-                    className={`${styles.fillAccent} ${styles.spark} ${styles.sparkLater}`}
-                  />
-                </g>
-                <g className={styles.doorLeaf}>
-                  <path
-                    d="M120 44 L233 62 L233 284 L120 296 Z"
-                    className={`${styles.fillFrame} ${styles.strokeInk}`}
-                    strokeWidth="1.4"
-                  />
-                  <circle cx="144" cy="172" r="3" className={styles.fillInk} />
-                  <circle
-                    cx="150"
-                    cy="222"
-                    r="12"
-                    fill="none"
-                    className={styles.strokeAccent}
-                    strokeWidth="1.3"
-                  />
-                  <path
-                    d="M145 222 l4 4 l7 -8"
-                    fill="none"
-                    className={styles.strokeAccent}
-                    strokeWidth="1.3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </g>
-                <line
-                  x1="0"
-                  y1="272"
-                  x2="400"
-                  y2="272"
-                  className={styles.strokeInk}
-                  strokeWidth="1"
-                />
-              </svg>
-            </div>
-            <div className={styles.photoSlot}>
-              <span>{t('hero.photo')}</span>
-            </div>
+            <Image
+              src={heroWorld}
+              alt={t('hero.illustrationAlt')}
+              className={styles.heroImage}
+              sizes="(max-width: 860px) 100vw, 560px"
+              priority
+            />
           </div>
         </div>
       </section>

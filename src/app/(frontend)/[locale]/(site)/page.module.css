@@ -158,7 +158,7 @@
 
 .heroGrid {
   display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
+  grid-template-columns: 0.95fr 1.05fr;
   gap: 3.5rem;
   align-items: center;
 }
@@ -226,15 +226,12 @@
   position: relative;
 }
 
-.windowFrame {
-  padding: 1.125rem;
-  border: 1.5px solid var(--color-ink);
-  background: var(--color-paper-frame);
-}
-
-.windowFrame svg {
+.heroImage {
   display: block;
+  width: 100%;
   height: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .photoSlot {
@@ -885,9 +882,6 @@
 }
 
 /* ---------- svg colours (attributes can't read tokens) ---------- */
-.fillFrame {
-  fill: var(--color-paper-frame);
-}
 
 .fillDeep {
   fill: var(--color-paper-deep);
@@ -907,126 +901,6 @@
 
 .strokeAccent {
   stroke: var(--color-brass);
-}
-
-.strokeSoft {
-  stroke: var(--color-ink-soft);
-}
-
-/* ---------- hero door: it swings open onto new worlds (university, office, globe) ---------- */
-.glowStart {
-  stop-color: var(--color-brass);
-  stop-opacity: 0.5;
-}
-
-.glowEnd {
-  stop-color: var(--color-paper-frame);
-  stop-opacity: 0;
-}
-
-.world {
-  opacity: 0;
-}
-
-.worldFirst {
-  opacity: 1;
-}
-
-.doorLeaf {
-  transform-box: fill-box;
-  transform-origin: left center;
-}
-
-.spark {
-  opacity: 0;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .doorLeaf {
-    animation: door-open 1.6s cubic-bezier(0.22, 0.8, 0.3, 1) 0.4s both;
-  }
-
-  .world {
-    animation: world-cycle 12s ease-in-out 1.2s infinite both;
-  }
-
-  .worldSecond {
-    animation-delay: 5.2s;
-  }
-
-  .worldThird {
-    animation-delay: 9.2s;
-  }
-
-  .spark {
-    animation: spark-rise 3.6s ease-in-out 1.6s infinite;
-  }
-
-  .sparkLate {
-    animation-delay: 2.4s;
-  }
-
-  .sparkLater {
-    animation-delay: 3.2s;
-  }
-
-  /* Nudging it shut on hover keeps the picture alive without a script. */
-  .windowFrame:hover .doorLeaf {
-    animation: door-ajar 1.2s ease-in-out both;
-  }
-}
-
-@keyframes door-open {
-  from {
-    transform: scaleX(1.22);
-  }
-
-  to {
-    transform: scaleX(0.28);
-  }
-}
-
-@keyframes door-ajar {
-  0%,
-  100% {
-    transform: scaleX(0.28);
-  }
-
-  50% {
-    transform: scaleX(0.6);
-  }
-}
-
-@keyframes world-cycle {
-  0% {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  8%,
-  30% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  38%,
-  100% {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-}
-
-@keyframes spark-rise {
-  0%,
-  100% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  50% {
-    opacity: 1;
-    transform: translateY(-6px);
-  }
 }
 
 /* ---------- zone of proximal development: the known core grows into the zone with help ---------- */
