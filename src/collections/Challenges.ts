@@ -197,10 +197,15 @@ export const Challenges: CollectionConfig = {
       labels: { singular: 'Video', plural: 'Videos' },
       admin: {
         description: 'Exactly one video per block: durationDays / blockDays items, in block order.',
-        initCollapsed: true,
       },
       fields: [
-        { name: 'title', type: 'text', required: true },
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+          validate: (value: unknown) =>
+            typeof value === 'string' && value.trim() ? true : 'Enter the video topic (title).',
+        },
         {
           name: 'youtubeUrl',
           type: 'text',
