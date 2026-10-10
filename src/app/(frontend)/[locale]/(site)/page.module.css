@@ -326,12 +326,14 @@
   margin-bottom: 1.5rem;
 }
 
-.zpd svg {
+.zpdImage {
   display: block;
   width: 100%;
-  max-width: 13rem;
+  max-width: 28rem;
   height: auto;
-  margin: 0 auto 1.375rem;
+  margin: 0 auto 1.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .zpdLegend {
@@ -357,16 +359,18 @@
 }
 
 .dotInner {
-  background: var(--color-ink);
+  border: 1px solid var(--color-zone-inner-line);
+  background: var(--color-zone-inner);
 }
 
 .dotMid {
-  background: var(--color-brass);
+  border: 1px solid var(--color-zone-mid-line);
+  background: var(--color-zone-mid);
 }
 
 .dotOuter {
-  border: 1px solid var(--color-ink);
-  background: var(--color-paper-deep);
+  border: 1px solid var(--color-zone-outer-line);
+  background: var(--color-zone-outer);
 }
 
 .quote {
@@ -883,86 +887,12 @@
 
 /* ---------- svg colours (attributes can't read tokens) ---------- */
 
-.fillDeep {
-  fill: var(--color-paper-deep);
-}
-
-.fillInk {
-  fill: var(--color-ink);
-}
-
 .fillAccent {
   fill: var(--color-brass);
 }
 
-.strokeInk {
-  stroke: var(--color-ink);
-}
-
 .strokeAccent {
   stroke: var(--color-brass);
-}
-
-/* ---------- zone of proximal development: the known core grows into the zone with help ---------- */
-.zpdMiddle {
-  opacity: 0.4;
-}
-
-.zpdMiddle,
-.zpdCore,
-.zpdRipple {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.zpdRipple {
-  opacity: 0;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .zpdMiddle {
-    animation: zpd-breathe 4.5s ease-in-out infinite alternate;
-  }
-
-  .zpdCore {
-    animation: zpd-grow 4.5s ease-in-out infinite alternate;
-  }
-
-  .zpdRipple {
-    animation: zpd-ripple 4.5s ease-out infinite;
-  }
-}
-
-@keyframes zpd-breathe {
-  from {
-    transform: scale(0.93);
-  }
-
-  to {
-    transform: scale(1.1);
-  }
-}
-
-@keyframes zpd-grow {
-  from {
-    transform: scale(1);
-  }
-
-  to {
-    transform: scale(1.45);
-  }
-}
-
-@keyframes zpd-ripple {
-  0% {
-    opacity: 0.9;
-    transform: scale(1);
-  }
-
-  100% {
-    opacity: 0;
-    transform: scale(2.9);
-  }
 }
 
 /* ---------- "Как я учу": the method gets more room and larger type ---------- */

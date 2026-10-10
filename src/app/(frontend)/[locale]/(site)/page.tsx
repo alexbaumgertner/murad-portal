@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 
 import heroWorld from '@/assets/hero-world.webp'
+import zpdImage from '@/assets/zpd.webp'
 import { siteConfig } from '@/config/site'
 import { alternatesFor } from '@/i18n/alternates'
 import { routing } from '@/i18n/routing'
@@ -159,35 +160,12 @@ export default async function HomePage({ params }: PageProps) {
           </div>
           <div>
             <div className={styles.zpd}>
-              <svg viewBox="0 0 300 300" role="img" aria-label={t('approach.diagramAlt')}>
-                <circle
-                  cx="150"
-                  cy="150"
-                  r="135"
-                  className={`${styles.fillDeep} ${styles.strokeInk}`}
-                  strokeWidth="1"
-                />
-                <circle
-                  cx="150"
-                  cy="150"
-                  r="92"
-                  className={`${styles.fillAccent} ${styles.zpdMiddle}`}
-                />
-                <circle
-                  cx="150"
-                  cy="150"
-                  r="46"
-                  fill="none"
-                  className={`${styles.strokeAccent} ${styles.zpdRipple}`}
-                  strokeWidth="1.5"
-                />
-                <circle
-                  cx="150"
-                  cy="150"
-                  r="46"
-                  className={`${styles.fillInk} ${styles.zpdCore}`}
-                />
-              </svg>
+              <Image
+                src={zpdImage}
+                alt={t('approach.diagramAlt')}
+                className={styles.zpdImage}
+                sizes="(max-width: 820px) 100vw, 520px"
+              />
               <ul className={styles.zpdLegend}>
                 <li>
                   <span className={`${styles.dot} ${styles.dotInner}`} aria-hidden="true" />

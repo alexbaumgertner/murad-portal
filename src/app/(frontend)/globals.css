@@ -38,6 +38,13 @@
   /* Filled buttons: dark enough for white text (AA) in both themes. */
   --color-button: #c2410c;
   --color-button-hover: #9a3412;
+  /* Zone-of-proximal-development legend; matches the illustration. */
+  --color-zone-inner: #b8f5c0;
+  --color-zone-inner-line: #22a84a;
+  --color-zone-mid: #fcd34d;
+  --color-zone-mid-line: #f5a623;
+  --color-zone-outer: #a6d5fa;
+  --color-zone-outer-line: #1d7be8;
   --color-forest: #1b1a17;
   --color-forest-line: rgb(255 255 255 / 14%);
   --color-forest-heading: #f3f1ec;
