@@ -1,12 +1,18 @@
 import { z } from 'zod'
 
+// Links in emails (invite, assigned program) must point at the real site, never at localhost.
+// Without NEXT_PUBLIC_SITE_URL, Vercel's own production domain is used; localhost is for local dev only.
+const defaultSiteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : 'http://localhost:3000'
+
 const serverEnvSchema = z.object({
   DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
   PAYLOAD_SECRET: z.string().min(16, 'PAYLOAD_SECRET must be at least 16 characters'),
   BLOB_READ_WRITE_TOKEN: z.string().min(1).optional(),
   RESEND_API_KEY: z.string().min(1).optional(),
   EMAIL_FROM_ADDRESS: z.email().default('onboarding@resend.dev'),
-  NEXT_PUBLIC_SITE_URL: z.url().default('http://localhost:3000'),
+  NEXT_PUBLIC_SITE_URL: z.url().default(defaultSiteUrl),
   // Dev-only schema push (never in production). Off for extra processes sharing a DB
   // with the dev server, e.g. Playwright workers: concurrent pushes can hang on a prompt.
   PAYLOAD_DB_PUSH: z
