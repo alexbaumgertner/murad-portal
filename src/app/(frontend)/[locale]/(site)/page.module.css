@@ -165,10 +165,10 @@
 }
 
 .heroInner {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.5rem;
   align-items: center;
-  text-align: center;
 }
 
 .eyebrow {
@@ -182,7 +182,6 @@
 }
 
 .heroTitle {
-  max-width: 20ch;
   margin-top: 1.25rem;
   font-size: clamp(2.25rem, 6vw, 3.75rem);
   line-height: 1.1;
@@ -191,21 +190,17 @@
 }
 
 .heroLead {
-  max-width: 44rem;
+  max-width: 36rem;
   margin-top: 1.25rem;
   color: var(--color-ink-soft);
   font-size: clamp(1.0625rem, 2vw, 1.1875rem);
   text-wrap: pretty;
 }
 
-.heroActions {
-  margin-top: 2rem;
-}
-
 .heroStat {
   width: 100%;
   max-width: 24rem;
-  margin-top: 2.5rem;
+  margin-top: 3rem;
   padding-top: 1.375rem;
   border-top: 1px solid var(--color-ink-line);
 }
@@ -249,8 +244,6 @@
 .heroImage {
   display: block;
   width: 100%;
-  max-width: 56rem;
-  margin-top: 3.5rem;
   height: auto;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
@@ -841,6 +834,7 @@
 
 @media (max-width: 820px) {
   .approachGrid,
+  .heroInner,
   .proofGrid,
   .blogGrid {
     grid-template-columns: 1fr;
@@ -882,8 +876,6 @@
 @media (prefers-reduced-motion: no-preference) {
   .heroTitle,
   .heroLead,
-  .heroActions,
-  .heroStat,
   .heroImage {
     animation: rise 0.7s ease both;
   }

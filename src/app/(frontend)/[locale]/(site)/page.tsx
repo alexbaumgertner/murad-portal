@@ -60,42 +60,20 @@ export default async function HomePage({ params }: PageProps) {
   if (!hasLocale(routing.locales, locale)) return null
   const t = await getTranslations({ locale, namespace: 'Home' })
 
-  const telegram = (className: string) => (
-    <div className={styles.ctaGroup}>
-      <a href={siteConfig.telegramUrl} target="_blank" rel="noopener" className={className}>
-        {t('hero.cta')}
-      </a>
-      <span className={styles.ctaHandle}>{siteConfig.telegramHandle}</span>
-    </div>
-  )
-
   return (
     <div className={styles.landing}>
       <section className={`${styles.section} ${styles.hero}`}>
         <div className={`${styles.wrap} ${styles.heroInner}`}>
-          <p className={styles.eyebrow}>{t('hero.eyebrow')}</p>
-          <h1 className={styles.heroTitle}>{t('hero.title')}</h1>
-          <p className={styles.heroLead}>{t('hero.lead')}</p>
-          <div className={styles.heroActions}>
-            {telegram(`${styles.btnCta} ${styles.btnLarge}`)}
-          </div>
-          <div className={styles.heroStat}>
-            <p className={styles.heroStatNum}>54</p>
-            <p className={styles.heroStatLabel}>{t('hero.statLabel')}</p>
-            <ul className={styles.breakdown}>
-              {BREAKDOWN.map(({ key, count }) => (
-                <li key={key}>
-                  <span>{t(`hero.${key}`)}</span>
-                  <b>{count}</b>
-                </li>
-              ))}
-            </ul>
+          <div>
+            <p className={styles.eyebrow}>{t('hero.eyebrow')}</p>
+            <h1 className={styles.heroTitle}>{t('hero.title')}</h1>
+            <p className={styles.heroLead}>{t('hero.lead')}</p>
           </div>
           <Image
             src={heroWorld}
             alt={t('hero.illustrationAlt')}
             className={styles.heroImage}
-            sizes="(max-width: 960px) 100vw, 896px"
+            sizes="(max-width: 820px) 100vw, 520px"
             priority
           />
         </div>
@@ -205,6 +183,18 @@ export default async function HomePage({ params }: PageProps) {
               </li>
             ))}
           </ol>
+          <div className={styles.heroStat}>
+            <p className={styles.heroStatNum}>54</p>
+            <p className={styles.heroStatLabel}>{t('hero.statLabel')}</p>
+            <ul className={styles.breakdown}>
+              {BREAKDOWN.map(({ key, count }) => (
+                <li key={key}>
+                  <span>{t(`hero.${key}`)}</span>
+                  <b>{count}</b>
+                </li>
+              ))}
+            </ul>
+          </div>
           <p className={`${styles.footnote} ${styles.footnoteLarge}`}>{t('method.footnote')}</p>
         </div>
       </section>
