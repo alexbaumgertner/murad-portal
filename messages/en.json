@@ -13,7 +13,10 @@
     "materials": "Materials",
     "exams": "Exams",
     "faq": "FAQ",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "study": "My study",
+    "studentNav": "Student menu",
+    "signOut": "Sign out"
   },
   "LocaleSwitcher": {
     "label": "Language",
@@ -356,7 +359,14 @@
     "greetingAnonymous": "Hi!",
     "empty": "Your study plan will appear here. Murad assigns a program after the placement test.",
     "logout": "Sign out",
-    "settingsLink": "Settings"
+    "settingsLink": "Settings",
+    "card": {
+      "label": "Your profile",
+      "avatarAlt": "Profile photo",
+      "level": "Level",
+      "goal": "Goal",
+      "since": "Studying with Murad since {date}"
+    }
   },
   "StudySettings": {
     "title": "Settings",
@@ -372,6 +382,24 @@
       "unauthorized": "Sign in to change your settings.",
       "invalid_form": "Pick one of the two options.",
       "server": "Could not save. Please try again."
+    },
+    "avatar": {
+      "legend": "Profile photo",
+      "hint": "JPEG, PNG or WebP, up to 2 MB.",
+      "choose": "Choose a photo",
+      "upload": "Upload",
+      "remove": "Remove photo",
+      "pending": "Saving…",
+      "saved": "Photo saved",
+      "removed": "Photo removed",
+      "errors": {
+        "unauthorized": "Sign in to change your photo.",
+        "no_file": "Choose a photo first.",
+        "empty": "The file is empty.",
+        "invalid_type": "Use a JPEG, PNG or WebP image.",
+        "too_large": "The photo is over 2 MB.",
+        "server": "Could not save the photo. Try again."
+      }
     }
   },
   "StudyProgram": {

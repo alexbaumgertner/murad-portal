@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { cookies, headers } from 'next/headers'
 import { z } from 'zod'
 
@@ -8,8 +9,16 @@ import { ADDRESS_FORM_COOKIE, addressFormCookieOptions } from '@/i18n/address-fo
 import { captureServerError, monitorAction } from '@/lib/monitoring/server'
 import { getPayloadClient } from '@/lib/payload'
 
-import { inviteSchema, settingsSchema, type InviteState, type SettingsState } from './schema'
-import { inviteStudent, updateAddressForm } from './service'
+import {
+  avatarFileSchema,
+  inviteSchema,
+  settingsSchema,
+  type AvatarError,
+  type AvatarState,
+  type InviteState,
+  type SettingsState,
+} from './schema'
+import { inviteStudent, removeAvatar, saveAvatar, updateAddressForm } from './service'
 
 export async function inviteStudentAction(
   _prev: InviteState,
@@ -60,5 +69,61 @@ export async function saveStudySettingsAction(
     }
     ;(await cookies()).set(ADDRESS_FORM_COOKIE, parsed.data.addressForm, addressFormCookieOptions())
     return { status: 'success', addressForm: parsed.data.addressForm }
+  })
+}
+
+export async function saveAvatarAction(
+  _prev: AvatarState,
+  formData: FormData,
+): Promise<AvatarState> {
+  return monitorAction('saveAvatarAction', async () => {
+    const payload = await getPayloadClient()
+    const student = await currentStudent(payload, await headers())
+    if (!student) return { status: 'error', error: 'unauthorized' }
+
+    // Only the file is read: the owner of the avatar is always the signed-in student.
+    const parsed = avatarFileSchema.safeParse(formData.get('avatar'))
+    if (!parsed.success) {
+      const picked = formData.get('avatar')
+      if (!(picked instanceof File) || picked.name === '') {
+        return { status: 'error', error: 'no_file' }
+      }
+      return { status: 'error', error: parsed.error.issues[0]?.message as AvatarError }
+    }
+    const file = parsed.data
+
+    try {
+      const result = await saveAvatar(payload, student, {
+        data: Buffer.from(await file.arrayBuffer()),
+        name: file.name,
+        type: file.type,
+        size: file.size,
+      })
+      if (!result.ok) return { status: 'error', error: result.error }
+    } catch (error) {
+      console.error('[students] saving avatar failed', error)
+      await captureServerError(error, 'students-avatar')
+      return { status: 'error', error: 'server' }
+    }
+    revalidatePath('/study')
+    return { status: 'success', removed: false }
+  })
+}
+
+export async function removeAvatarAction(): Promise<AvatarState> {
+  return monitorAction('removeAvatarAction', async () => {
+    const payload = await getPayloadClient()
+    const student = await currentStudent(payload, await headers())
+    if (!student) return { status: 'error', error: 'unauthorized' }
+
+    try {
+      await removeAvatar(payload, student)
+    } catch (error) {
+      console.error('[students] removing avatar failed', error)
+      await captureServerError(error, 'students-avatar')
+      return { status: 'error', error: 'server' }
+    }
+    revalidatePath('/study')
+    return { status: 'success', removed: true }
   })
 }

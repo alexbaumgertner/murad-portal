@@ -1,8 +1,10 @@
-import { APIError, type CollectionConfig, type FieldAccess } from 'payload'
+import { APIError, type CollectionConfig, type FieldAccess, type PayloadRequest } from 'payload'
 
 import { isOwner, owner } from '@/access'
 import { emailCodeStrategy } from '@/features/auth/strategy'
+import { LEVELS } from '@/features/programs/shape'
 import { sendInvite } from '@/features/students/send-invite'
+import { MAX_GOAL } from '@/features/students/shape'
 
 // Field-level twin of `owner`: students may not set `role` or `invitedAt`.
 const ownerOnly: FieldAccess = ({ req }) => isOwner(req.user)
@@ -43,6 +45,12 @@ export const Users: CollectionConfig = {
     // the database would otherwise null the required `student` column first.
     beforeDelete: [
       async ({ id, req }) => {
+        await req.payload.delete({
+          collection: 'avatars',
+          where: { owner: { equals: id } },
+          overrideAccess: true,
+          req,
+        })
         await req.payload.delete({
           collection: 'enrollments',
           where: { student: { equals: id } },
@@ -125,6 +133,39 @@ export const Users: CollectionConfig = {
       type: 'date',
       admin: { date: { pickerAppearance: 'dayAndTime' } },
       access: { create: ownerOnly, update: ownerOnly },
+    },
+    {
+      // Story 021: what Murad knows about her; shown on her card, written by the owner only.
+      name: 'level',
+      type: 'select',
+      options: [...LEVELS],
+      access: { create: ownerOnly, update: ownerOnly },
+    },
+    {
+      name: 'goal',
+      type: 'text',
+      maxLength: MAX_GOAL,
+      access: { create: ownerOnly, update: ownerOnly },
+    },
+    {
+      // Story 021: her profile picture; she uploads it on /study/settings.
+      name: 'avatar',
+      type: 'upload',
+      relationTo: 'avatars',
+      // A student may only link a file that is hers; the owner may link any.
+      validate: async (value: unknown, { req }: { req: PayloadRequest }) => {
+        const id = typeof value === 'object' && value ? (value as { id: number }).id : value
+        if (id == null || isOwner(req.user)) return true
+        const { totalDocs } = await req.payload.count({
+          collection: 'avatars',
+          where: { id: { equals: id as number } },
+          // The avatars read rule (own file only) is the guard: she can count nothing else.
+          overrideAccess: false,
+          user: req.user,
+          req,
+        })
+        return totalDocs > 0 ? true : 'This avatar is not yours.'
+      },
     },
     {
       name: 'locale',

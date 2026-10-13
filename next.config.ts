@@ -14,6 +14,8 @@ const sentryDsn = process.env.SENTRY_DSN?.trim() ?? ''
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Avatar uploads (2 MB max, story 021) go through a Server Action; the default cap is 1 MB.
+  experimental: { serverActions: { bodySizeLimit: '3mb' } },
   // The DSN is public by design; one server-side variable drives both runtimes.
   env: {
     NEXT_PUBLIC_SENTRY_DSN: sentryDsn,

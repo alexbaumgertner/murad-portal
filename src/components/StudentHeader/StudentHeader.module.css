@@ -1,0 +1,94 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--color-bg) 85%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: var(--width-content);
+  margin: 0 auto;
+  padding: 0.875rem var(--space-page);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-weight: 650;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.logo {
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
+  box-shadow: var(--shadow-sm);
+}
+
+.navArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.user {
+  min-width: 0;
+  max-width: 14rem;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signOut {
+  padding: 0.375rem 0.75rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.signOut:hover {
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+}
+
+.signOut:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* On phones the brand shrinks to the logo; name, sign out and language stay. */
+@media (max-width: 560px) {
+  .brandName {
+    display: none;
+  }
+
+  .navArea {
+    gap: 0.25rem;
+  }
+
+  .user {
+    max-width: 7rem;
+    font-size: 0.8125rem;
+  }
+
+  .signOut {
+    padding: 0.375rem;
+    font-size: 0.8125rem;
+  }
+}

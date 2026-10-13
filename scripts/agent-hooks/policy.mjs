@@ -9,6 +9,11 @@ const deny = (reason) => /** @type {Verdict} */ ({ allowed: false, reason })
 // Start of a command: beginning of the line or after a shell separator.
 const CMD = String.raw`(?:^|[;&|(]\s*|\bnpx\s+|\bpnpm\s+(?:exec\s+|dlx\s+)?)`
 
+// `DATABASE_URL=postgres://…@127.0.0.1|localhost[:port]/app_test|app_migr*` right before the command.
+const LOCAL_SCRATCH_MIGRATE = new RegExp(
+  String.raw`^\s*(?:\w+=\S+\s+)*DATABASE_URL=["']?postgres(?:ql)?:\/\/[^\s@/]*@(?:127\.0\.0\.1|localhost)(?::\d+)?\/(?:app_test|app_migr\w*)["']?(?:\s+\w+=\S+)*\s+(?:pnpm\s+)?(?:exec\s+)?(?:payload\s+)?migrate:(?:fresh|reset|down)\b`,
+)
+
 const SHELL_RULES = [
   {
     pattern:
@@ -30,6 +35,9 @@ const SHELL_RULES = [
   {
     pattern: /\bmigrate:(?:fresh|reset|down)\b/,
     reason: 'drops or rolls back data — run it yourself if you really mean it',
+    // Allowed only against a local scratch database named in the same command segment; the dev
+    // database `app` and anything remote stay blocked.
+    unless: LOCAL_SCRATCH_MIGRATE,
   },
   {
     pattern: /postgres(?:ql)?:\/\/\S*neon\.tech/i,
@@ -51,8 +59,19 @@ const SHELL_RULES = [
 
 /** @param {string} command @returns {Verdict} */
 export function checkShellCommand(command) {
-  const hit = SHELL_RULES.find((rule) => rule.pattern.test(command))
+  const hit = SHELL_RULES.find(
+    (rule) => rule.pattern.test(command) && !(rule.unless && everySegmentMatches(command, rule)),
+  )
   return hit ? deny(hit.reason) : ALLOW
+}
+
+// Every shell segment that trips the rule must satisfy its exception: an allowed local
+// segment cannot smuggle in a second, remote one (`a && b`, `a; b`, `a | b`).
+function everySegmentMatches(command, rule) {
+  return command
+    .split(/&&|\|\||[;&|]/)
+    .filter((segment) => rule.pattern.test(segment))
+    .every((segment) => rule.unless.test(segment))
 }
 
 // --- MCP ---------------------------------------------------------------------------------
