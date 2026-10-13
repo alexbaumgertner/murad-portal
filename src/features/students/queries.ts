@@ -15,9 +15,10 @@ export type StudentCard = {
 }
 
 // Payload may prefix the file URL with the server origin; the page wants a same-origin path.
+// Any other URL (a storage adapter serving files from its own host) is left as it is.
 function relativeUrl(url: string): string {
   const { pathname, search } = new URL(url, 'http://localhost')
-  return `${pathname}${search}`
+  return pathname.startsWith('/api/avatars/file/') ? `${pathname}${search}` : url
 }
 
 /**

@@ -158,8 +158,10 @@ export const Users: CollectionConfig = {
         if (id == null || isOwner(req.user)) return true
         const { totalDocs } = await req.payload.count({
           collection: 'avatars',
-          where: { id: { equals: id as number }, owner: { equals: req.user?.id ?? 0 } },
-          overrideAccess: true,
+          where: { id: { equals: id as number } },
+          // The avatars read rule (own file only) is the guard: she can count nothing else.
+          overrideAccess: false,
+          user: req.user,
           req,
         })
         return totalDocs > 0 ? true : 'This avatar is not yours.'

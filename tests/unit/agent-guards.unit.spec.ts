@@ -30,6 +30,22 @@ describe('shell guard', () => {
     ['psql "$DATABASE_URL" -c "truncate waitlist_signups"', 'truncate'],
     ['pnpm payload migrate:fresh', 'migrate:fresh'],
     ['pnpm payload migrate:down', 'migrate:down'],
+    [
+      'DATABASE_URL=postgresql://app:app@127.0.0.1:5432/app pnpm payload migrate:down',
+      'migrate:down on the dev database',
+    ],
+    [
+      'DATABASE_URL=postgresql://app:app@db.example.com:5432/app_test pnpm payload migrate:down',
+      'migrate:down on a remote host',
+    ],
+    [
+      'DATABASE_URL=postgresql://app:app@127.0.0.1:5433/app_test pnpm payload migrate:down; pnpm payload migrate:down',
+      'a second, unscoped migrate:down',
+    ],
+    [
+      'export DATABASE_URL=postgresql://app:app@127.0.0.1:5433/app_test; pnpm payload migrate:fresh',
+      'exported URL does not scope the next command',
+    ],
     ['psql postgresql://u:p@ep-cool-123-pooler.eu-central-1.aws.neon.tech/neondb', 'Neon URL'],
     ['DATABASE_URL=postgres://u:p@ep-x.neon.tech/db pnpm seed', 'Neon URL in env prefix'],
     ['neonctl branches delete main', 'Neon CLI'],
@@ -53,6 +69,8 @@ describe('shell guard', () => {
     'git push --force-with-lease origin feature/x',
     'git reset --hard HEAD~1',
     'pnpm migrate:create add-tags',
+    'DATABASE_URL=postgresql://app:app@127.0.0.1:5433/app_migr_021 PAYLOAD_DB_PUSH=false pnpm payload migrate:down',
+    'DATABASE_URL=postgresql://app:app@localhost:5433/app_test pnpm payload migrate:fresh',
     'psql postgresql://app:app@127.0.0.1:5432/app -c "select 1"',
     'vercel --help',
     'vercel deploy',
