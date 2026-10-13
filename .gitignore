@@ -15,6 +15,7 @@ next-env.d.ts
 
 # payload local uploads
 /media
+/avatars
 
 # testing
 /coverage

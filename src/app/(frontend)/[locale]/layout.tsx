@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { notFound } from 'next/navigation'
 import type { ReactNode } from 'react'
 
+import { HeaderSwitch } from '@/components/HeaderSwitch/HeaderSwitch'
 import { PageViews } from '@/components/PageViews/PageViews'
 import { SiteFooter } from '@/components/SiteFooter/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader/SiteHeader'
@@ -49,7 +50,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
         <NextIntlClientProvider>
-          <SiteHeader />
+          <HeaderSwitch>
+            <SiteHeader />
+          </HeaderSwitch>
           <main>{children}</main>
           <SiteFooter />
         </NextIntlClientProvider>

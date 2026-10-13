@@ -3,8 +3,10 @@ import { createTranslator, hasLocale, NextIntlClientProvider } from 'next-intl'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 
+import { AvatarForm } from '@/components/AvatarForm/AvatarForm'
 import { StudySettings } from '@/components/StudySettings/StudySettings'
 import { currentStudent } from '@/features/auth/current-user'
+import { getStudentCard } from '@/features/students/queries'
 import { messagesFor, parseAddressForm, studentMessages } from '@/i18n/address-form'
 import { Link, redirect } from '@/i18n/navigation'
 import { routing } from '@/i18n/routing'
@@ -36,6 +38,7 @@ export default async function StudySettingsPage({ params }: PageProps) {
   if (!student) return redirect({ href: '/login', locale })
 
   const addressForm = parseAddressForm(student.addressForm)
+  const { avatarUrl } = await getStudentCard(await getPayloadClient(), student)
   const t = createTranslator({
     locale,
     messages: messagesFor(locale, addressForm),
@@ -52,6 +55,7 @@ export default async function StudySettingsPage({ params }: PageProps) {
       </header>
       <NextIntlClientProvider locale={locale} messages={studentMessages(locale, addressForm)}>
         <StudySettings addressForm={addressForm} />
+        <AvatarForm hasAvatar={avatarUrl !== null} />
       </NextIntlClientProvider>
     </div>
   )

@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { emailSchema } from '@/features/auth/schema'
+import { avatarError } from './shape'
 import { addressForms, type AddressForm } from '@/i18n/address-form'
 
 export const inviteSchema = z.object({
@@ -35,3 +36,20 @@ export type SettingsState =
   | { status: 'error'; error: SettingsError }
 
 export const initialSettingsState: SettingsState = { status: 'idle' }
+
+/** `/study/settings`: the profile picture (story 021). Errors are codes; the component translates them. */
+export type AvatarError =
+  'unauthorized' | 'no_file' | 'empty' | 'invalid_type' | 'too_large' | 'server'
+
+export type AvatarState =
+  | { status: 'idle' }
+  | { status: 'success'; removed: boolean }
+  | { status: 'error'; error: AvatarError }
+
+export const initialAvatarState: AvatarState = { status: 'idle' }
+
+/** The picked file: the message of a failed check is the error code. */
+export const avatarFileSchema = z.instanceof(File).superRefine((file, ctx) => {
+  const error = avatarError(file)
+  if (error) ctx.addIssue({ code: 'custom', message: error })
+})

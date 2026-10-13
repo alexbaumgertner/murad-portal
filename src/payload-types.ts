@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    avatars: Avatar;
     changelog: Changelog;
     'waitlist-signups': WaitlistSignup;
     challenges: Challenge;
@@ -95,6 +96,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    avatars: AvatarsSelect<false> | AvatarsSelect<true>;
     changelog: ChangelogSelect<false> | ChangelogSelect<true>;
     'waitlist-signups': WaitlistSignupsSelect<false> | WaitlistSignupsSelect<true>;
     challenges: ChallengesSelect<false> | ChallengesSelect<true>;
@@ -159,6 +161,9 @@ export interface User {
   role: 'owner' | 'student';
   name?: string | null;
   invitedAt?: string | null;
+  level?: ('A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2') | null;
+  goal?: string | null;
+  avatar?: (number | null) | Avatar;
   locale?: ('ru' | 'en') | null;
   addressForm?: ('ty' | 'vy') | null;
   enrollments?: {
@@ -185,6 +190,25 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "avatars".
+ */
+export interface Avatar {
+  id: number;
+  owner: number | User;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * Программа ученика после теста уровня. Назначайте со страницы ученика (Users → ученик).
@@ -626,6 +650,10 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
+        relationTo: 'avatars';
+        value: number | Avatar;
+      } | null)
+    | ({
         relationTo: 'changelog';
         value: number | Changelog;
       } | null)
@@ -727,6 +755,9 @@ export interface UsersSelect<T extends boolean = true> {
   role?: T;
   name?: T;
   invitedAt?: T;
+  level?: T;
+  goal?: T;
+  avatar?: T;
   locale?: T;
   addressForm?: T;
   enrollments?: T;
@@ -754,6 +785,24 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "avatars_select".
+ */
+export interface AvatarsSelect<T extends boolean = true> {
+  owner?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

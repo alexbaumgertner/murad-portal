@@ -1,0 +1,73 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+  font-size: 1.5rem;
+  font-weight: 650;
+  object-fit: cover;
+}
+
+.body {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.name {
+  font-size: 1.125rem;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.email {
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.rows {
+  display: grid;
+  gap: 0.125rem;
+  margin: 0.375rem 0 0;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.row dt {
+  color: var(--color-text-muted);
+}
+
+.row dt::after {
+  content: ':';
+}
+
+.row dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.since {
+  margin-top: 0.375rem;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}

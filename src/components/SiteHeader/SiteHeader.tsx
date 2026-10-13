@@ -18,7 +18,8 @@ export function SiteHeader() {
   const t = useTranslations('Header')
 
   return (
-    <header className={styles.header}>
+    // Also rendered inside <main> under /study (study layout), so the banner role is explicit.
+    <header role="banner" className={styles.header}>
       <div className={styles.inner}>
         <Link href="/" className={styles.brand} aria-label={t('home', { name: siteConfig.name })}>
           <span className={styles.logo} aria-hidden="true" />

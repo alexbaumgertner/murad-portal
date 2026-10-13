@@ -9,10 +9,13 @@ import { DayGrid } from '@/components/DayGrid/DayGrid'
 import { PauseProgram } from '@/components/PauseProgram/PauseProgram'
 import { SlotTimers } from '@/components/SlotTimers/SlotTimers'
 import { ManualMark } from '@/components/ManualMark/ManualMark'
+import { StudentCard } from '@/components/StudentCard/StudentCard'
 import { ProgramCard } from '@/components/ProgramCard/ProgramCard'
 import { StartProgram } from '@/components/StartProgram/StartProgram'
 import { logoutAction } from '@/features/auth/actions'
 import { currentStudent } from '@/features/auth/current-user'
+import { getStudentCard } from '@/features/students/queries'
+import { formatStartDate } from '@/features/students/shape'
 import { getStudyView } from '@/features/enrollments/queries'
 import { getDayComments } from '@/features/day-comments/queries'
 import { getTimerState } from '@/features/slot-timer/service'
@@ -77,6 +80,7 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
   const tt = createTranslator({ locale, messages, namespace: 'StudyToday' })
   const tpause = createTranslator({ locale, messages, namespace: 'StudyPause' })
   const view = await getStudyView(payload, student, locale)
+  const card = await getStudentCard(payload, student)
   // An assigned program shows the start card; otherwise a started (or just finished) one shows «Сегодня».
   // A timer left running is settled first (4-hour cap, minimum reached while the tab was closed),
   // so the numbers below already include it.
@@ -132,6 +136,18 @@ export default async function StudyPage({ params, searchParams }: PageProps) {
 
   return (
     <div className={styles.page}>
+      <StudentCard
+        card={card}
+        labels={{
+          label: t('card.label'),
+          avatarAlt: t('card.avatarAlt'),
+          level: t('card.level'),
+          goal: t('card.goal'),
+          since: card.startedAt
+            ? t('card.since', { date: formatStartDate(card.startedAt, locale) })
+            : null,
+        }}
+      />
       <header className={styles.header}>
         <h1 className={styles.title}>
           {student.name ? t('greeting', { name: student.name }) : t('greetingAnonymous')}

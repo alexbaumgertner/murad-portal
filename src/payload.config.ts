@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url'
 
 import { owner } from './access'
 import { AuthCodes } from './collections/AuthCodes'
+import { Avatars } from './collections/Avatars'
 import { ChallengeDays } from './collections/ChallengeDays'
 import { Challenges } from './collections/Challenges'
 import { ChangelogEntries } from './collections/ChangelogEntries'
@@ -52,6 +53,7 @@ export default buildConfig({
   collections: [
     Users,
     Media,
+    Avatars,
     ChangelogEntries,
     WaitlistSignups,
     Challenges,
@@ -103,7 +105,7 @@ export default buildConfig({
   plugins: [
     vercelBlobStorage({
       enabled: Boolean(env.BLOB_READ_WRITE_TOKEN),
-      collections: { media: true },
+      collections: { media: true, avatars: true },
       token: env.BLOB_READ_WRITE_TOKEN,
     }),
   ],
