@@ -382,7 +382,7 @@ describe('story 022 · planner core', () => {
 
   it('026 8/9. a background image and its effects persist and can be removed', async () => {
     const { planner } = await weeksOf(anna)
-    const image = 'data:image/jpeg;base64,/9j/4AAQSkZJRg=='
+    const image = 'https://example.com/bg.jpg'
     await saveAppearance(payload, anna, {
       plannerId: planner.id,
       appearance: { background: { image, blur: 12, overlay: -30, grain: 40, grainSize: 5 } },

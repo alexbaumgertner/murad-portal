@@ -37,7 +37,14 @@
 }
 
 .corner {
+  display: grid;
+  place-items: center;
   background: var(--pl-header, #2b2d31);
+  color: #fff;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.85;
 }
 
 .date {

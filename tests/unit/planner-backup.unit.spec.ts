@@ -14,7 +14,7 @@ const sample = (): PlannerData => {
   appearance.type.tasks = { font: 'lora', size: 18, bold: true, italic: true }
   appearance.background = {
     ...appearance.background,
-    image: 'data:image/png;base64,iVBORw0KGgo=',
+    image: 'https://example.com/bg.jpg',
     blur: 9,
     overlay: -20,
   }
@@ -213,7 +213,7 @@ describe('story 028 · backup', () => {
     expect(d.appearance.type.tasks).toMatchObject({ font: 'lora', size: 20, bold: true })
     expect(d.appearance.type.goalText).toMatchObject({ font: 'default', size: 70 }) // unknown font → original
     expect(d.appearance.background).toMatchObject({
-      image: 'data:image/jpeg;base64,/9j/4AAQ',
+      image: null, // the mock's picture is a data URL: not imported, there is no upload yet
       blur: 12,
       grain: 30,
       grainSize: 4,

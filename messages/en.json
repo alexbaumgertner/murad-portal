@@ -713,7 +713,6 @@
       "background": {
         "title": "Background",
         "color": "Background color",
-        "image": "Background image",
         "mode": "Image mode",
         "modes": {
           "cover": "Cover",
@@ -729,14 +728,7 @@
           "grain": "Grain intensity",
           "grainSize": "Grain size"
         },
-        "remove": "Remove image",
-        "reset": "Reset background",
-        "errors": {
-          "unsupported_type": "Use a JPG, PNG or WebP image",
-          "too_large": "The file is larger than 10 MB",
-          "decode_failed": "This image could not be read",
-          "still_too_big": "The image is too detailed to store. Try a smaller one"
-        }
+        "reset": "Reset background"
       },
       "bars": {
         "title": "Progress bars",
@@ -784,6 +776,8 @@
         "importConfirm": "Replace this planner with the backup? Everything in it now will be lost.",
         "resetConfirm": "Reset the entire planner? Every week, task, tick, note and setting will be deleted for good. This cannot be undone."
       }
-    }
+    },
+    "slot": "Slot",
+    "slotHint": "Priority slot: row I, II, III… of the day’s exercises"
   }
 }

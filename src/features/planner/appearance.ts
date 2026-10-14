@@ -108,14 +108,11 @@ const typeSchema = (section: TypeSection) => {
 
 export const BACKGROUND_MODES = ['cover', 'contain', 'center', 'fit'] as const
 export type BackgroundMode = (typeof BACKGROUND_MODES)[number]
-/** Largest stored image, as a data URL. Server Actions accept 3 MB, and this is sent on every save. */
-export const MAX_IMAGE_CHARS = 1_200_000
-export const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const
 
 export type Background = {
   color: string
   opacity: number
-  /** `data:image/(jpeg|png|webp);base64,…` or null. */
+  /** `https://…` or `/…` URL of a hosted picture, or null. There is no upload yet: `data:` URLs are dropped. */
   image: string | null
   mode: BackgroundMode
   /** px, 0–40 */
@@ -142,10 +139,12 @@ export const DEFAULT_BACKGROUND: Background = {
   grainSize: 3,
 }
 
-const IMAGE_PATTERN = /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/
+/** A URL, never the picture itself: the appearance JSON is sent on every save. */
+const MAX_IMAGE_URL = 2000
+const IMAGE_PATTERN = /^(?:https:\/\/|\/(?!\/))\S+$/
 
 export const isStoredImage = (value: unknown): value is string =>
-  typeof value === 'string' && value.length <= MAX_IMAGE_CHARS && IMAGE_PATTERN.test(value)
+  typeof value === 'string' && value.length <= MAX_IMAGE_URL && IMAGE_PATTERN.test(value)
 
 const num = (min: number, max: number, fallback: number) =>
   z.number().min(min).max(max).catch(fallback)
@@ -166,15 +165,6 @@ const backgroundSchema = z
     grainSize: num(1, 12, DEFAULT_BACKGROUND.grainSize),
   })
   .catch(() => ({ ...DEFAULT_BACKGROUND }))
-
-/** Width/height that fit inside `max` on the long side, never enlarging. */
-export function fitWithin(width: number, height: number, max: number) {
-  const scale = Math.min(1, max / Math.max(width, height))
-  return {
-    width: Math.max(1, Math.round(width * scale)),
-    height: Math.max(1, Math.round(height * scale)),
-  }
-}
 
 /**
  * A tileable film-grain texture (SVG turbulence, gray, fully opaque). Meant for `mix-blend-mode:
@@ -315,11 +305,6 @@ export const restoreOriginalFonts = (appearance: Appearance): Appearance =>
 export const resetTypography = (appearance: Appearance): Appearance => ({
   ...appearance,
   type: defaultType(),
-})
-
-export const removeBackgroundImage = (appearance: Appearance): Appearance => ({
-  ...appearance,
-  background: { ...appearance.background, image: null },
 })
 
 export const resetColors = (appearance: Appearance): Appearance => ({

@@ -616,6 +616,9 @@ export interface DayComment {
 export interface Planner {
   id: number;
   student: number | User;
+  /**
+   * Любая дата в формате YYYY-MM-DD: при сохранении сдвинется на понедельник той же недели (2026-10-10 → 2026-10-05).
+   */
   baseDate: string;
   studentName?: string | null;
   goal?: string | null;

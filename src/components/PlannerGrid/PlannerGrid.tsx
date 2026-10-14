@@ -107,7 +107,9 @@ export function PlannerGrid({
       <div className={styles.scroll}>
         <div className={styles.grid} role="table" aria-label={t('gridLabel')}>
           <div role="row" className={styles.row}>
-            <span role="columnheader" className={styles.corner} />
+            <span role="columnheader" className={styles.corner} title={t('slotHint')}>
+              {t('slot')}
+            </span>
             {dates.map((iso, day) => (
               <span key={iso} role="columnheader" className={styles.head}>
                 <span className={styles.date}>{dateLabel(iso)}</span>

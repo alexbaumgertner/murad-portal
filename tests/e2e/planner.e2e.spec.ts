@@ -77,19 +77,9 @@ test.describe('Weekly planner (story 022)', () => {
       await expect
         .poll(() => page.evaluate(() => document.fonts.check('14px Lora', 'Привет')))
         .toBe(true)
-      // 026: upload a photo, blur + grain it; the text stays sharp; it survives a reload
+      // 026: grain the background; the text stays sharp; it survives a reload
       await page.getByRole('button', { name: 'Настройки' }).click()
       await drawer.getByText('Фон', { exact: true }).click()
-      await drawer.getByLabel('Фоновая картинка').setInputFiles({
-        name: 'bg.png',
-        mimeType: 'image/png',
-        buffer: Buffer.from(
-          'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
-          'base64',
-        ),
-      })
-      await expect(page.getByTestId('planner-bg-image')).toBeAttached()
-      await drawer.getByLabel('Размытие картинки').fill('10')
       await drawer.getByLabel('Сила зерна').fill('30')
       const bgSaved = page.waitForResponse(
         (r) => r.request().method() === 'POST' && r.url().includes('/study/planner'),
@@ -108,7 +98,6 @@ test.describe('Weekly planner (story 022)', () => {
         })
       expect(textFilters.every((f) => f === 'none')).toBe(true)
       await page.reload()
-      await expect(page.getByTestId('planner-bg-image')).toBeAttached()
       await expect(page.getByTestId('planner-bg-grain')).toBeAttached()
       // 027: the four-week bar moves, and stops under prefers-reduced-motion
       const fill = page.getByTestId('planner-bar-fill').first()

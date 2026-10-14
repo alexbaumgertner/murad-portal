@@ -343,7 +343,7 @@ The planner offers 34 Latin + Cyrillic families. `src/features/planner/fonts.ts`
 Options must be literals in each `const x = Font({...})` call (no shared variables); `font-list.ts` holds the pure list so unit tests and the schema never import `next/font`.
 Cost: the build needs network access to fonts.googleapis.com. Revisit if the build moves offline or the CSS weight matters (then load a family on demand from `public/`).
 
-## Planner background image is stored inside the appearance JSON (story 026)
+## Planner background photo: upload removed until it goes to Blob (story 026)
 
-The uploaded photo is resized in the browser (long side ≤ 1600 px, JPEG) and kept as a `data:` URL in `planners.appearance.background.image` (limit 1.2 M characters), not in the Media collection. One value to read, save, back up and delete; no Blob/Media access rules for students; `img-src` already allows `data:`. The image travels with every appearance save (debounced) and with the page payload.
-Revisit if: images need to be larger or shared between planners (then a private upload collection).
+A first version kept the resized photo as a `data:` URL inside `planners.appearance.background.image`. It was removed: base64 in the JSON is sent on every save, bloats the row and the page payload, and shows up in the admin. Today `image` accepts only an `https://` or `/` URL and drops everything else (`data:` included), and Settings has no upload control; color, opacity, overlay and grain remain. The mock's embedded picture is not imported from a backup.
+Revisit: a private upload collection on Vercel Blob (like `avatars`, one file per planner) that sets `background.image` to its URL; blur, brightness and mode show up in Settings once an image is set.

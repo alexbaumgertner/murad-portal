@@ -16,7 +16,6 @@ import {
   DEFAULT_COLORS,
   GRAIN_DATA_URI,
   TYPE_SECTIONS,
-  fitWithin,
   grainTilePx,
 } from '@/features/planner/appearance'
 import { FONTS } from '@/features/planner/font-list'
@@ -98,19 +97,21 @@ describe('story 025 · appearance', () => {
 })
 
 describe('story 026 · background', () => {
-  const png = 'data:image/png;base64,iVBORw0KGgo='
+  const photo = 'https://example.com/bg.jpg'
 
   it('9/8. keeps a valid image and drops anything else', () => {
-    expect(parseAppearance({ background: { image: png } }).background.image).toBe(png)
+    expect(parseAppearance({ background: { image: photo } }).background.image).toBe(photo)
     for (const bad of [
       'http://x/y.png',
+      '//evil.example/y.png',
+      'data:image/png;base64,iVBORw0KGgo=',
       'data:text/html;base64,AAAA',
       'data:image/svg+xml;base64,AAAA',
       42,
       null,
     ])
       expect(parseAppearance({ background: { image: bad } }).background.image).toBeNull()
-    const huge = `data:image/jpeg;base64,${'A'.repeat(1_300_000)}`
+    const huge = `https://example.com/${'a'.repeat(2000)}`
     expect(parseAppearance({ background: { image: huge } }).background.image).toBeNull()
   })
 
@@ -140,12 +141,6 @@ describe('story 026 · background', () => {
       overlay: -100,
       brightness: 20,
     })
-  })
-
-  it('2. downscales on the long side, keeps the aspect ratio, never enlarges', () => {
-    expect(fitWithin(4000, 3000, 1600)).toEqual({ width: 1600, height: 1200 })
-    expect(fitWithin(3000, 4000, 1600)).toEqual({ width: 1200, height: 1600 })
-    expect(fitWithin(800, 600, 1600)).toEqual({ width: 800, height: 600 })
   })
 
   it('7. grain tile grows with the size setting', () => {

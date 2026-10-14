@@ -320,7 +320,6 @@ export function fromLegacy(raw: Record<string, unknown>): PlannerData | null {
   const darken = int(bg.darken, 0, 75, 0)
   appearance.background = {
     ...appearance.background,
-    image: bg.mode === 'image' && typeof bg.image === 'string' ? bg.image : null,
     blur: int(bg.blur, 0, 40, 0),
     grain: int(bg.grain, 0, 100, 0),
     grainSize: int(bg.grainSize, 1, 12, 3),

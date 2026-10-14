@@ -4,6 +4,8 @@ title: Planner background image with blur, brightness, overlay and grain
 status: done
 ---
 
+> **Scope change:** the photo upload (criteria 1 image part, 2, 3, 9, 11) is postponed until files go to Vercel Blob; see decisions.md. `background.image` only accepts an `https://` or `/` URL for now. Color, opacity, overlay and grain are live.
+
 # 026 — Background
 
 **As the** owner or student **I want** a background photo behind the schedule **so that** the planner feels personal.

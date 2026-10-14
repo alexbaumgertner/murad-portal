@@ -5,7 +5,7 @@ import { render } from 'vitest-browser-react'
 import { PlannerBackground } from '@/components/PlannerBackground/PlannerBackground'
 import { DEFAULT_BACKGROUND, type Background } from '@/features/planner/appearance'
 
-const png = 'data:image/png;base64,iVBORw0KGgo='
+const png = 'https://example.com/bg.jpg'
 const show = (patch: Partial<Background>) =>
   render(<PlannerBackground background={{ ...DEFAULT_BACKGROUND, ...patch }} />)
 
