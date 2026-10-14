@@ -12,6 +12,8 @@ import {
   createPlannerSchema,
   plannerIdSchema,
   progressSettingsSchema,
+  saveHeaderSchema,
+  saveNoteSchema,
   setDoneSchema,
   setTextSchema,
   weekIdSchema,
@@ -91,4 +93,12 @@ export async function saveProgressSettingsAction(input: unknown): Promise<Planne
   return run('saveProgressSettingsAction', progressSettingsSchema, input, (p, u, i) =>
     service.saveProgressSettings(p, u, i),
   )
+}
+
+export async function saveHeaderAction(input: unknown): Promise<PlannerActionState> {
+  return run('saveHeaderAction', saveHeaderSchema, input, (p, u, i) => service.saveHeader(p, u, i))
+}
+
+export async function saveNoteAction(input: unknown): Promise<PlannerActionState> {
+  return run('saveNoteAction', saveNoteSchema, input, (p, u, i) => service.saveNote(p, u, i))
 }

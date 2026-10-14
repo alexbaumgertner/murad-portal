@@ -12,6 +12,8 @@ const actions = vi.hoisted(() => ({
   removeRowAction: vi.fn(),
   setCellTextAction: vi.fn(),
   setDoneAction: vi.fn(),
+  saveHeaderAction: vi.fn(),
+  saveNoteAction: vi.fn(),
 }))
 vi.mock('@/features/planner/actions', () => actions)
 vi.mock('@/i18n/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }))
@@ -42,6 +44,9 @@ const renderBoard = (
   render(
     <NextIntlClientProvider locale="en" messages={messagesFor('en', 'ty')}>
       <PlannerBoard
+        plannerId={7}
+        header={{ studentName: '', goal: '', subtitle: '', labels: {} }}
+        notes={{}}
         weekId={1}
         weekIndex={0}
         rowCount={2}

@@ -11,7 +11,8 @@ import {
 } from '@/features/planner/actions'
 import type { CellView } from '@/features/planner/queries'
 import type { PlannerError } from '@/features/planner/schema'
-import { MAX_TASK_TEXT, isAssignedTask, roman } from '@/features/planner/shape'
+import { MAX_LABEL, MAX_TASK_TEXT, isAssignedTask, roman } from '@/features/planner/shape'
+import { EditableText } from '@/components/EditableText/EditableText'
 import { useRouter } from '@/i18n/navigation'
 
 import styles from './PlannerGrid.module.css'
@@ -24,11 +25,13 @@ type Props = {
   cells: Record<string, CellView>
   /** The owner edits text and rows; a student only ticks. */
   canEdit: boolean
+  /** Seven weekday names (defaults or the owner's overrides). */
+  dayNames: string[]
+  /** Owner renames a weekday; resolves false when saving failed. */
+  onDayName?: (day: number, value: string) => Promise<boolean>
   /** Called with the live cells after every change, so siblings can show progress. */
   onCellsChange?: (cells: Record<string, CellView>) => void
 }
-
-const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
 /**
  * The weekly grid (story 022): priority rows × Monday…Sunday. Typing and ticking are separate
@@ -41,6 +44,8 @@ export function PlannerGrid({
   dates,
   cells: initial,
   canEdit,
+  dayNames,
+  onDayName,
   onCellsChange,
 }: Props) {
   const t = useTranslations('Planner')
@@ -106,7 +111,15 @@ export function PlannerGrid({
             {dates.map((iso, day) => (
               <span key={iso} role="columnheader" className={styles.head}>
                 <span className={styles.date}>{dateLabel(iso)}</span>
-                <span className={styles.day}>{t(`days.${DAY_KEYS[day]!}`)}</span>
+                <span className={styles.day}>
+                  <EditableText
+                    value={dayNames[day]!}
+                    label={t('dayNameLabel', { n: day + 1 })}
+                    canEdit={canEdit && Boolean(onDayName)}
+                    maxLength={MAX_LABEL}
+                    onSave={(value) => onDayName!(day, value)}
+                  />
+                </span>
               </span>
             ))}
           </div>

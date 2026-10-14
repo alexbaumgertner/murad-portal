@@ -1,7 +1,7 @@
 ---
 id: 023
 title: Planner header, editable labels, mini-diary and print
-status: approved
+status: done
 ---
 
 # 023 — Header, diary, print

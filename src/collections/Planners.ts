@@ -1,7 +1,13 @@
 import type { Access, CollectionBeforeDeleteHook, CollectionConfig } from 'payload'
 
 import { isOwner, owner } from '@/access'
-import { MAX_DEADLINE_TITLE, isIsoDate, mondayOf } from '@/features/planner/shape'
+import {
+  MAX_DEADLINE_TITLE,
+  MAX_HEADER_TEXT,
+  MAX_SUBTITLE,
+  isIsoDate,
+  mondayOf,
+} from '@/features/planner/shape'
 
 // Owner: everything. Student: her own planner. Anonymous: 403. Never public (story 022).
 export const ownPlannerOrOwner =
@@ -43,6 +49,11 @@ export const Planners: CollectionConfig = {
           ? true
           : 'Нужен понедельник в формате YYYY-MM-DD',
     },
+    // Story 023: the header and the printed words (JSON of overrides, see `labelsSchema`).
+    { name: 'studentName', type: 'text', maxLength: MAX_HEADER_TEXT, label: 'Имя ученика' },
+    { name: 'goal', type: 'text', maxLength: MAX_HEADER_TEXT, label: 'Цель' },
+    { name: 'subtitle', type: 'text', maxLength: MAX_SUBTITLE, label: 'Подзаголовок (экзамен)' },
+    { name: 'labels', type: 'json', label: 'Подписи' },
     // Story 024: which progress blocks are shown and the exam deadline.
     { name: 'showWeekProgress', type: 'checkbox', defaultValue: true, label: 'Прогресс недели' },
     {

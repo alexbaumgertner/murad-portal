@@ -1,6 +1,17 @@
 import { z } from 'zod'
 
-import { DAYS, MAX_DEADLINE_TITLE, MAX_ROWS, MAX_TASK_TEXT, isIsoDate } from './shape'
+import {
+  DAYS,
+  MAX_DEADLINE_TITLE,
+  MAX_HEADER_TEXT,
+  MAX_LABEL,
+  MAX_NOTE,
+  MAX_ROWS,
+  MAX_SUBTITLE,
+  MAX_TASK_TEXT,
+  NOTE_KINDS,
+  isIsoDate,
+} from './shape'
 
 const id = z.number().int().positive()
 const row = z
@@ -38,6 +49,37 @@ export const progressSettingsSchema = z.strictObject({
   deadlineDate: z.union([z.literal(''), z.string().refine(isIsoDate)]),
 })
 export type ProgressSettingsInput = z.infer<typeof progressSettingsSchema>
+
+const label = z.string().trim().max(MAX_LABEL)
+const sevenLabels = z.array(label).length(DAYS)
+/** Overrides of the printed words; an empty string means "use the default". */
+export const labelsSchema = z.strictObject({
+  schedule: label,
+  goal: label,
+  exercises: label,
+  questions: label,
+  days: sevenLabels,
+  diaryDays: sevenLabels,
+})
+export type Labels = Partial<z.infer<typeof labelsSchema>>
+
+export const saveHeaderSchema = z.strictObject({
+  plannerId: id,
+  studentName: z.string().trim().max(MAX_HEADER_TEXT).optional(),
+  goal: z.string().trim().max(MAX_HEADER_TEXT).optional(),
+  subtitle: z.string().trim().max(MAX_SUBTITLE).optional(),
+  labels: labelsSchema.partial().optional(),
+})
+export type SaveHeaderInput = z.infer<typeof saveHeaderSchema>
+
+export const saveNoteSchema = z.strictObject({
+  weekId: id,
+  kind: z.enum(NOTE_KINDS),
+  day,
+  text: z.string().max(MAX_NOTE),
+})
+
+export type NoteInput = z.infer<typeof saveNoteSchema>
 
 export type PlannerError =
   | 'unauthorized'

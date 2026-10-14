@@ -6,12 +6,13 @@ import { MAX_ROWS } from '@/features/planner/shape'
 import { ownPlannerOrOwner } from './Planners'
 
 const deleteCells: CollectionBeforeDeleteHook = async ({ id, req }) => {
-  await req.payload.delete({
-    collection: 'planner-cells',
-    where: { week: { equals: id } },
-    overrideAccess: true,
-    req,
-  })
+  for (const collection of ['planner-cells', 'planner-notes'] as const)
+    await req.payload.delete({
+      collection,
+      where: { week: { equals: id } },
+      overrideAccess: true,
+      req,
+    })
 }
 
 /** A week of a planner: its 0-based index (gaps allowed) and how many priority rows it has. */

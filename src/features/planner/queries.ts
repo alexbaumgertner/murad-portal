@@ -4,6 +4,7 @@ import type { Payload, TypedUser } from 'payload'
 
 import { DEFAULT_TIMEZONE, todayIn } from '@/features/enrollments/shape'
 
+import type { Labels } from './schema'
 import { isAssignedTask, weekDates } from './shape'
 
 export type CellView = { text: string; done: boolean }
@@ -18,16 +19,25 @@ export type ProgressSettings = {
 /** A written task of a week the grid is not showing: enough to count it, never its text. */
 export type OtherTask = { week: number; day: number; done: boolean }
 
+export type HeaderView = {
+  studentName: string
+  goal: string
+  subtitle: string
+  labels: Labels
+}
+
 export type PlannerView = {
   plannerId: number
   studentId: number
   baseDate: string
   weeks: { id: number; index: number }[]
+  header: HeaderView
   settings: ProgressSettings
   today: string
   otherTasks: OtherTask[]
   active: { id: number; index: number; rowCount: number; dates: string[] } & {
     cells: Record<string, CellView> // key `${row}-${day}`
+    notes: Record<string, string> // key `${kind}-${day}`
   }
 }
 
@@ -70,6 +80,16 @@ export async function getPlannerView(
     overrideAccess: false,
     user,
   })
+  const noteDocs = (
+    await payload.find({
+      collection: 'planner-notes',
+      where: { week: { equals: week.id } },
+      pagination: false,
+      depth: 0,
+      overrideAccess: false,
+      user,
+    })
+  ).docs
   const others = weeks.filter((w) => w.id !== week.id)
   const otherCells = others.length
     ? (
@@ -88,6 +108,12 @@ export async function getPlannerView(
   const idOf = (rel: number | { id: number }) => (typeof rel === 'object' ? rel.id : rel)
   return {
     plannerId: planner.id,
+    header: {
+      studentName: planner.studentName ?? '',
+      goal: planner.goal ?? '',
+      subtitle: planner.subtitle ?? '',
+      labels: (planner.labels as Labels | null) ?? {},
+    },
     settings: {
       showWeekProgress: planner.showWeekProgress ?? true,
       showFourWeekProgress: Boolean(planner.showFourWeekProgress),
@@ -107,6 +133,7 @@ export async function getPlannerView(
       index: week.index,
       rowCount: week.rowCount,
       dates: weekDates(planner.baseDate, week.index),
+      notes: Object.fromEntries(noteDocs.map((n) => [`${n.kind}-${n.day}`, n.text])),
       cells: Object.fromEntries(
         docs.map((c) => [`${c.row}-${c.day}`, { text: c.text ?? '', done: Boolean(c.done) }]),
       ),

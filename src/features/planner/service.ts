@@ -4,7 +4,13 @@ import type { Payload, TypedUser } from 'payload'
 
 import { isOwner } from '@/access'
 
-import type { PlannerError, ProgressSettingsInput } from './schema'
+import type {
+  Labels,
+  NoteInput,
+  PlannerError,
+  ProgressSettingsInput,
+  SaveHeaderInput,
+} from './schema'
 import { MAX_ROWS, isAssignedTask, mondayOf } from './shape'
 
 /**
@@ -222,5 +228,77 @@ export async function saveProgressSettings(
     data: { ...rest, deadlineDate: deadlineDate || null },
     overrideAccess: true,
   })
+  return ok
+}
+
+/** Owner edits the header and printed words. Empty label strings drop the override. */
+export async function saveHeader(
+  payload: Payload,
+  owner: TypedUser,
+  input: SaveHeaderInput,
+): Promise<Result> {
+  if (!isOwner(owner)) return fail('forbidden')
+  const { plannerId, labels, ...texts } = input
+  const planner = await payload.findByID({
+    collection: 'planners',
+    id: plannerId,
+    depth: 0,
+    disableErrors: true,
+  })
+  if (!planner) return fail('not_found')
+  const data: Record<string, unknown> = { ...texts }
+  if (labels) {
+    const merged: Record<string, unknown> = {
+      ...((planner.labels as Labels | null) ?? {}),
+      ...labels,
+    }
+    for (const [key, value] of Object.entries(merged)) {
+      const blank = Array.isArray(value) ? value.every((item) => item === '') : value === ''
+      if (blank) delete merged[key]
+    }
+    data.labels = merged
+  }
+  await payload.update({ collection: 'planners', id: plannerId, data, overrideAccess: true })
+  return ok
+}
+
+/** The owner or the student of this planner writes a diary entry; empty text deletes it. */
+export async function saveNote(
+  payload: Payload,
+  user: TypedUser,
+  input: NoteInput,
+): Promise<Result> {
+  const week = await weekOf(payload, user, input.weekId)
+  if (!week) return fail('not_found')
+  const { docs } = await payload.find({
+    collection: 'planner-notes',
+    where: {
+      week: { equals: input.weekId },
+      kind: { equals: input.kind },
+      day: { equals: input.day },
+    },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const note = docs[0]
+  if (input.text.trim() === '') {
+    if (note)
+      await payload.delete({ collection: 'planner-notes', id: note.id, overrideAccess: true })
+    return ok
+  }
+  if (note)
+    await payload.update({
+      collection: 'planner-notes',
+      id: note.id,
+      data: { text: input.text },
+      overrideAccess: true,
+    })
+  else
+    await payload.create({
+      collection: 'planner-notes',
+      data: { week: input.weekId, kind: input.kind, day: input.day, text: input.text },
+      overrideAccess: true,
+    })
   return ok
 }

@@ -632,6 +632,27 @@
       "deadlineDate": "Deadline date",
       "save": "Save",
       "saved": "Saved"
-    }
+    },
+    "header": {
+      "schedule": "SCHEDULE:",
+      "name": "NAME",
+      "goal": "GOAL:",
+      "goalPlaceholder": "GOAL",
+      "subtitlePlaceholder": "EXAM OR COURSE",
+      "week": "WEEK {n}",
+      "exercises": "EXERCISES",
+      "questions": "QUESTIONS",
+      "scheduleLabel": "Schedule label",
+      "nameLabel": "Student name",
+      "goalLabelLabel": "Goal label",
+      "goalTextLabel": "Goal",
+      "subtitleLabel": "Exam subtitle",
+      "exercisesLabel": "Exercises heading",
+      "questionsLabel": "Questions heading",
+      "diaryDayLabel": "Diary day name: {day}",
+      "entryLabel": "{kind}, {day}"
+    },
+    "print": "Print",
+    "dayNameLabel": "Weekday {n} name"
   }
 }

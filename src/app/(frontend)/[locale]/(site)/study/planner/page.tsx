@@ -56,12 +56,9 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
 
   return (
     <div className={styles.page}>
-      <header className={shared.header}>
-        <h1 className={shared.title}>{t('title')}</h1>
-        <Link href="/study" className={shared.back}>
-          {t('back')}
-        </Link>
-      </header>
+      <Link href="/study" className={`${shared.back} ${styles.noPrint}`}>
+        {t('back')}
+      </Link>
       {!view ? (
         owner ? (
           <PlannerWeekBar
@@ -74,7 +71,7 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
         )
       ) : (
         <>
-          <nav aria-label={t('weeksNav')}>
+          <nav aria-label={t('weeksNav')} className={styles.noPrint}>
             <ol className={styles.weeks}>
               {view.weeks.map((week) => (
                 <li key={week.id}>
@@ -96,6 +93,9 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
           </nav>
           <PlannerBoard
             key={`${view.active.id}-${view.active.rowCount}`}
+            plannerId={view.plannerId}
+            header={view.header}
+            notes={view.active.notes}
             weekId={view.active.id}
             weekIndex={view.active.index}
             rowCount={view.active.rowCount}
@@ -109,15 +109,15 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
             today={view.today}
           />
           {owner ? (
-            <PlannerWeekBar
-              kind="owner"
-              plannerId={view.plannerId}
-              weekId={view.active.id}
-              lastWeek={view.weeks.length <= 1}
-            />
-          ) : null}
-          {owner ? (
-            <PlannerProgressSettings plannerId={view.plannerId} initial={view.settings} />
+            <div className={styles.noPrint}>
+              <PlannerWeekBar
+                kind="owner"
+                plannerId={view.plannerId}
+                weekId={view.active.id}
+                lastWeek={view.weeks.length <= 1}
+              />
+              <PlannerProgressSettings plannerId={view.plannerId} initial={view.settings} />
+            </div>
           ) : null}
         </>
       )}

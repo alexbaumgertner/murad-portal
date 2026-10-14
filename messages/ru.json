@@ -632,6 +632,27 @@
       "deadlineDate": "Дата дедлайна",
       "save": "Сохранить",
       "saved": "Сохранено"
-    }
+    },
+    "header": {
+      "schedule": "РАСПИСАНИЕ:",
+      "name": "ИМЯ",
+      "goal": "ЦЕЛЬ:",
+      "goalPlaceholder": "ЦЕЛЬ",
+      "subtitlePlaceholder": "ЭКЗАМЕН ИЛИ КУРС",
+      "week": "НЕДЕЛЯ {n}",
+      "exercises": "УПРАЖНЕНИЯ",
+      "questions": "ВОПРОСЫ",
+      "scheduleLabel": "Подпись расписания",
+      "nameLabel": "Имя ученика",
+      "goalLabelLabel": "Подпись цели",
+      "goalTextLabel": "Цель",
+      "subtitleLabel": "Подзаголовок экзамена",
+      "exercisesLabel": "Заголовок «Упражнения»",
+      "questionsLabel": "Заголовок «Вопросы»",
+      "diaryDayLabel": "Название дня в дневнике: {day}",
+      "entryLabel": "{kind}, {day}"
+    },
+    "print": "Печать",
+    "dayNameLabel": "Название дня недели {n}"
   }
 }

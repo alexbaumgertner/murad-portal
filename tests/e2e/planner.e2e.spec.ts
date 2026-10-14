@@ -46,7 +46,7 @@ test.describe('Weekly planner (story 022)', () => {
 
       await signIn(page, email)
       await page.goto('/study/planner')
-      await expect(page.getByRole('heading', { name: 'Недельный планер' })).toBeVisible()
+      await expect(page.getByRole('heading', { name: /РАСПИСАНИЕ/ })).toBeVisible()
       await expect(page.getByRole('columnheader', { name: /1 янв\.?.*Пятница/ })).toBeVisible()
       const tick = page.getByRole('button', { name: /Отметить выполненным: PODCAST/ })
       await expect(tick).toHaveAttribute('aria-pressed', 'false')
@@ -62,6 +62,13 @@ test.describe('Weekly planner (story 022)', () => {
       await expect(
         page.getByRole('button', { name: /Отметить выполненным: PODCAST/ }),
       ).toHaveAttribute('aria-pressed', 'true')
+      // 7. print: tools are hidden, the sheet stays
+      await expect(page.getByRole('button', { name: 'Печать' })).toBeVisible()
+      await page.emulateMedia({ media: 'print' })
+      await expect(page.getByRole('button', { name: 'Печать' })).toBeHidden()
+      await expect(page.getByRole('link', { name: 'Назад' })).toBeHidden()
+      await expect(page.getByRole('columnheader', { name: /Пятница/ })).toBeVisible()
+      await page.emulateMedia({ media: 'screen' })
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
       ).toBe(true)

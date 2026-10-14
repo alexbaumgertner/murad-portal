@@ -85,6 +85,7 @@ export interface Config {
     planners: Planner;
     'planner-weeks': PlannerWeek;
     'planner-cells': PlannerCell;
+    'planner-notes': PlannerNote;
     'auth-codes': AuthCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -115,6 +116,7 @@ export interface Config {
     planners: PlannersSelect<false> | PlannersSelect<true>;
     'planner-weeks': PlannerWeeksSelect<false> | PlannerWeeksSelect<true>;
     'planner-cells': PlannerCellsSelect<false> | PlannerCellsSelect<true>;
+    'planner-notes': PlannerNotesSelect<false> | PlannerNotesSelect<true>;
     'auth-codes': AuthCodesSelect<false> | AuthCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -615,6 +617,18 @@ export interface Planner {
   id: number;
   student: number | User;
   baseDate: string;
+  studentName?: string | null;
+  goal?: string | null;
+  subtitle?: string | null;
+  labels?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   showWeekProgress?: boolean | null;
   showFourWeekProgress?: boolean | null;
   showDeadlineProgress?: boolean | null;
@@ -646,6 +660,19 @@ export interface PlannerCell {
   day: number;
   text?: string | null;
   done?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "planner-notes".
+ */
+export interface PlannerNote {
+  id: number;
+  week: number | PlannerWeek;
+  kind: 'exercises' | 'questions';
+  day: number;
+  text: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -760,6 +787,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'planner-cells';
         value: number | PlannerCell;
+      } | null)
+    | ({
+        relationTo: 'planner-notes';
+        value: number | PlannerNote;
       } | null)
     | ({
         relationTo: 'auth-codes';
@@ -1098,6 +1129,10 @@ export interface DayCommentsSelect<T extends boolean = true> {
 export interface PlannersSelect<T extends boolean = true> {
   student?: T;
   baseDate?: T;
+  studentName?: T;
+  goal?: T;
+  subtitle?: T;
+  labels?: T;
   showWeekProgress?: T;
   showFourWeekProgress?: T;
   showDeadlineProgress?: T;
@@ -1127,6 +1162,18 @@ export interface PlannerCellsSelect<T extends boolean = true> {
   day?: T;
   text?: T;
   done?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "planner-notes_select".
+ */
+export interface PlannerNotesSelect<T extends boolean = true> {
+  week?: T;
+  kind?: T;
+  day?: T;
+  text?: T;
   updatedAt?: T;
   createdAt?: T;
 }

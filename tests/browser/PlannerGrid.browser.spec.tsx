@@ -26,6 +26,8 @@ const dates = [
   '2026-10-18',
 ]
 
+const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
 const renderGrid = (props: Partial<Parameters<typeof PlannerGrid>[0]> = {}) =>
   render(
     <NextIntlClientProvider locale="en" messages={messagesFor('en', 'ty')}>
@@ -35,6 +37,7 @@ const renderGrid = (props: Partial<Parameters<typeof PlannerGrid>[0]> = {}) =>
         dates={dates}
         cells={{ '0-0': { text: 'ANKI', done: false } }}
         canEdit
+        dayNames={DAY_NAMES}
         {...props}
       />
     </NextIntlClientProvider>,
@@ -47,7 +50,7 @@ describe('PlannerGrid (story 022)', () => {
   })
 
   test('3/5. shows Monday…Sunday dates and Roman priority labels', async () => {
-    await renderGrid()
+    await renderGrid({ canEdit: false })
     await expect.element(page.getByRole('columnheader', { name: /Oct 12.*Monday/i })).toBeVisible()
     await expect.element(page.getByRole('columnheader', { name: /Oct 18.*Sunday/i })).toBeVisible()
     await expect.element(page.getByRole('rowheader', { name: 'II' })).toBeVisible()

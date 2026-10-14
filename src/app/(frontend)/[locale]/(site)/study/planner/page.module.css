@@ -6,6 +6,10 @@
   gap: 1.5rem;
 }
 
+.noPrint {
+  display: block;
+}
+
 .weeks {
   display: flex;
   gap: 0.5rem;
@@ -27,4 +31,20 @@
 .week[aria-current='page'] {
   border-color: var(--color-text);
   color: var(--color-text);
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  .page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .noPrint {
+    display: none;
+  }
 }

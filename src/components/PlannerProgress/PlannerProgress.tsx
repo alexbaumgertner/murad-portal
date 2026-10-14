@@ -25,6 +25,8 @@ type Props = {
   otherTasks: OtherTask[]
   settings: ProgressSettings
   today: string
+  /** `strip`: the weekly percent for the header strip; `blocks`: four-week and deadline bars. */
+  part: 'strip' | 'blocks'
 }
 
 const two = (n: number) => String(n + 1).padStart(2, '0')
@@ -57,6 +59,7 @@ export function PlannerProgress({
   otherTasks,
   settings,
   today,
+  part,
 }: Props) {
   const t = useTranslations('Planner.progress')
   const locale = useLocale()
@@ -102,14 +105,16 @@ export function PlannerProgress({
       )
     : null
 
+  if (part === 'strip')
+    return settings.showWeekProgress ? (
+      <p className={styles.strip} role="status">
+        <span>{t('week')}</span>{' '}
+        <strong>{weekPercent === null ? t('noTasks') : `${weekPercent}%`}</strong>
+      </p>
+    ) : null
+
   return (
     <div className={styles.wrap}>
-      {settings.showWeekProgress ? (
-        <p className={styles.strip} role="status">
-          <span>{t('week')}</span>{' '}
-          <strong>{weekPercent === null ? t('noTasks') : `${weekPercent}%`}</strong>
-        </p>
-      ) : null}
       {settings.showFourWeekProgress ? (
         <section aria-label={t('fourWeeks')} className={styles.block}>
           {fourWeekGroups(baseDate, perWeek).map((group) => {

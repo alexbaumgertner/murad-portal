@@ -8,6 +8,8 @@ import {
   createPlanner,
   deleteWeek,
   removeRow,
+  saveHeader,
+  saveNote,
   saveProgressSettings,
   setCellText,
   setDone,
@@ -279,6 +281,69 @@ describe('story 022 · planner core', () => {
         collection: 'planners',
         id: planner.id,
         data: { deadlineDate: '2026-13-40' },
+      }),
+    ).rejects.toThrow()
+  })
+
+  it('023 2/9. the owner edits the header and labels; a student cannot; empty label drops the override', async () => {
+    const { planner } = await weeksOf(anna)
+    expect(
+      await saveHeader(payload, owner, {
+        plannerId: planner.id,
+        studentName: 'Anna',
+        goal: 'IELTS 7.5',
+        subtitle: 'ACADEMIC',
+        labels: { exercises: 'HOMEWORK', days: ['Пн', '', '', '', '', '', ''] },
+      }),
+    ).toEqual({ ok: true })
+    let doc = (await weeksOf(anna)).planner
+    expect(doc).toMatchObject({ studentName: 'Anna', goal: 'IELTS 7.5', subtitle: 'ACADEMIC' })
+    expect(doc.labels).toMatchObject({ exercises: 'HOMEWORK' })
+    await saveHeader(payload, owner, { plannerId: planner.id, labels: { exercises: '' } })
+    doc = (await weeksOf(anna)).planner
+    expect(doc.labels).not.toHaveProperty('exercises')
+    expect(await saveHeader(payload, anna, { plannerId: planner.id, goal: 'x' })).toEqual({
+      ok: false,
+      error: 'forbidden',
+    })
+  })
+
+  it('023 4/5/6. diary entries are per week; the student writes hers; strangers cannot; empty deletes', async () => {
+    const { weeks } = await weeksOf(anna)
+    const [w1, w2] = [weeks[0]!, weeks[1]!]
+    const note = { kind: 'exercises' as const, day: 2, text: 'Unit 4\nex. 3' }
+    expect(await saveNote(payload, anna, { weekId: w1.id, ...note })).toEqual({ ok: true })
+    expect(await saveNote(payload, owner, { weekId: w1.id, ...note, text: 'Unit 5' })).toEqual({
+      ok: true,
+    })
+    expect(
+      await saveNote(payload, owner, { weekId: w2.id, kind: 'questions', day: 0, text: 'Why?' }),
+    ).toEqual({ ok: true })
+    const all = await payload.find({
+      collection: 'planner-notes',
+      where: { week: { in: [w1.id, w2.id] } },
+      pagination: false,
+      depth: 0,
+    })
+    expect(all.docs.map((n) => [n.kind, n.day, n.text]).sort()).toEqual([
+      ['exercises', 2, 'Unit 5'],
+      ['questions', 0, 'Why?'],
+    ])
+    expect(await saveNote(payload, boris, { weekId: w1.id, ...note })).toEqual({
+      ok: false,
+      error: 'not_found',
+    })
+    expect(await saveNote(payload, anna, { weekId: w1.id, ...note, text: '  ' })).toEqual({
+      ok: true,
+    })
+    expect(
+      (await payload.count({ collection: 'planner-notes', where: { week: { equals: w1.id } } }))
+        .totalDocs,
+    ).toBe(0)
+    await expect(
+      payload.create({
+        collection: 'planner-notes',
+        data: { week: w1.id, kind: 'exercises', day: 0, text: 'x'.repeat(2001) },
       }),
     ).rejects.toThrow()
   })

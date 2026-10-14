@@ -5,6 +5,12 @@ export const MAX_ROWS = 40
 export const MAX_TASK_TEXT = 500
 export const DAYS = 7
 export const MAX_DEADLINE_TITLE = 80
+export const MAX_HEADER_TEXT = 80
+export const MAX_SUBTITLE = 120
+export const MAX_LABEL = 40
+export const MAX_NOTE = 2000
+export const NOTE_KINDS = ['exercises', 'questions'] as const
+export type NoteKind = (typeof NOTE_KINDS)[number]
 
 const NOON = 12
 

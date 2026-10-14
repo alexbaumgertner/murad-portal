@@ -19,6 +19,7 @@ import { ProgramPlanItems } from './collections/ProgramPlanItems'
 import { Programs } from './collections/Programs'
 import { DayComments } from './collections/DayComments'
 import { PlannerCells } from './collections/PlannerCells'
+import { PlannerNotes } from './collections/PlannerNotes'
 import { PlannerWeeks } from './collections/PlannerWeeks'
 import { Planners } from './collections/Planners'
 import { SlotLogs } from './collections/SlotLogs'
@@ -72,6 +73,7 @@ export default buildConfig({
     Planners,
     PlannerWeeks,
     PlannerCells,
+    PlannerNotes,
     AuthCodes,
   ],
   // Content locales (the admin UI itself stays English). Missing translations fall back to English.
