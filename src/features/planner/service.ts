@@ -22,7 +22,7 @@ import type {
 } from './schema'
 import { parseAppearance } from './appearance'
 import { blankSettings, blankWeek, buildBackup, type Backup, type PlannerData } from './backup'
-import { MAX_ROWS, isAssignedTask, mondayOf, readTaskTypes } from './shape'
+import { MAX_ROWS, effectiveTaskTypes, isAssignedTask, mondayOf, readTaskTypes } from './shape'
 
 /**
  * Planner writes (story 022). Callers name ids; every call first reads the week AS the user
@@ -188,17 +188,30 @@ export async function setCellText(
       disableErrors: true,
     })
     if (!planner) return fail('not_found')
-    if (!readTaskTypes(planner.taskTypes).includes(input.text)) return fail('forbidden')
+    const { docs } = await payload.find({
+      collection: 'planner-cells',
+      where: { 'week.planner': { equals: planner.id } },
+      pagination: false,
+      depth: 0,
+      select: { text: true },
+      overrideAccess: true,
+    })
+    const allowed = effectiveTaskTypes(
+      readTaskTypes(planner.taskTypes),
+      docs.map((cell) => cell.text ?? ''),
+    )
+    if (!allowed.includes(input.text.trim())) return fail('forbidden')
   }
   const cell = await findCell(payload, input.weekId, input.row, input.day)
-  const assigned = isAssignedTask(input.text)
-  const text = input.text.trim()
+  const typed = isOwner(user) ? input.text : input.text.trim()
+  const assigned = isAssignedTask(typed)
+  const text = typed.trim()
   if (!assigned && !text) {
     if (cell)
       await payload.delete({ collection: 'planner-cells', id: cell.id, overrideAccess: true })
     return ok
   }
-  const data = { text: input.text, done: assigned ? Boolean(cell?.done) : false }
+  const data = { text: typed, done: assigned ? Boolean(cell?.done) : false }
   if (cell)
     await payload.update({ collection: 'planner-cells', id: cell.id, data, overrideAccess: true })
   else

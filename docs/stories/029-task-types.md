@@ -15,7 +15,7 @@ status: done
 2. `[happy]` **Given** a non-empty list **then** a student's cell is a drop-down of the types (plus an empty choice); picking one saves it and the tick appears.
 3. `[edge]` **Given** a student **when** she sends a text that is not in the list **then** `forbidden`; an empty text clears the cell.
 4. `[happy]` **Given** the owner **then** she still types any text in a cell.
-5. `[edge]` **Given** an empty list **then** the student sees plain text, no drop-down.
+5. `[happy]` **Given** no saved list **then** the student picks from the distinct tasks already in her planner (the same rule on the server); the owner's panel starts from that list. With no tasks at all she sees plain text and a hint.
 6. `[access]` **Given** a student **then** she cannot save the list.
 
 ## Out of scope

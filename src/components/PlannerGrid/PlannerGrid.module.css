@@ -31,7 +31,7 @@
   display: grid;
   gap: 0.125rem;
   padding: 0.5rem;
-  background: var(--pl-header, #1b1a17);
+  background: var(--pl-header, var(--planner-header));
   color: #fff;
   text-align: center;
 }
@@ -40,7 +40,7 @@
 .corner {
   display: grid;
   place-items: center;
-  background: var(--pl-header, #1b1a17);
+  background: var(--pl-header, var(--planner-header));
   color: #fff;
   opacity: 0.85;
 }
@@ -66,7 +66,7 @@
 .priority {
   display: grid;
   place-items: center;
-  background: var(--pl-priority, #f3f1ec);
+  background: var(--pl-priority, var(--planner-priority));
   color: var(--pl-text, var(--color-text));
   font-family: var(--pl-t-priority-font, inherit);
   font-size: var(--pl-t-priority-size, 1em);
@@ -83,7 +83,7 @@
 }
 
 .cellDone {
-  background: var(--pl-done, #cdebd7);
+  background: var(--pl-done, var(--planner-done));
 }
 
 .text,

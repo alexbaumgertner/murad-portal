@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   addDays,
+  effectiveTaskTypes,
   isAssignedTask,
   mondayOf,
   roman,
@@ -66,5 +67,15 @@ describe('story 022 · planner shape', () => {
     expect(isAssignedTask(null)).toBe(false)
     for (const text of ['ANKI', 'read 20 pages', 'Читать 20 страниц', '- item'])
       expect(isAssignedTask(text)).toBe(true)
+  })
+})
+
+describe('story 029 · task types', () => {
+  it('uses the saved list, else the distinct tasks already written', () => {
+    expect(effectiveTaskTypes(['A'], ['B'])).toEqual(['A'])
+    expect(effectiveTaskTypes([], ['ANKI', ' ANKI ', '-', '', 'PODCAST'])).toEqual([
+      'ANKI',
+      'PODCAST',
+    ])
   })
 })

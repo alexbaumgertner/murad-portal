@@ -83,3 +83,14 @@ export function readTaskTypes(value: unknown): string[] {
     ? value.filter((item): item is string => typeof item === 'string')
     : []
 }
+
+/**
+ * What a student may pick: the owner's saved list, or, while there is none, the distinct tasks
+ * already written in the planner (first appearance order).
+ */
+export function effectiveTaskTypes(saved: string[], existingTexts: string[]): string[] {
+  if (saved.length > 0) return saved
+  const seen = new Set<string>()
+  for (const raw of existingTexts) if (isAssignedTask(raw)) seen.add(raw.trim())
+  return [...seen]
+}

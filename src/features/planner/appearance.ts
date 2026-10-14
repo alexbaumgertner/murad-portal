@@ -163,6 +163,10 @@ export const DEFAULT_BACKGROUND: Background = {
 const MAX_IMAGE_URL = 2000
 const IMAGE_PATTERN = /^(?:https:\/\/|\/(?!\/))\S+$/
 
+/** True while the page color is the untouched default: it then follows the site theme. */
+export const isDefaultBackground = (background: Background): boolean =>
+  background.opacity === 100 && background.color.toLowerCase() === DEFAULT_BACKGROUND.color
+
 export const isStoredImage = (value: unknown): value is string =>
   typeof value === 'string' && value.length <= MAX_IMAGE_URL && IMAGE_PATTERN.test(value)
 
@@ -171,7 +175,9 @@ const num = (min: number, max: number, fallback: number) =>
 
 const backgroundSchema = z
   .object({
-    color: hex.catch(DEFAULT_BACKGROUND.color),
+    color: hex
+      .transform((value) => (value.toLowerCase() === '#ffffff' ? DEFAULT_BACKGROUND.color : value))
+      .catch(DEFAULT_BACKGROUND.color),
     opacity: num(0, 100, DEFAULT_BACKGROUND.opacity),
     image: z
       .unknown()
@@ -375,6 +381,8 @@ export function appearanceVars(
   const vars: Record<string, string> = {}
   for (const key of COLOR_KEYS) {
     const { color, opacity } = appearance.colors[key]
+    // An untouched color emits nothing: the CSS falls back to the site tokens, which follow dark mode.
+    if (opacity === 100 && color.toLowerCase() === DEFAULT_COLORS[key]) continue
     vars[`--pl-${key}`] = rgba(color, opacity)
   }
   for (const key of TYPE_SECTIONS) {

@@ -39,6 +39,14 @@ describe('story 025 · appearance', () => {
     expect(a.colors.done.color).toBe('#112233')
   })
 
+  it('dark mode: untouched colors emit no variable, customized ones do', () => {
+    const a = defaultAppearance()
+    a.colors.done = { color: '#112233', opacity: 100 }
+    const vars = appearanceVars(a, () => 'x')
+    expect(vars['--pl-header']).toBeUndefined()
+    expect(vars['--pl-done']).toBe('rgba(17, 34, 51, 1)')
+  })
+
   it('1. applies real alpha, not a blend with white', () => {
     expect(rgba('#ff0000', 75)).toBe('rgba(255, 0, 0, 0.75)')
     const a = defaultAppearance()

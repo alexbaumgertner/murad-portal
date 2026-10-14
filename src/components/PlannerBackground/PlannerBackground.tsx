@@ -1,4 +1,10 @@
-import { GRAIN_DATA_URI, grainTilePx, rgba, type Background } from '@/features/planner/appearance'
+import {
+  GRAIN_DATA_URI,
+  grainTilePx,
+  isDefaultBackground,
+  rgba,
+  type Background,
+} from '@/features/planner/appearance'
 
 import styles from './PlannerBackground.module.css'
 
@@ -20,7 +26,9 @@ export function PlannerBackground({ background }: { background: Background }) {
     <div
       className={styles.stack}
       aria-hidden="true"
-      style={{ backgroundColor: rgba(color, opacity) }}
+      style={{
+        backgroundColor: isDefaultBackground(background) ? 'var(--color-bg)' : rgba(color, opacity),
+      }}
     >
       {image ? (
         <div

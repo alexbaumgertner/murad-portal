@@ -9,7 +9,7 @@
   justify-content: space-between;
   gap: 0.5rem 2rem;
   padding: 1rem 1.25rem;
-  background: var(--pl-header, #1b1a17);
+  background: var(--pl-header, var(--planner-header));
   color: #fff;
 }
 
@@ -72,7 +72,7 @@
   align-items: center;
   gap: 0.25rem 1.5rem;
   padding: 0.5rem 1.25rem;
-  background: var(--pl-strip, #6b675e);
+  background: var(--pl-strip, var(--planner-strip));
   color: #fff;
   letter-spacing: 0.06em;
   text-transform: uppercase;

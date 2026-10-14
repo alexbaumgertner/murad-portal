@@ -231,6 +231,22 @@ describe('story 022 · planner core', () => {
     await saveTaskTypes(payload, owner, { plannerId: planner.id, types: [] })
   })
 
+  it('029. while no list is saved, a student may pick the tasks already in her planner', async () => {
+    const { weeks } = await weeksOf(anna)
+    const at = { weekId: weeks[0]!.id, row: 0, day: 4 }
+    expect(await setCellText(payload, owner, { ...at, text: 'B2 TRAINING' })).toEqual({ ok: true })
+    const other = { ...at, row: 1 }
+    expect(await setCellText(payload, anna, { ...other, text: 'B2 TRAINING' })).toEqual({
+      ok: true,
+    })
+    expect(await setCellText(payload, anna, { ...other, text: 'ANKI' })).toEqual({
+      ok: false,
+      error: 'forbidden',
+    })
+    await setCellText(payload, owner, { ...at, text: '' })
+    await setCellText(payload, owner, { ...other, text: '' })
+  })
+
   it('11/12. a student ticks her own task only and cannot write anything else', async () => {
     const week = (await weeksOf(anna)).weeks[0]!
     const at = { weekId: week.id, row: 0, day: 1 }
