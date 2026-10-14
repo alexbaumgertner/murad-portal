@@ -45,6 +45,7 @@ export const Planners: CollectionConfig = {
       required: true,
       label: 'Понедельник первой недели (YYYY-MM-DD)',
       admin: {
+        components: { Field: '/components/admin/MondayPicker/MondayPicker#MondayPicker' },
         description:
           'Любая дата в формате YYYY-MM-DD: при сохранении сдвинется на понедельник той же недели (2026-10-10 → 2026-10-05).',
       },
