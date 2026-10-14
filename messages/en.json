@@ -733,6 +733,43 @@
           "decode_failed": "This image could not be read",
           "still_too_big": "The image is too detailed to store. Try a smaller one"
         }
+      },
+      "bars": {
+        "title": "Progress bars",
+        "names": {
+          "fourWeeks": "Four-week bars",
+          "deadline": "Deadline bar"
+        },
+        "style": "Animation",
+        "animate": "Animate",
+        "fill": "Fill color",
+        "track": "Track color",
+        "highlight": "Highlight color",
+        "opacity": "Color opacity",
+        "grain": "Film grain",
+        "grainSize": "Grain size",
+        "reset": "Reset this bar",
+        "styleOf": "Animation: {name}",
+        "animateOf": "Animate: {name}",
+        "fillOf": "Fill color: {name}",
+        "trackOf": "Track color: {name}",
+        "highlightOf": "Highlight color: {name}",
+        "opacityOf": "Color opacity: {name}",
+        "grainOf": "Film grain: {name}",
+        "grainSizeOf": "Grain size: {name}",
+        "styles": {
+          "none": "No Animation",
+          "ambient-flow": "Ambient Flow",
+          "soft-aurora": "Soft Aurora",
+          "morning-mist": "Morning Mist",
+          "silk-light": "Silk Light",
+          "cloud-bloom": "Cloud Bloom",
+          "slow-tide": "Slow Tide",
+          "velvet-breathing": "Velvet Breathing",
+          "film-grain": "Film Grain",
+          "grainy-haze": "Grainy Haze",
+          "moonlight": "Moonlight"
+        }
       }
     }
   }

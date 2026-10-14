@@ -42,18 +42,226 @@
 }
 
 .track {
-  height: 0.375rem;
+  height: 0.5rem;
+  overflow: hidden;
   background: var(--pl-grid, var(--color-surface-muted));
 }
 
+/* The fill clips every ambient layer: nothing animates outside it or over the percent label. */
 .fill {
+  position: relative;
   height: 100%;
-  background: var(--pl-accent, var(--color-success));
+  overflow: hidden;
+  background: var(--bar-fill, #4f8a6a);
   transition: width 300ms ease;
+}
+
+.fill::before,
+.fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* 1. Ambient Flow: a periodic highlight pattern slides by exactly one period, so it loops seamlessly. */
+.fill[data-style='ambient-flow']::before {
+  background: repeating-linear-gradient(90deg, transparent 0, var(--bar-hi) 25%, transparent 50%);
+  background-size: 200% 100%;
+  opacity: 0.35;
+}
+.fill[data-style='ambient-flow'][data-animate='true']::before {
+  animation: flow 40s linear infinite;
+}
+
+/* 2. Soft Aurora: two blurred color lights drifting against each other. */
+.fill[data-style='soft-aurora']::before {
+  background: radial-gradient(60% 140% at 30% 50%, var(--bar-hi), transparent 70%);
+  opacity: 0.3;
+}
+.fill[data-style='soft-aurora']::after {
+  background: radial-gradient(50% 140% at 70% 50%, #8fd3c8, transparent 70%);
+  mix-blend-mode: soft-light;
+  opacity: 0.5;
+}
+.fill[data-style='soft-aurora'][data-animate='true']::before {
+  animation: drift-right 36s ease-in-out infinite alternate;
+}
+.fill[data-style='soft-aurora'][data-animate='true']::after {
+  animation: drift-left 44s ease-in-out infinite alternate;
+}
+
+/* 3. Morning Mist: fog-like brightness swells. */
+.fill[data-style='morning-mist']::before {
+  background: radial-gradient(70% 160% at 25% 60%, var(--bar-hi), transparent 70%);
+  opacity: 0.15;
+}
+.fill[data-style='morning-mist']::after {
+  background: radial-gradient(60% 160% at 75% 40%, var(--bar-hi), transparent 70%);
+  opacity: 0.3;
+}
+.fill[data-style='morning-mist'][data-animate='true']::before {
+  animation: swell 30s ease-in-out infinite alternate;
+}
+.fill[data-style='morning-mist'][data-animate='true']::after {
+  animation: swell 42s ease-in-out -14s infinite alternate;
+}
+
+/* 4. Silk Light: one soft diagonal sheen that glides a short way and back. */
+.fill[data-style='silk-light']::before {
+  inset: 0 auto 0 0;
+  width: 50%;
+  background: linear-gradient(105deg, transparent 20%, var(--bar-hi) 50%, transparent 80%);
+  opacity: 0.35;
+}
+.fill[data-style='silk-light'][data-animate='true']::before {
+  animation: sheen 34s ease-in-out infinite alternate;
+}
+
+/* 5. Cloud Bloom: blurred regions slowly grow and fade. */
+.fill[data-style='cloud-bloom']::before {
+  background: radial-gradient(40% 150% at 20% 50%, var(--bar-hi), transparent 70%);
+  opacity: 0.3;
+}
+.fill[data-style='cloud-bloom']::after {
+  background: radial-gradient(35% 150% at 65% 50%, var(--bar-hi), transparent 70%);
+  opacity: 0.22;
+}
+.fill[data-style='cloud-bloom'][data-animate='true']::before {
+  animation: bloom 28s ease-in-out infinite alternate;
+}
+.fill[data-style='cloud-bloom'][data-animate='true']::after {
+  animation: bloom 38s ease-in-out -12s infinite alternate;
+}
+
+/* 6. Slow Tide: luminance and gradient position rise and fall together. */
+.fill[data-style='slow-tide']::before {
+  background: linear-gradient(90deg, transparent, var(--bar-hi), transparent);
+  background-size: 300% 100%;
+  opacity: 0.25;
+}
+.fill[data-style='slow-tide'][data-animate='true']::before {
+  animation: tide 45s ease-in-out infinite alternate;
+}
+
+/* 7. Velvet Breathing: one extremely small brightness change. */
+.fill[data-style='velvet-breathing']::before {
+  background: var(--bar-hi);
+  opacity: 0.02;
+}
+.fill[data-style='velvet-breathing'][data-animate='true']::before {
+  animation: breathe 26s ease-in-out infinite alternate;
+}
+
+/* 8. Film Grain: still light, the texture does the work. */
+.fill[data-style='film-grain']::before {
+  background: linear-gradient(180deg, var(--bar-hi), transparent 70%);
+  opacity: 0.22;
+}
+
+/* 9. Grainy Haze: slow fog; pair it with a higher grain setting. */
+.fill[data-style='grainy-haze']::before {
+  background: radial-gradient(70% 160% at 40% 50%, var(--bar-hi), transparent 70%);
+  opacity: 0.2;
+}
+.fill[data-style='grainy-haze'][data-animate='true']::before {
+  animation: swell 40s ease-in-out infinite alternate;
+}
+
+/* 10. Moonlight: cool, diffuse and restrained. */
+.fill[data-style='moonlight']::before {
+  background: radial-gradient(55% 170% at 70% 40%, #cfe0ff, transparent 70%);
+  opacity: 0.32;
+}
+.fill[data-style='moonlight']::after {
+  background: linear-gradient(180deg, rgb(120 150 220 / 18%), transparent);
+}
+.fill[data-style='moonlight'][data-animate='true']::before {
+  animation: drift-left 45s ease-in-out infinite alternate;
+}
+
+@keyframes flow {
+  to {
+    background-position: -200% 0;
+  }
+}
+@keyframes drift-right {
+  from {
+    transform: translateX(-12%);
+  }
+  to {
+    transform: translateX(14%);
+  }
+}
+@keyframes drift-left {
+  from {
+    transform: translateX(12%);
+  }
+  to {
+    transform: translateX(-14%);
+  }
+}
+@keyframes swell {
+  from {
+    opacity: 0.1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.35;
+    transform: scale(1.12);
+  }
+}
+@keyframes sheen {
+  from {
+    transform: translateX(-10%);
+  }
+  to {
+    transform: translateX(90%);
+  }
+}
+@keyframes bloom {
+  from {
+    opacity: 0.15;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 0.4;
+    transform: scale(1.2);
+  }
+}
+@keyframes tide {
+  from {
+    background-position: 0 0;
+    filter: brightness(0.96);
+  }
+  to {
+    background-position: 100% 0;
+    filter: brightness(1.05);
+  }
+}
+@keyframes breathe {
+  from {
+    opacity: 0.02;
+  }
+  to {
+    opacity: 0.16;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .fill {
     transition: none;
+  }
+
+  .fill::before,
+  .fill::after {
+    animation: none !important;
   }
 }

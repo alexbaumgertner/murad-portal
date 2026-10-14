@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  BAR_STYLES,
+  DEFAULT_BAR,
   appearanceVars,
   applyFontToAll,
   contrastRatio,
@@ -162,6 +164,35 @@ describe('story 026 · background', () => {
       overlay: 0,
       grain: 0,
       grainSize: 3,
+    })
+  })
+})
+
+describe('story 027 · progress bars', () => {
+  it('1/9. each bar has its own settings; an unknown style becomes No Animation', () => {
+    expect(BAR_STYLES).toHaveLength(11)
+    const a = parseAppearance({
+      bars: {
+        fourWeeks: { style: 'moonlight', grain: 0, fill: '#112233' },
+        deadline: { style: 'sparkles', grain: 400 },
+      },
+    })
+    expect(a.bars.fourWeeks).toMatchObject({ style: 'moonlight', grain: 0, fill: '#112233' })
+    expect(a.bars.deadline.style).toBe('none')
+    expect(a.bars.deadline.grain).toBe(DEFAULT_BAR.grain)
+    expect(a.bars.fourWeeks.track).toBe(DEFAULT_BAR.track)
+  })
+
+  it('13. defaults: animated, restrained grain, fully opaque', () => {
+    expect(defaultAppearance().bars.deadline).toEqual({
+      style: 'ambient-flow',
+      animate: true,
+      fill: '#4f8a6a',
+      track: '#e5e7eb',
+      highlight: '#ffffff',
+      opacity: 100,
+      grain: 12,
+      grainSize: 2,
     })
   })
 })

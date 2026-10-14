@@ -186,6 +186,64 @@ export const GRAIN_DATA_URI =
 /** Grain tile size in px: size 1 is the native 200 px tile, 12 stretches it to 2400 px (coarse). */
 export const grainTilePx = (size: number) => Math.round(200 * size)
 
+// ---- progress bars (story 027) ----
+
+export const BAR_STYLES = [
+  'none',
+  'ambient-flow',
+  'soft-aurora',
+  'morning-mist',
+  'silk-light',
+  'cloud-bloom',
+  'slow-tide',
+  'velvet-breathing',
+  'film-grain',
+  'grainy-haze',
+  'moonlight',
+] as const
+export type BarStyle = (typeof BAR_STYLES)[number]
+export const BAR_KEYS = ['fourWeeks', 'deadline'] as const
+export type BarKey = (typeof BAR_KEYS)[number]
+
+export type BarSetting = {
+  style: BarStyle
+  /** Master switch: off keeps the style chosen but stops all movement. */
+  animate: boolean
+  fill: string
+  track: string
+  highlight: string
+  /** Opacity of the fill and its highlight, 0–100. */
+  opacity: number
+  /** 0–100; 0 is perfectly smooth (no grain layer). */
+  grain: number
+  /** 1–12 */
+  grainSize: number
+}
+
+export const DEFAULT_BAR: BarSetting = {
+  style: 'ambient-flow',
+  animate: true,
+  fill: '#4f8a6a',
+  track: '#e5e7eb',
+  highlight: '#ffffff',
+  opacity: 100,
+  grain: 12,
+  grainSize: 2,
+}
+
+const barSchema = z
+  .object({
+    style: z.enum(BAR_STYLES).catch('none'),
+    animate: z.boolean().catch(DEFAULT_BAR.animate),
+    fill: hex.catch(DEFAULT_BAR.fill),
+    track: hex.catch(DEFAULT_BAR.track),
+    highlight: hex.catch(DEFAULT_BAR.highlight),
+    opacity: num(0, 100, DEFAULT_BAR.opacity),
+    grain: num(0, 100, DEFAULT_BAR.grain),
+    grainSize: num(1, 12, DEFAULT_BAR.grainSize),
+  })
+  .catch(() => ({ ...DEFAULT_BAR }))
+
 // ---- whole appearance ----
 
 const colorsShape = Object.fromEntries(COLOR_KEYS.map((key) => [key, colorSchema(key)])) as {
@@ -200,6 +258,9 @@ export const appearanceSchema = z.object({
   colors: z.object(colorsShape).catch(() => defaultColors()),
   type: z.object(typeShape).catch(() => defaultType()),
   background: backgroundSchema,
+  bars: z
+    .object({ fourWeeks: barSchema, deadline: barSchema })
+    .catch(() => ({ fourWeeks: { ...DEFAULT_BAR }, deadline: { ...DEFAULT_BAR } })),
 })
 export type ColorSetting = { color: string; opacity: number }
 export type Appearance = {
@@ -207,6 +268,7 @@ export type Appearance = {
   colors: Record<ColorKey, ColorSetting>
   type: Record<TypeSection, TypeSetting>
   background: Background
+  bars: Record<BarKey, BarSetting>
 }
 
 function defaultColors(): Record<ColorKey, ColorSetting> {
@@ -226,6 +288,7 @@ export const defaultAppearance = (): Appearance => ({
   colors: defaultColors(),
   type: defaultType(),
   background: { ...DEFAULT_BACKGROUND },
+  bars: { fourWeeks: { ...DEFAULT_BAR }, deadline: { ...DEFAULT_BAR } },
 })
 
 /** Reads whatever is stored: anything unknown or damaged becomes the default for that field. */

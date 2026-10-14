@@ -2,6 +2,14 @@
 
 import { useLocale, useTranslations } from 'next-intl'
 
+import { useOptionalPlanner } from '@/components/PlannerShell/planner-context'
+import {
+  DEFAULT_BAR,
+  GRAIN_DATA_URI,
+  grainTilePx,
+  rgba,
+  type BarSetting,
+} from '@/features/planner/appearance'
 import type { OtherTask, ProgressSettings } from '@/features/planner/queries'
 import {
   cellDate,
@@ -31,8 +39,9 @@ type Props = {
 
 const two = (n: number) => String(n + 1).padStart(2, '0')
 
-function Bar({ stats, label }: { stats: Stats; label: string }) {
+function Bar({ stats, label, bar }: { stats: Stats; label: string; bar: BarSetting }) {
   const percent = percentOf(stats)
+  const motion = bar.animate && bar.style !== 'none'
   return (
     <div
       className={styles.track}
@@ -41,8 +50,33 @@ function Bar({ stats, label }: { stats: Stats; label: string }) {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={percent ?? undefined}
+      style={{ backgroundColor: bar.track }}
     >
-      <div className={styles.fill} style={{ width: `${percent ?? 0}%` }} />
+      <div
+        className={styles.fill}
+        data-style={bar.style}
+        data-animate={motion}
+        data-testid="planner-bar-fill"
+        style={
+          {
+            width: `${percent ?? 0}%`,
+            '--bar-fill': rgba(bar.fill, bar.opacity),
+            '--bar-hi': rgba(bar.highlight, bar.opacity),
+          } as React.CSSProperties
+        }
+      >
+        {bar.grain > 0 ? (
+          <span
+            className={styles.grain}
+            data-testid="planner-bar-grain"
+            style={{
+              backgroundImage: GRAIN_DATA_URI,
+              backgroundSize: `${grainTilePx(bar.grainSize)}px`,
+              opacity: bar.grain / 100,
+            }}
+          />
+        ) : null}
+      </div>
     </div>
   )
 }
@@ -62,6 +96,7 @@ export function PlannerProgress({
   part,
 }: Props) {
   const t = useTranslations('Planner.progress')
+  const bars = useOptionalPlanner()?.appearance.bars
   const locale = useLocale()
   const date = (iso: string, withYear = false) =>
     new Intl.DateTimeFormat(locale, {
@@ -131,7 +166,7 @@ export function PlannerProgress({
                     {percent === null ? t('noTasks') : `${percent}%`}
                   </span>
                 </div>
-                <Bar stats={group} label={heading} />
+                <Bar stats={group} label={heading} bar={bars?.fourWeeks ?? DEFAULT_BAR} />
               </div>
             )
           })}
@@ -153,7 +188,11 @@ export function PlannerProgress({
               {percentOf(deadline) === null ? t('noTasks') : `${percentOf(deadline)}%`}
             </span>
           </div>
-          <Bar stats={deadline} label={settings.deadlineTitle || t('deadline')} />
+          <Bar
+            stats={deadline}
+            label={settings.deadlineTitle || t('deadline')}
+            bar={bars?.deadline ?? DEFAULT_BAR}
+          />
         </section>
       ) : null}
     </div>

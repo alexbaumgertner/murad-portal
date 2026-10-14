@@ -1,7 +1,7 @@
 ---
 id: 027
 title: Ambient animations and styling of the progress bars
-status: approved
+status: done
 ---
 
 # 027 — Ambient bars

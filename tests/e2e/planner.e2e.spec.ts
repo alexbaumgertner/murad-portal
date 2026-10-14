@@ -33,7 +33,7 @@ test.describe('Weekly planner (story 022)', () => {
       ).docs[0]!
       const planner = await payload.create({
         collection: 'planners',
-        data: { student: student.id, baseDate: '2026-12-28' },
+        data: { student: student.id, baseDate: '2026-12-28', showFourWeekProgress: true },
       })
       const week = await payload.create({
         collection: 'planner-weeks',
@@ -110,6 +110,14 @@ test.describe('Weekly planner (story 022)', () => {
       await page.reload()
       await expect(page.getByTestId('planner-bg-image')).toBeAttached()
       await expect(page.getByTestId('planner-bg-grain')).toBeAttached()
+      // 027: the four-week bar moves, and stops under prefers-reduced-motion
+      const fill = page.getByTestId('planner-bar-fill').first()
+      await expect(fill).toHaveAttribute('data-style', 'ambient-flow')
+      const moving = () => fill.evaluate((el) => el.getAnimations({ subtree: true }).length)
+      await expect.poll(moving).toBeGreaterThan(0)
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await expect.poll(moving).toBe(0)
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
       // 7. print: tools are hidden, the sheet stays
       await expect(page.getByRole('button', { name: 'Печать' })).toBeVisible()
       await page.emulateMedia({ media: 'print' })

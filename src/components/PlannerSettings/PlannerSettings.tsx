@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useRef, type ReactNode } from 'react'
 
 import { PlannerBackgroundSettings } from '@/components/PlannerSettings/PlannerBackgroundSettings'
+import { PlannerBarSettings } from '@/components/PlannerSettings/PlannerBarSettings'
 import { PlannerColorSettings } from '@/components/PlannerSettings/PlannerColorSettings'
 import { PlannerTypographySettings } from '@/components/PlannerSettings/PlannerTypographySettings'
 
@@ -44,6 +45,10 @@ export function PlannerSettings({
       <details className={styles.section}>
         <summary>{t('background.title')}</summary>
         <PlannerBackgroundSettings />
+      </details>
+      <details className={styles.section}>
+        <summary>{t('bars.title')}</summary>
+        <PlannerBarSettings />
       </details>
       <details className={styles.section}>
         <summary>{t('typography')}</summary>
