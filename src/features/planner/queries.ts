@@ -6,7 +6,7 @@ import { DEFAULT_TIMEZONE, todayIn } from '@/features/enrollments/shape'
 
 import { parseAppearance, type Appearance } from './appearance'
 import type { Labels } from './schema'
-import { isAssignedTask, weekDates } from './shape'
+import { isAssignedTask, readTaskTypes, weekDates } from './shape'
 
 export type CellView = { text: string; done: boolean }
 export type ProgressSettings = {
@@ -34,6 +34,7 @@ export type PlannerView = {
   weeks: { id: number; index: number }[]
   header: HeaderView
   appearance: Appearance
+  taskTypes: string[]
   settings: ProgressSettings
   today: string
   otherTasks: OtherTask[]
@@ -117,6 +118,7 @@ export async function getPlannerView(
       labels: (planner.labels as Labels | null) ?? {},
     },
     appearance: parseAppearance(planner.appearance),
+    taskTypes: readTaskTypes(planner.taskTypes),
     settings: {
       showWeekProgress: planner.showWeekProgress ?? true,
       showFourWeekProgress: Boolean(planner.showFourWeekProgress),

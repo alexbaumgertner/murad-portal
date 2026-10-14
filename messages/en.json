@@ -778,6 +778,13 @@
       }
     },
     "slot": "Priority",
-    "slotHint": "Type of task for the day, like I, II, III. You can add or remove rows below the grid."
+    "slotHint": "Type of task for the day, like I, II, III. You can add or remove rows below the grid.",
+    "pickTask": "Choose…",
+    "taskTypes": {
+      "summary": "Task types for the student",
+      "label": "One task type per line (up to {max}). The student picks from these in her cells.",
+      "save": "Save task types",
+      "saved": "Saved"
+    }
   }
 }

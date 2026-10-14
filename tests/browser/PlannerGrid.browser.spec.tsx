@@ -91,6 +91,23 @@ describe('PlannerGrid (story 022)', () => {
     expect(actions.setDoneAction).toHaveBeenCalled()
   })
 
+  test('029. a student picks a task type from a list instead of typing', async () => {
+    await renderGrid({ canEdit: false, taskTypes: ['ANKI', 'PODCAST'] })
+    expect(page.getByRole('textbox').query()).toBeNull()
+    await userEvent.selectOptions(
+      page.getByRole('combobox', { name: /priority I, Oct 13/ }),
+      'PODCAST',
+    )
+    await vi.waitFor(() =>
+      expect(actions.setCellTextAction).toHaveBeenCalledWith({
+        weekId: 1,
+        row: 0,
+        day: 1,
+        text: 'PODCAST',
+      }),
+    )
+  })
+
   test('6. removing a priority asks first; cancel changes nothing', async () => {
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
     await renderGrid()

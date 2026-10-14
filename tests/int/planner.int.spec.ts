@@ -10,6 +10,7 @@ import {
   createPlanner,
   deleteWeek,
   removeRow,
+  saveTaskTypes,
   exportPlanner,
   importPlanner,
   resetPlanner,
@@ -199,6 +200,35 @@ describe('story 022 · planner core', () => {
     expect((await weeksOf(anna)).weeks.map((w) => w.index)).toEqual([0, 2])
     await addWeek(payload, owner, planner.id)
     expect((await weeksOf(anna)).weeks.map((w) => w.index)).toEqual([0, 2, 3])
+  })
+
+  it('029. the owner sets task types; a student picks only from them and may clear a cell', async () => {
+    const { planner, weeks } = await weeksOf(anna)
+    const at = { weekId: weeks[0]!.id, row: 0, day: 3 }
+    expect(await saveTaskTypes(payload, anna, { plannerId: planner.id, types: ['X'] })).toEqual({
+      ok: false,
+      error: 'forbidden',
+    })
+    expect(
+      await saveTaskTypes(payload, owner, {
+        plannerId: planner.id,
+        types: [' Anki ', '', 'Podcast', 'Anki'],
+      }),
+    ).toEqual({ ok: true })
+    const stored = await payload.findByID({ collection: 'planners', id: planner.id, depth: 0 })
+    expect(stored.taskTypes).toEqual(['Anki', 'Podcast'])
+    expect(await setCellText(payload, anna, { ...at, text: 'Podcast' })).toEqual({ ok: true })
+    expect((await cells(weeks[0]!.id)).find((c) => c.day === 3)?.text).toBe('Podcast')
+    expect(await setCellText(payload, anna, { ...at, text: 'my own idea' })).toEqual({
+      ok: false,
+      error: 'forbidden',
+    })
+    expect(await setCellText(payload, anna, { ...at, text: '' })).toEqual({ ok: true })
+    expect((await cells(weeks[0]!.id)).find((c) => c.day === 3)).toBeUndefined()
+    // the owner still types anything
+    expect(await setCellText(payload, owner, { ...at, text: 'free text' })).toEqual({ ok: true })
+    await setCellText(payload, owner, { ...at, text: '' })
+    await saveTaskTypes(payload, owner, { plannerId: planner.id, types: [] })
   })
 
   it('11/12. a student ticks her own task only and cannot write anything else', async () => {

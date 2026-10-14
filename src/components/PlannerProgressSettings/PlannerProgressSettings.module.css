@@ -34,7 +34,8 @@
   font-size: 0.875rem;
 }
 
-.field input {
+.field input,
+.field textarea {
   padding: 0.5rem;
   border: 1px solid var(--color-border);
   background: var(--color-surface);

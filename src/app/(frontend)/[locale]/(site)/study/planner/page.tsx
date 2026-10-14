@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation'
 import { isOwner } from '@/access'
 import { PlannerShell } from '@/components/PlannerShell/PlannerShell'
 import { PlannerBoard } from '@/components/PlannerBoard/PlannerBoard'
+import { PlannerTaskTypes } from '@/components/PlannerTaskTypes/PlannerTaskTypes'
 import { PlannerProgressSettings } from '@/components/PlannerProgressSettings/PlannerProgressSettings'
 import { PlannerWeekBar } from '@/components/PlannerWeekBar/PlannerWeekBar'
 import { currentUser } from '@/features/auth/current-user'
@@ -77,7 +78,10 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
           isOwner={owner}
           ownerPanels={
             owner ? (
-              <PlannerProgressSettings plannerId={view.plannerId} initial={view.settings} />
+              <>
+                <PlannerTaskTypes plannerId={view.plannerId} initial={view.taskTypes} />
+                <PlannerProgressSettings plannerId={view.plannerId} initial={view.settings} />
+              </>
             ) : null
           }
         >
@@ -111,6 +115,7 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
             rowCount={view.active.rowCount}
             dates={view.active.dates}
             cells={view.active.cells}
+            taskTypes={view.taskTypes}
             canEdit={owner}
             baseDate={view.baseDate}
             weekIndexes={view.weeks.map((week) => week.index)}

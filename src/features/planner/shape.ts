@@ -8,6 +8,9 @@ export const MAX_DEADLINE_TITLE = 80
 export const MAX_HEADER_TEXT = 80
 export const MAX_SUBTITLE = 120
 export const MAX_LABEL = 40
+/** The owner's list of task types a student picks from (story 029). */
+export const MAX_TASK_TYPES = 30
+export const MAX_TASK_TYPE = 80
 export const MAX_NOTE = 2000
 export const NOTE_KINDS = ['exercises', 'questions'] as const
 export type NoteKind = (typeof NOTE_KINDS)[number]
@@ -73,3 +76,10 @@ export const isAssignedTask = (text: string | null | undefined): boolean => {
 /** Whole calendar days from `from` to `to` (negative when `to` is earlier). */
 export const diffDays = (from: string, to: string): number =>
   Math.round((toUtc(to).getTime() - toUtc(from).getTime()) / 86_400_000)
+
+/** The saved list as plain strings; anything else in the JSON column is ignored. */
+export function readTaskTypes(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : []
+}

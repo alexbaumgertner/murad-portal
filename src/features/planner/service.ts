@@ -22,7 +22,7 @@ import type {
 } from './schema'
 import { parseAppearance } from './appearance'
 import { blankSettings, blankWeek, buildBackup, type Backup, type PlannerData } from './backup'
-import { MAX_ROWS, isAssignedTask, mondayOf } from './shape'
+import { MAX_ROWS, isAssignedTask, mondayOf, readTaskTypes } from './shape'
 
 /**
  * Planner writes (story 022). Callers name ids; every call first reads the week AS the user
@@ -171,13 +171,25 @@ async function findCell(payload: Payload, weekId: number, row: number, day: numb
 /** Owner types a task. A cleared task also clears its tick; an empty untouched cell is not stored. */
 export async function setCellText(
   payload: Payload,
-  owner: TypedUser,
+  user: TypedUser,
   input: { weekId: number; row: number; day: number; text: string },
 ): Promise<Result> {
-  if (!isOwner(owner)) return fail('forbidden')
-  const week = await weekOf(payload, owner, input.weekId)
+  const week = await weekOf(payload, user, input.weekId)
   if (!week) return fail('not_found')
   if (input.row >= week.rowCount) return fail('invalid_input')
+  // The owner types anything; a student only picks one of the owner's task types (or clears it).
+  if (!isOwner(user) && input.text.trim() !== '') {
+    const planner = await payload.findByID({
+      collection: 'planners',
+      id: typeof week.planner === 'object' ? week.planner.id : week.planner,
+      depth: 0,
+      overrideAccess: false,
+      user,
+      disableErrors: true,
+    })
+    if (!planner) return fail('not_found')
+    if (!readTaskTypes(planner.taskTypes).includes(input.text)) return fail('forbidden')
+  }
   const cell = await findCell(payload, input.weekId, input.row, input.day)
   const assigned = isAssignedTask(input.text)
   const text = input.text.trim()
@@ -212,6 +224,30 @@ export async function setDone(
     collection: 'planner-cells',
     id: cell.id,
     data: { done: input.done },
+    overrideAccess: true,
+  })
+  return ok
+}
+
+/** Owner saves the list of task types a student picks from: trimmed, no blanks, no repeats. */
+export async function saveTaskTypes(
+  payload: Payload,
+  owner: TypedUser,
+  input: { plannerId: number; types: string[] },
+): Promise<Result> {
+  if (!isOwner(owner)) return fail('forbidden')
+  const planner = await payload.findByID({
+    collection: 'planners',
+    id: input.plannerId,
+    depth: 0,
+    disableErrors: true,
+  })
+  if (!planner) return fail('not_found')
+  const types = [...new Set(input.types.map((type) => type.trim()).filter(Boolean))]
+  await payload.update({
+    collection: 'planners',
+    id: input.plannerId,
+    data: { taskTypes: types },
     overrideAccess: true,
   })
   return ok

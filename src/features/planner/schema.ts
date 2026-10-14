@@ -9,6 +9,8 @@ import {
   MAX_ROWS,
   MAX_SUBTITLE,
   MAX_TASK_TEXT,
+  MAX_TASK_TYPE,
+  MAX_TASK_TYPES,
   NOTE_KINDS,
   isIsoDate,
 } from './shape'
@@ -71,6 +73,10 @@ export const saveHeaderSchema = z.strictObject({
   labels: labelsSchema.partial().optional(),
 })
 export type SaveHeaderInput = z.infer<typeof saveHeaderSchema>
+
+/** The owner's list of task types; blanks are dropped and repeats collapse in the service. */
+export const taskTypesSchema = z.array(z.string().trim().max(MAX_TASK_TYPE)).max(MAX_TASK_TYPES)
+export const saveTaskTypesSchema = z.strictObject({ plannerId: id, types: taskTypesSchema })
 
 export const saveNoteSchema = z.strictObject({
   weekId: id,

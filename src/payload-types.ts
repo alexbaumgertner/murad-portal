@@ -632,6 +632,15 @@ export interface Planner {
     | number
     | boolean
     | null;
+  taskTypes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   appearance?:
     | {
         [k: string]: unknown;
@@ -1145,6 +1154,7 @@ export interface PlannersSelect<T extends boolean = true> {
   goal?: T;
   subtitle?: T;
   labels?: T;
+  taskTypes?: T;
   appearance?: T;
   showWeekProgress?: T;
   showFourWeekProgress?: T;

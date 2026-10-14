@@ -41,8 +41,10 @@
   place-items: center;
   background: var(--pl-header, #2b2d31);
   color: #fff;
-  font-size: 0.7rem;
-  letter-spacing: 0.05em;
+  padding: 0 0.125rem;
+  overflow: hidden;
+  font-size: 0.6rem;
+  letter-spacing: 0;
   text-transform: uppercase;
   opacity: 0.85;
 }
@@ -89,7 +91,9 @@
 }
 
 .text,
-.readText {
+.readText,
+.pick,
+.pickEmpty {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
@@ -111,7 +115,27 @@
   white-space: pre-wrap;
 }
 
+.pick,
+.pickEmpty {
+  appearance: none;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.pickEmpty {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+@media print {
+  .pickEmpty {
+    color: transparent;
+  }
+}
+
 .text:focus-visible,
+.pick:focus-visible,
+.pickEmpty:focus-visible,
 .tick:focus-visible,
 .control:focus-visible {
   outline: 2px solid var(--color-accent);

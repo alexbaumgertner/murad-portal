@@ -22,6 +22,7 @@ type Props = {
   rowCount: number
   dates: string[]
   cells: Record<string, CellView>
+  taskTypes?: string[]
   notes: Record<string, string>
   /** True for the owner: edits everything. A student ticks and writes her diary only. */
   canEdit: boolean

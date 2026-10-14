@@ -15,6 +15,7 @@ import {
   progressSettingsSchema,
   saveAppearanceSchema,
   saveHeaderSchema,
+  saveTaskTypesSchema,
   saveNoteSchema,
   setDoneSchema,
   setTextSchema,
@@ -96,6 +97,12 @@ export async function setDoneAction(input: unknown): Promise<PlannerActionState>
 export async function saveProgressSettingsAction(input: unknown): Promise<PlannerActionState> {
   return run('saveProgressSettingsAction', progressSettingsSchema, input, (p, u, i) =>
     service.saveProgressSettings(p, u, i),
+  )
+}
+
+export async function saveTaskTypesAction(input: unknown): Promise<PlannerActionState> {
+  return run('saveTaskTypesAction', saveTaskTypesSchema, input, (p, u, i) =>
+    service.saveTaskTypes(p, u, i),
   )
 }
 

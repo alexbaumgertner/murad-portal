@@ -15,6 +15,7 @@ import * as migration_20261014_103937_planner_core from './20261014_103937_plann
 import * as migration_20261014_112238_planner_progress from './20261014_112238_planner_progress';
 import * as migration_20261014_113548_planner_header_notes from './20261014_113548_planner_header_notes';
 import * as migration_20261014_113941_planner_appearance from './20261014_113941_planner_appearance';
+import * as migration_20261014_192138_planner_task_types from './20261014_192138_planner_task_types';
 
 export const migrations = [
   {
@@ -100,6 +101,11 @@ export const migrations = [
   {
     up: migration_20261014_113941_planner_appearance.up,
     down: migration_20261014_113941_planner_appearance.down,
-    name: '20261014_113941_planner_appearance'
+    name: '20261014_113941_planner_appearance',
+  },
+  {
+    up: migration_20261014_192138_planner_task_types.up,
+    down: migration_20261014_192138_planner_task_types.down,
+    name: '20261014_192138_planner_task_types'
   },
 ];

@@ -23,6 +23,8 @@ type Props = {
   /** Seven `YYYY-MM-DD` dates, Monday first. */
   dates: string[]
   cells: Record<string, CellView>
+  /** The owner's task types: a student picks one of them for a cell. */
+  taskTypes?: string[]
   /** The owner edits task text; a student only ticks. Both add and remove priority rows. */
   canEdit: boolean
   /** Seven weekday names (defaults or the owner's overrides). */
@@ -43,6 +45,7 @@ export function PlannerGrid({
   rowCount,
   dates,
   cells: initial,
+  taskTypes = [],
   canEdit,
   dayNames,
   onDayName,
@@ -149,6 +152,24 @@ export function PlannerGrid({
                         rows={2}
                         onBlur={(event) => void saveText(row, day, event.currentTarget.value)}
                       />
+                    ) : taskTypes.length > 0 ? (
+                      <select
+                        className={cell?.text ? styles.pick : styles.pickEmpty}
+                        aria-label={label}
+                        value={cell?.text ?? ''}
+                        disabled={pending}
+                        onChange={(event) => void saveText(row, day, event.target.value)}
+                      >
+                        <option value="">{t('pickTask')}</option>
+                        {cell?.text && !taskTypes.includes(cell.text) ? (
+                          <option value={cell.text}>{cell.text}</option>
+                        ) : null}
+                        {taskTypes.map((type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
                     ) : (
                       <span className={styles.readText}>{cell?.text}</span>
                     )}

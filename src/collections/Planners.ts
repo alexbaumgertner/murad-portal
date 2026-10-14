@@ -65,6 +65,8 @@ export const Planners: CollectionConfig = {
     { name: 'goal', type: 'text', maxLength: MAX_HEADER_TEXT, label: 'Цель' },
     { name: 'subtitle', type: 'text', maxLength: MAX_SUBTITLE, label: 'Подзаголовок (экзамен)' },
     { name: 'labels', type: 'json', label: 'Подписи' },
+    // Story 029: task types the student picks from (JSON array of strings, see `taskTypesSchema`).
+    { name: 'taskTypes', type: 'json', label: 'Виды заданий' },
     // Story 025+: colors, typography, background, bars (JSON read with `parseAppearance`).
     { name: 'appearance', type: 'json', label: 'Оформление' },
     // Story 024: which progress blocks are shown and the exam deadline.
