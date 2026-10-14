@@ -44,10 +44,20 @@ export const Planners: CollectionConfig = {
       type: 'text',
       required: true,
       label: 'Понедельник первой недели (YYYY-MM-DD)',
+      admin: {
+        description:
+          'Любая дата в формате YYYY-MM-DD: при сохранении сдвинется на понедельник той же недели (2026-10-10 → 2026-10-05).',
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value }) =>
+            typeof value === 'string' && isIsoDate(value.trim()) ? mondayOf(value.trim()) : value,
+        ],
+      },
       validate: (value: string | null | undefined) =>
         typeof value === 'string' && isIsoDate(value) && mondayOf(value) === value
           ? true
-          : 'Нужен понедельник в формате YYYY-MM-DD',
+          : 'Нужна дата в формате YYYY-MM-DD',
     },
     // Story 023: the header and the printed words (JSON of overrides, see `labelsSchema`).
     { name: 'studentName', type: 'text', maxLength: MAX_HEADER_TEXT, label: 'Имя ученика' },
