@@ -12,7 +12,13 @@
       "Bash(pnpm generate:importmap)",
       "Bash(git status)",
       "Bash(git diff:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Read(.env.development.local)",
+      "Edit(.env.development.local)",
+      "Write(.env.development.local)",
+      "Read(.env.test.local)",
+      "Edit(.env.test.local)",
+      "Write(.env.test.local)"
     ],
     "deny": []
   },

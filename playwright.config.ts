@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
-import 'dotenv/config'
+import { config as loadEnv } from 'dotenv'
+
+// Workers and the dev server share one database: same files Next loads in development (first wins).
+loadEnv({ path: ['.env.development.local', '.env'], quiet: true })
 
 // Test workers open their own Payload connections (helpers seed data). Only the
 // dev server may push the schema; concurrent pushes can block on an interactive prompt.
