@@ -27,7 +27,9 @@ const serverEnvSchema = z.object({
 export type ServerEnv = z.infer<typeof serverEnvSchema>
 
 function parseEnv(): ServerEnv {
-  const result = serverEnvSchema.safeParse(process.env)
+  // `KEY=` in a .env file means "unset", not "empty string".
+  const raw = Object.fromEntries(Object.entries(process.env).filter(([, value]) => value !== ''))
+  const result = serverEnvSchema.safeParse(raw)
   if (!result.success) {
     throw new Error(`Invalid environment variables:\n${z.prettifyError(result.error)}`)
   }
