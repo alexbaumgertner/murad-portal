@@ -36,11 +36,31 @@ export const DEFAULT_COLORS: Record<ColorKey, string> = {
   grid: '#e6e2d9',
 }
 
+/**
+ * The first defaults (the mock's spreadsheet look). Autosave stored them in every planner, so a
+ * value that still equals one is read as "never changed" and becomes the current default.
+ */
+const LEGACY_COLORS: Record<ColorKey, string> = {
+  header: '#2b2d31',
+  strip: '#6b6e75',
+  priority: '#cfe0f3',
+  done: '#7ed48f',
+  accent: '#2563eb',
+  paper: '#ffffff',
+  text: '#1f2328',
+  textMuted: '#6b7280',
+  grid: '#d9dce1',
+}
+
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/)
 const colorSchema = (key: ColorKey) =>
   z
     .object({
-      color: hex.catch(DEFAULT_COLORS[key]),
+      color: hex
+        .transform((value) =>
+          value.toLowerCase() === LEGACY_COLORS[key] ? DEFAULT_COLORS[key] : value,
+        )
+        .catch(DEFAULT_COLORS[key]),
       opacity: z.number().min(0).max(100).catch(100),
     })
     .catch({ color: DEFAULT_COLORS[key], opacity: 100 })

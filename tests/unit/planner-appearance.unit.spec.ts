@@ -28,6 +28,17 @@ describe('story 025 · appearance', () => {
     expect(a.type.tasks.font).toBe('default')
   })
 
+  it('025. colors saved as the first defaults read as the current defaults; real picks stay', () => {
+    const a = parseAppearance({
+      colors: {
+        header: { color: '#2b2d31', opacity: 100 },
+        done: { color: '#112233', opacity: 100 },
+      },
+    })
+    expect(a.colors.header.color).toBe(DEFAULT_COLORS.header)
+    expect(a.colors.done.color).toBe('#112233')
+  })
+
   it('1. applies real alpha, not a blend with white', () => {
     expect(rgba('#ff0000', 75)).toBe('rgba(255, 0, 0, 0.75)')
     const a = defaultAppearance()
