@@ -615,6 +615,11 @@ export interface Planner {
   id: number;
   student: number | User;
   baseDate: string;
+  showWeekProgress?: boolean | null;
+  showFourWeekProgress?: boolean | null;
+  showDeadlineProgress?: boolean | null;
+  deadlineTitle?: string | null;
+  deadlineDate?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1093,6 +1098,11 @@ export interface DayCommentsSelect<T extends boolean = true> {
 export interface PlannersSelect<T extends boolean = true> {
   student?: T;
   baseDate?: T;
+  showWeekProgress?: T;
+  showFourWeekProgress?: T;
+  showDeadlineProgress?: T;
+  deadlineTitle?: T;
+  deadlineDate?: T;
   updatedAt?: T;
   createdAt?: T;
 }

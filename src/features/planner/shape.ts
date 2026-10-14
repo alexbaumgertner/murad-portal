@@ -4,6 +4,7 @@
 export const MAX_ROWS = 40
 export const MAX_TASK_TEXT = 500
 export const DAYS = 7
+export const MAX_DEADLINE_TITLE = 80
 
 const NOON = 12
 
@@ -62,3 +63,7 @@ export const isAssignedTask = (text: string | null | undefined): boolean => {
   const trimmed = (text ?? '').trim()
   return trimmed !== '' && !/^[-–—]+$/.test(trimmed)
 }
+
+/** Whole calendar days from `from` to `to` (negative when `to` is earlier). */
+export const diffDays = (from: string, to: string): number =>
+  Math.round((toUtc(to).getTime() - toUtc(from).getTime()) / 86_400_000)

@@ -1,7 +1,7 @@
 import type { Access, CollectionBeforeDeleteHook, CollectionConfig } from 'payload'
 
 import { isOwner, owner } from '@/access'
-import { isIsoDate, mondayOf } from '@/features/planner/shape'
+import { MAX_DEADLINE_TITLE, isIsoDate, mondayOf } from '@/features/planner/shape'
 
 // Owner: everything. Student: her own planner. Anonymous: 403. Never public (story 022).
 export const ownPlannerOrOwner =
@@ -42,6 +42,33 @@ export const Planners: CollectionConfig = {
         typeof value === 'string' && isIsoDate(value) && mondayOf(value) === value
           ? true
           : 'Нужен понедельник в формате YYYY-MM-DD',
+    },
+    // Story 024: which progress blocks are shown and the exam deadline.
+    { name: 'showWeekProgress', type: 'checkbox', defaultValue: true, label: 'Прогресс недели' },
+    {
+      name: 'showFourWeekProgress',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Прогресс по 4 недели',
+    },
+    {
+      name: 'showDeadlineProgress',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Прогресс до дедлайна',
+    },
+    {
+      name: 'deadlineTitle',
+      type: 'text',
+      maxLength: MAX_DEADLINE_TITLE,
+      label: 'Название дедлайна',
+    },
+    {
+      name: 'deadlineDate',
+      type: 'text',
+      label: 'Дата дедлайна (YYYY-MM-DD)',
+      validate: (value: string | null | undefined) =>
+        !value || isIsoDate(value) ? true : 'Нужна дата в формате YYYY-MM-DD',
     },
   ],
 }

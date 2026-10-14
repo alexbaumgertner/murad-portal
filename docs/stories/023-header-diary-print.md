@@ -26,9 +26,9 @@ Progress strip content (024), fonts (025).
 
 ## Verification
 
-| # | Test | Layer |
-| --- | --- | --- |
-| 3 | `planner-dates.unit.spec.ts` › strip label | unit |
-| 2,4,6 | `PlannerHeader.browser.spec.tsx`, `PlannerDiary.browser.spec.tsx` | browser |
-| 5,9 | `planner.int.spec.ts` › access | int |
-| 7 | `planner.e2e.spec.ts` › print (`page.emulateMedia({media:'print'})`) | e2e |
+| #     | Test                                                                 | Layer   |
+| ----- | -------------------------------------------------------------------- | ------- |
+| 3     | `planner-dates.unit.spec.ts` › strip label                           | unit    |
+| 2,4,6 | `PlannerHeader.browser.spec.tsx`, `PlannerDiary.browser.spec.tsx`    | browser |
+| 5,9   | `planner.int.spec.ts` › access                                       | int     |
+| 7     | `planner.e2e.spec.ts` › print (`page.emulateMedia({media:'print'})`) | e2e     |

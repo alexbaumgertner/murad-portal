@@ -4,7 +4,7 @@ import type { Payload, TypedUser } from 'payload'
 
 import { isOwner } from '@/access'
 
-import type { PlannerError } from './schema'
+import type { PlannerError, ProgressSettingsInput } from './schema'
 import { MAX_ROWS, isAssignedTask, mondayOf } from './shape'
 
 /**
@@ -196,6 +196,30 @@ export async function setDone(
     collection: 'planner-cells',
     id: cell.id,
     data: { done: input.done },
+    overrideAccess: true,
+  })
+  return ok
+}
+
+/** Owner switches the progress blocks and sets the exam deadline. */
+export async function saveProgressSettings(
+  payload: Payload,
+  owner: TypedUser,
+  input: ProgressSettingsInput,
+): Promise<Result> {
+  if (!isOwner(owner)) return fail('forbidden')
+  const { plannerId, deadlineDate, ...rest } = input
+  const planner = await payload.findByID({
+    collection: 'planners',
+    id: plannerId,
+    depth: 0,
+    disableErrors: true,
+  })
+  if (!planner) return fail('not_found')
+  await payload.update({
+    collection: 'planners',
+    id: plannerId,
+    data: { ...rest, deadlineDate: deadlineDate || null },
     overrideAccess: true,
   })
   return ok

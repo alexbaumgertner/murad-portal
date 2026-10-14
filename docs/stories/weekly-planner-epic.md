@@ -14,42 +14,42 @@ Murad plans a student's week as a spreadsheet: weekday columns × priority rows 
 
 ## Differences from the mock that need an owner decision (see «Open questions»)
 
-| Mock | Portal |
-| --- | --- |
-| One anonymous user, `localStorage` | One planner per student, Payload collections, access by role |
-| UI 100% English | Portal rule: every key in `messages/en.json` **and** `ru.json`. English stays the default copy for the planner; Russian is added |
-| Background image as base64 in the page | Image goes to Media (Vercel Blob in prod); backup JSON embeds it |
-| Standalone, opens from a file | Portal page `/study/planner` (student) and an owner view; no standalone file |
+| Mock                                   | Portal                                                                                                                           |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| One anonymous user, `localStorage`     | One planner per student, Payload collections, access by role                                                                     |
+| UI 100% English                        | Portal rule: every key in `messages/en.json` **and** `ru.json`. English stays the default copy for the planner; Russian is added |
+| Background image as base64 in the page | Image goes to Media (Vercel Blob in prod); backup JSON embeds it                                                                 |
+| Standalone, opens from a file          | Portal page `/study/planner` (student) and an owner view; no standalone file                                                     |
 
 ## Roles
 
-| Role | Can do |
-| --- | --- |
-| Owner (Murad) | Creates a planner for a student; edits everything: labels, weeks, rows, tasks, diary, deadline, appearance |
-| Student | Reads her planner; ticks / unticks done; writes her own diary text (proposed, Q-WP-1); changes **her own** appearance (proposed, Q-WP-2) |
-| Visitor | Nothing; planners are private (not even a public read) |
+| Role          | Can do                                                                                                                                   |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner (Murad) | Creates a planner for a student; edits everything: labels, weeks, rows, tasks, diary, deadline, appearance                               |
+| Student       | Reads her planner; ticks / unticks done; writes her own diary text (proposed, Q-WP-1); changes **her own** appearance (proposed, Q-WP-2) |
+| Visitor       | Nothing; planners are private (not even a public read)                                                                                   |
 
 ## Data model (overview)
 
-| Collection | Main fields | Write | Read |
-| --- | --- | --- | --- |
-| `planners` | `student` (unique rel → users), `baseDate` (Monday, `YYYY-MM-DD`), `studentName`, `goal`, `subtitle`, `labels` (schedule, goal, exercises, questions, 7 weekday names, 7 diary day names), `deadline` {enabled, title, date}, `progress` {showWeek, showFourWeeks, showDeadline}, `appearance` (JSON validated by Zod, versioned: colors+alpha, typography, background, bars) | owner; student — `appearance` only | owner; student — own |
-| `planner-weeks` | `planner`, `index` (0-based, unique per planner), `rowCount` ≥1 ≤40, `notes` (14 × {kind exercises/questions, day 0–6, text ≤2000}) | owner; student — `notes` | owner; student — own |
-| `planner-cells` | `week`, `row`, `day` 0–6, `text` ≤500, `done`; unique (week,row,day) | owner — text; student — `done` only | owner; student — own |
+| Collection      | Main fields                                                                                                                                                                                                                                                                                                                                                                   | Write                               | Read                 |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | -------------------- |
+| `planners`      | `student` (unique rel → users), `baseDate` (Monday, `YYYY-MM-DD`), `studentName`, `goal`, `subtitle`, `labels` (schedule, goal, exercises, questions, 7 weekday names, 7 diary day names), `deadline` {enabled, title, date}, `progress` {showWeek, showFourWeeks, showDeadline}, `appearance` (JSON validated by Zod, versioned: colors+alpha, typography, background, bars) | owner; student — `appearance` only  | owner; student — own |
+| `planner-weeks` | `planner`, `index` (0-based, unique per planner), `rowCount` ≥1 ≤40, `notes` (14 × {kind exercises/questions, day 0–6, text ≤2000})                                                                                                                                                                                                                                           | owner; student — `notes`            | owner; student — own |
+| `planner-cells` | `week`, `row`, `day` 0–6, `text` ≤500, `done`; unique (week,row,day)                                                                                                                                                                                                                                                                                                          | owner — text; student — `done` only | owner; student — own |
 
 Dates are strings; week N Monday = `baseDate + 7N` computed on UTC-noon calendar days (no timestamp drift across DST / leap years). Row label = Roman numeral of `row+1`, generated, never stored.
 
 ## Stories (one PR each; collection stories run sequentially)
 
-| # | Story | Layer | Migration |
-| --- | --- | --- | --- |
-| 022 | Planner core: grid, rows, cells, ticks, week navigation | collections + UI | yes |
-| 023 | Header, labels, mini-diary, print | UI | no (uses 022 fields) |
-| 024 | Progress: week · 4-week weighted · deadline | pure functions + UI | no |
-| 025 | Colors with alpha, typography (30 fonts), reset | appearance JSON + UI | no |
-| 026 | Background image, blur / brightness / overlay / grain | Media + UI | maybe |
-| 027 | Ambient progress bars: 11 animations, per-bar settings | CSS + UI | no |
-| 028 | Backup JSON export / import / reset + import of the mock's `localStorage` state | actions | no |
+| #   | Story                                                                           | Layer                | Migration            |
+| --- | ------------------------------------------------------------------------------- | -------------------- | -------------------- |
+| 022 | Planner core: grid, rows, cells, ticks, week navigation                         | collections + UI     | yes                  |
+| 023 | Header, labels, mini-diary, print                                               | UI                   | no (uses 022 fields) |
+| 024 | Progress: week · 4-week weighted · deadline                                     | pure functions + UI  | no                   |
+| 025 | Colors with alpha, typography (30 fonts), reset                                 | appearance JSON + UI | no                   |
+| 026 | Background image, blur / brightness / overlay / grain                           | Media + UI           | maybe                |
+| 027 | Ambient progress bars: 11 animations, per-bar settings                          | CSS + UI             | no                   |
+| 028 | Backup JSON export / import / reset + import of the mock's `localStorage` state | actions              | no                   |
 
 Order: 022 → 024 → 023 → 025 → 026 → 027 → 028 (024 early: its pure functions are tested first and used by 023/027).
 

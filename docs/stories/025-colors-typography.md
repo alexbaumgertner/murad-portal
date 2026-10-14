@@ -33,10 +33,10 @@ Background image (026), bars (027).
 
 ## Verification
 
-| # | Test | Layer |
-| --- | --- | --- |
-| 1,2,9,10 | `planner-appearance.unit.spec.ts` | unit |
-| 5–8 | `planner-typography.unit.spec.ts` (acceptance scenario H) | unit |
-| 3,4,6 | `PlannerSettings.browser.spec.tsx` | browser |
-| 11 | `planner.int.spec.ts` | int |
-| 8 | `planner.e2e.spec.ts` › Cyrillic renders (screenshot compare off; assert computed font-family) | e2e |
+| #        | Test                                                                                           | Layer   |
+| -------- | ---------------------------------------------------------------------------------------------- | ------- |
+| 1,2,9,10 | `planner-appearance.unit.spec.ts`                                                              | unit    |
+| 5–8      | `planner-typography.unit.spec.ts` (acceptance scenario H)                                      | unit    |
+| 3,4,6    | `PlannerSettings.browser.spec.tsx`                                                             | browser |
+| 11       | `planner.int.spec.ts`                                                                          | int     |
+| 8        | `planner.e2e.spec.ts` › Cyrillic renders (screenshot compare off; assert computed font-family) | e2e     |

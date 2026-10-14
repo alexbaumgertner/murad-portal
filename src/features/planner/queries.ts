@@ -2,14 +2,30 @@ import 'server-only'
 
 import type { Payload, TypedUser } from 'payload'
 
-import { weekDates } from './shape'
+import { DEFAULT_TIMEZONE, todayIn } from '@/features/enrollments/shape'
+
+import { isAssignedTask, weekDates } from './shape'
 
 export type CellView = { text: string; done: boolean }
+export type ProgressSettings = {
+  showWeekProgress: boolean
+  showFourWeekProgress: boolean
+  showDeadlineProgress: boolean
+  deadlineTitle: string
+  /** `YYYY-MM-DD` or empty. */
+  deadlineDate: string
+}
+/** A written task of a week the grid is not showing: enough to count it, never its text. */
+export type OtherTask = { week: number; day: number; done: boolean }
+
 export type PlannerView = {
   plannerId: number
   studentId: number
   baseDate: string
   weeks: { id: number; index: number }[]
+  settings: ProgressSettings
+  today: string
+  otherTasks: OtherTask[]
   active: { id: number; index: number; rowCount: number; dates: string[] } & {
     cells: Record<string, CellView> // key `${row}-${day}`
   }
@@ -54,8 +70,35 @@ export async function getPlannerView(
     overrideAccess: false,
     user,
   })
+  const others = weeks.filter((w) => w.id !== week.id)
+  const otherCells = others.length
+    ? (
+        await payload.find({
+          collection: 'planner-cells',
+          where: { week: { in: others.map((w) => w.id) } },
+          pagination: false,
+          depth: 0,
+          select: { week: true, day: true, text: true, done: true },
+          overrideAccess: false,
+          user,
+        })
+      ).docs
+    : []
+  const indexOf = new Map(weeks.map((w) => [w.id, w.index]))
+  const idOf = (rel: number | { id: number }) => (typeof rel === 'object' ? rel.id : rel)
   return {
     plannerId: planner.id,
+    settings: {
+      showWeekProgress: planner.showWeekProgress ?? true,
+      showFourWeekProgress: Boolean(planner.showFourWeekProgress),
+      showDeadlineProgress: Boolean(planner.showDeadlineProgress),
+      deadlineTitle: planner.deadlineTitle ?? '',
+      deadlineDate: planner.deadlineDate ?? '',
+    },
+    today: todayIn(DEFAULT_TIMEZONE),
+    otherTasks: otherCells
+      .filter((c) => isAssignedTask(c.text))
+      .map((c) => ({ week: indexOf.get(idOf(c.week))!, day: c.day, done: Boolean(c.done) })),
     studentId,
     baseDate: planner.baseDate,
     weeks: weeks.map((w) => ({ id: w.id, index: w.index })),

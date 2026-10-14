@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { DAYS, MAX_ROWS, MAX_TASK_TEXT, isIsoDate } from './shape'
+import { DAYS, MAX_DEADLINE_TITLE, MAX_ROWS, MAX_TASK_TEXT, isIsoDate } from './shape'
 
 const id = z.number().int().positive()
 const row = z
@@ -27,6 +27,17 @@ export const setTextSchema = z.strictObject({
   text: z.string().max(MAX_TASK_TEXT),
 })
 export const setDoneSchema = z.strictObject({ weekId: id, row, day, done: z.boolean() })
+
+export const progressSettingsSchema = z.strictObject({
+  plannerId: id,
+  showWeekProgress: z.boolean(),
+  showFourWeekProgress: z.boolean(),
+  showDeadlineProgress: z.boolean(),
+  deadlineTitle: z.string().trim().max(MAX_DEADLINE_TITLE),
+  /** Empty clears the deadline. */
+  deadlineDate: z.union([z.literal(''), z.string().refine(isIsoDate)]),
+})
+export type ProgressSettingsInput = z.infer<typeof progressSettingsSchema>
 
 export type PlannerError =
   | 'unauthorized'

@@ -8,6 +8,7 @@ import {
   createPlanner,
   deleteWeek,
   removeRow,
+  saveProgressSettings,
   setCellText,
   setDone,
 } from '@/features/planner/service'
@@ -244,6 +245,42 @@ describe('story 022 · planner core', () => {
     )
     const state = (await cells(week.id))[0]!.done
     expect(typeof state).toBe('boolean')
+  })
+
+  it('10/11. the owner saves progress settings; defaults are week on, others off; a student cannot', async () => {
+    const { planner } = await weeksOf(anna)
+    expect(planner).toMatchObject({
+      showWeekProgress: true,
+      showFourWeekProgress: false,
+      showDeadlineProgress: false,
+    })
+    const input = {
+      plannerId: planner.id,
+      showWeekProgress: false,
+      showFourWeekProgress: true,
+      showDeadlineProgress: true,
+      deadlineTitle: 'IELTS EXAM',
+      deadlineDate: '2026-12-20',
+    }
+    expect(await saveProgressSettings(payload, owner, input)).toEqual({ ok: true })
+    expect((await weeksOf(anna)).planner).toMatchObject({
+      showWeekProgress: false,
+      deadlineTitle: 'IELTS EXAM',
+      deadlineDate: '2026-12-20',
+    })
+    expect(await saveProgressSettings(payload, anna, input)).toEqual({
+      ok: false,
+      error: 'forbidden',
+    })
+    await saveProgressSettings(payload, owner, { ...input, deadlineDate: '' })
+    expect((await weeksOf(anna)).planner.deadlineDate).toBeNull()
+    await expect(
+      payload.update({
+        collection: 'planners',
+        id: planner.id,
+        data: { deadlineDate: '2026-13-40' },
+      }),
+    ).rejects.toThrow()
   })
 
   it('deleting the student deletes her planner', async () => {

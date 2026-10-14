@@ -25,8 +25,8 @@ Versions 5–8 of other mock files that were never shared; only the shape above 
 
 ## Verification
 
-| # | Test | Layer |
-| --- | --- | --- |
-| 1,3,4,8 | `planner-backup.unit.spec.ts` (fixture = state taken from the mock) | unit |
-| 2,5,6,7 | `planner-backup.int.spec.ts` | int |
-| 1,2 | `planner.e2e.spec.ts` › export → reset → import | e2e |
+| #       | Test                                                                | Layer |
+| ------- | ------------------------------------------------------------------- | ----- |
+| 1,3,4,8 | `planner-backup.unit.spec.ts` (fixture = state taken from the mock) | unit  |
+| 2,5,6,7 | `planner-backup.int.spec.ts`                                        | int   |
+| 1,2     | `planner.e2e.spec.ts` › export → reset → import                     | e2e   |

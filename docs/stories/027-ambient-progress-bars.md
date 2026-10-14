@@ -30,9 +30,9 @@ The prompt says «11 options» and in its test «ten» — we build 11 (list abo
 
 ## Verification
 
-| # | Test | Layer |
-| --- | --- | --- |
-| 1,9 | `planner-bars.unit.spec.ts` (schema, defaults) | unit |
+| #           | Test                                                                                     | Layer   |
+| ----------- | ---------------------------------------------------------------------------------------- | ------- |
+| 1,9         | `planner-bars.unit.spec.ts` (schema, defaults)                                           | unit    |
 | 2,3,5,6,7,8 | `PlannerBar.browser.spec.tsx` (`getAnimations()`, durations, reduced motion via emulate) | browser |
-| 4 | `planner.e2e.spec.ts` › width equals percent | e2e |
-| 2 | manual: look at each of 11 in Chrome DevTools MCP, light + dark paper | browser |
+| 4           | `planner.e2e.spec.ts` › width equals percent                                             | e2e     |
+| 2           | manual: look at each of 11 in Chrome DevTools MCP, light + dark paper                    | browser |

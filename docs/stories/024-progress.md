@@ -1,7 +1,7 @@
 ---
 id: 024
 title: Progress of the week, of every four weeks and of the exam deadline
-status: approved
+status: in-progress
 ---
 
 # 024 — Progress
@@ -28,12 +28,12 @@ Bar animation and colors (027).
 
 ## Notes
 
-All math in `src/features/planner/progress.ts` — pure, no `payload`, unit-tested first. Deadline "today" uses the student's `enrollment.timezone` if she has one, else `Asia/Almaty` (project default).
+Settings (toggles, deadline title/date) are fields of `planners`, written by the owner only (`saveProgressSettingsAction`). All math in `src/features/planner/progress.ts` — pure, no `payload`, unit-tested first. Deadline "today" uses the student's `enrollment.timezone` if she has one, else `Asia/Almaty` (project default).
 
 ## Verification
 
-| # | Test | Layer |
-| --- | --- | --- |
-| 1–9,11 | `planner-progress.unit.spec.ts` (acceptance scenarios D, E, F, G of the prompt) | unit |
-| 10 | `PlannerProgress.browser.spec.tsx` | browser |
-| 3,5 | `planner.e2e.spec.ts` › progress | e2e |
+| #      | Test                                                                            | Layer   |
+| ------ | ------------------------------------------------------------------------------- | ------- |
+| 1–9,11 | `planner-progress.unit.spec.ts` (acceptance scenarios D, E, F, G of the prompt) | unit    |
+| 10     | `PlannerProgress.browser.spec.tsx`                                              | browser |
+| 3,5    | `planner.e2e.spec.ts` › progress                                                | e2e     |

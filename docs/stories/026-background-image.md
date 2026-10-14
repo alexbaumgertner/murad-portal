@@ -32,9 +32,9 @@ Likely a migration (relation to Media). CSP is report-only but e2e fails on viol
 
 ## Verification
 
-| # | Test | Layer |
-| --- | --- | --- |
-| 2,3 | `planner-image.unit.spec.ts` (size / type / resize math) | unit |
-| 5–7,10 | `PlannerBackground.browser.spec.tsx` (computed style of layers) | browser |
-| 8,9,11 | `planner-background.int.spec.ts` | int |
-| 6 | `planner.e2e.spec.ts` › text stays unblurred (computed `filter` on content = none) | e2e |
+| #      | Test                                                                               | Layer   |
+| ------ | ---------------------------------------------------------------------------------- | ------- |
+| 2,3    | `planner-image.unit.spec.ts` (size / type / resize math)                           | unit    |
+| 5–7,10 | `PlannerBackground.browser.spec.tsx` (computed style of layers)                    | browser |
+| 8,9,11 | `planner-background.int.spec.ts`                                                   | int     |
+| 6      | `planner.e2e.spec.ts` › text stays unblurred (computed `filter` on content = none) | e2e     |

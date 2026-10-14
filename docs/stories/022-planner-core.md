@@ -39,11 +39,11 @@ Labels/diary/print (023), progress (024), appearance (025–027), backup (028).
 
 ## Verification
 
-| # | Test | Layer |
-| --- | --- | --- |
-| 2,3 | `planner-dates.unit.spec.ts` | unit |
-| 5 | `planner-roman.unit.spec.ts` (1…40) | unit |
-| 10 | `planner-task.unit.spec.ts` | unit |
-| 1,4,6,7,8,12,13,14 | `planner.int.spec.ts` | int |
-| 9,11,15 | `PlannerGrid.browser.spec.tsx` | browser |
-| 1,11 | `planner.e2e.spec.ts` (desktop + mobile) | e2e |
+| #                  | Test                                     | Layer   |
+| ------------------ | ---------------------------------------- | ------- |
+| 2,3                | `planner-dates.unit.spec.ts`             | unit    |
+| 5                  | `planner-roman.unit.spec.ts` (1…40)      | unit    |
+| 10                 | `planner-task.unit.spec.ts`              | unit    |
+| 1,4,6,7,8,12,13,14 | `planner.int.spec.ts`                    | int     |
+| 9,11,15            | `PlannerGrid.browser.spec.tsx`           | browser |
+| 1,11               | `planner.e2e.spec.ts` (desktop + mobile) | e2e     |

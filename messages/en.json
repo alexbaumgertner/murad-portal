@@ -614,6 +614,24 @@
       "max_rows": "No more than 40 priority rows",
       "empty_task": "Write a task first",
       "server": "Something went wrong. Try again"
+    },
+    "progress": {
+      "week": "This week",
+      "noTasks": "No tasks",
+      "fourWeeks": "Progress by four weeks",
+      "deadline": "Deadline",
+      "weeksRange": "Weeks {from}–{to}",
+      "daysLeft": "{count, plural, one {# day left} other {# days left}}",
+      "overdue": "Overdue",
+      "today": "Today",
+      "settings": "Progress settings",
+      "showWeek": "Show this week's progress",
+      "showFourWeeks": "Show progress by four weeks",
+      "showDeadline": "Show deadline progress",
+      "deadlineTitle": "Deadline title",
+      "deadlineDate": "Deadline date",
+      "save": "Save",
+      "saved": "Saved"
     }
   }
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useLocale, useTranslations } from 'next-intl'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 
 import {
   addRowAction,
@@ -24,6 +24,8 @@ type Props = {
   cells: Record<string, CellView>
   /** The owner edits text and rows; a student only ticks. */
   canEdit: boolean
+  /** Called with the live cells after every change, so siblings can show progress. */
+  onCellsChange?: (cells: Record<string, CellView>) => void
 }
 
 const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
@@ -33,13 +35,22 @@ const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
  * controls, so editing text never toggles a task. State is local and optimistic; a failed save
  * puts the previous value back and says why.
  */
-export function PlannerGrid({ weekId, rowCount, dates, cells: initial, canEdit }: Props) {
+export function PlannerGrid({
+  weekId,
+  rowCount,
+  dates,
+  cells: initial,
+  canEdit,
+  onCellsChange,
+}: Props) {
   const t = useTranslations('Planner')
   const locale = useLocale()
   const router = useRouter()
   const [cells, setCells] = useState(initial)
   const [error, setError] = useState<PlannerError | null>(null)
   const [pending, startTransition] = useTransition()
+
+  useEffect(() => onCellsChange?.(cells), [cells, onCellsChange])
 
   const dateLabel = (iso: string) =>
     new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(

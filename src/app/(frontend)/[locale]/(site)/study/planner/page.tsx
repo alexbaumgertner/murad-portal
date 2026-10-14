@@ -4,7 +4,8 @@ import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 
 import { isOwner } from '@/access'
-import { PlannerGrid } from '@/components/PlannerGrid/PlannerGrid'
+import { PlannerBoard } from '@/components/PlannerBoard/PlannerBoard'
+import { PlannerProgressSettings } from '@/components/PlannerProgressSettings/PlannerProgressSettings'
 import { PlannerWeekBar } from '@/components/PlannerWeekBar/PlannerWeekBar'
 import { currentUser } from '@/features/auth/current-user'
 import { getPlannerView } from '@/features/planner/queries'
@@ -93,13 +94,19 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
               ))}
             </ol>
           </nav>
-          <PlannerGrid
-            key={view.active.id}
+          <PlannerBoard
+            key={`${view.active.id}-${view.active.rowCount}`}
             weekId={view.active.id}
+            weekIndex={view.active.index}
             rowCount={view.active.rowCount}
             dates={view.active.dates}
             cells={view.active.cells}
             canEdit={owner}
+            baseDate={view.baseDate}
+            weekIndexes={view.weeks.map((week) => week.index)}
+            otherTasks={view.otherTasks}
+            settings={view.settings}
+            today={view.today}
           />
           {owner ? (
             <PlannerWeekBar
@@ -108,6 +115,9 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
               weekId={view.active.id}
               lastWeek={view.weeks.length <= 1}
             />
+          ) : null}
+          {owner ? (
+            <PlannerProgressSettings plannerId={view.plannerId} initial={view.settings} />
           ) : null}
         </>
       )}

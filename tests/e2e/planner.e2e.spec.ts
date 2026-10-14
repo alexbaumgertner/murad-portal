@@ -56,7 +56,9 @@ test.describe('Weekly planner (story 022)', () => {
       await tick.click()
       await saved
       await expect(tick).toHaveAttribute('aria-pressed', 'true')
+      await expect(page.getByText('Эта неделя').locator('..')).toContainText('100%')
       await page.reload()
+      await expect(page.getByText('Эта неделя').locator('..')).toContainText('100%')
       await expect(
         page.getByRole('button', { name: /Отметить выполненным: PODCAST/ }),
       ).toHaveAttribute('aria-pressed', 'true')

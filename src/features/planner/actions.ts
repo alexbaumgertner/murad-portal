@@ -11,6 +11,7 @@ import { getPayloadClient } from '@/lib/payload'
 import {
   createPlannerSchema,
   plannerIdSchema,
+  progressSettingsSchema,
   setDoneSchema,
   setTextSchema,
   weekIdSchema,
@@ -84,4 +85,10 @@ export async function setDoneAction(input: unknown): Promise<PlannerActionState>
     if (result.ok) await track('planner_task_ticked', { done: i.done }, async () => headers())
     return result
   })
+}
+
+export async function saveProgressSettingsAction(input: unknown): Promise<PlannerActionState> {
+  return run('saveProgressSettingsAction', progressSettingsSchema, input, (p, u, i) =>
+    service.saveProgressSettings(p, u, i),
+  )
 }
