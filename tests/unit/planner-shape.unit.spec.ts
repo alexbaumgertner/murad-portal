@@ -7,7 +7,6 @@ import {
   mondayOf,
   roman,
   weekDates,
-  weekLabel,
 } from '@/features/planner/shape'
 
 describe('story 022 · planner shape', () => {
@@ -37,11 +36,6 @@ describe('story 022 · planner shape', () => {
       '2027-01-03',
     ])
     expect(weekDates('2026-12-28', 1)[0]).toBe('2027-01-04')
-  })
-
-  it('3. numbers weeks from 01', () => {
-    expect(weekLabel(0)).toBe('WEEK 01')
-    expect(weekLabel(11)).toBe('WEEK 12')
   })
 
   it('5. makes Roman numerals for 1…40', () => {

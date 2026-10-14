@@ -12,7 +12,7 @@ import { PlannerWeekNav } from '@/components/PlannerWeekNav/PlannerWeekNav'
 import { PlannerWeekBar } from '@/components/PlannerWeekBar/PlannerWeekBar'
 import { currentUser } from '@/features/auth/current-user'
 import { getPlannerView } from '@/features/planner/queries'
-import { mondayOf, weekDates, weekLabel } from '@/features/planner/shape'
+import { mondayOf, weekDates } from '@/features/planner/shape'
 import { messagesFor, parseAddressForm } from '@/i18n/address-form'
 import { Link, redirect } from '@/i18n/navigation'
 import { routing } from '@/i18n/routing'
@@ -93,7 +93,7 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
                 return {
                   id: week.id,
                   index: week.index,
-                  label: weekLabel(week.index),
+                  label: t('header.week', { n: String(week.index + 1).padStart(2, '0') }),
                   from: dates[0]!,
                   to: dates[6]!,
                 }

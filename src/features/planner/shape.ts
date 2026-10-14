@@ -45,8 +45,6 @@ export function weekDates(baseDate: string, index: number): string[] {
   return Array.from({ length: DAYS }, (_, day) => addDays(monday, day))
 }
 
-export const weekLabel = (index: number) => `WEEK ${String(index + 1).padStart(2, '0')}`
-
 const NUMERALS: [number, string][] = [
   [40, 'XL'],
   [10, 'X'],
