@@ -578,5 +578,42 @@
     "noComments": "No comments yet.",
     "commentMeta": "{date} · day {day}",
     "commentMetaNoDay": "{date}"
+  },
+  "Planner": {
+    "title": "Weekly planner",
+    "back": "Back",
+    "none": "Your planner has not been set up yet.",
+    "weeksNav": "Weeks",
+    "gridLabel": "Week schedule",
+    "create": "Create planner",
+    "addWeek": "Add week",
+    "deleteWeek": "Delete week",
+    "deleteWeekConfirm": "Delete this week? Its tasks and checkmarks will be lost for good.",
+    "addPriority": "Add priority",
+    "removePriority": "Remove priority",
+    "removeConfirm": "Remove the last priority row? Its tasks and checkmarks will be deleted for good.",
+    "cellLabel": "Task, priority {row}, {date}",
+    "tickLabel": "Mark as done: {task}",
+    "days": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    },
+    "errors": {
+      "unauthorized": "Sign in again",
+      "forbidden": "Not allowed",
+      "invalid_input": "That did not work. Refresh and try again",
+      "not_found": "Not found",
+      "exists": "A planner already exists",
+      "too_long": "Text is too long",
+      "min_rows": "At least one priority row is required",
+      "max_rows": "No more than 40 priority rows",
+      "empty_task": "Write a task first",
+      "server": "Something went wrong. Try again"
+    }
   }
 }

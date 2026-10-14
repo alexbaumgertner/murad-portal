@@ -82,6 +82,9 @@ export interface Config {
     'student-assignments': StudentAssignment;
     'slot-logs': SlotLog;
     'day-comments': DayComment;
+    planners: Planner;
+    'planner-weeks': PlannerWeek;
+    'planner-cells': PlannerCell;
     'auth-codes': AuthCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -109,6 +112,9 @@ export interface Config {
     'student-assignments': StudentAssignmentsSelect<false> | StudentAssignmentsSelect<true>;
     'slot-logs': SlotLogsSelect<false> | SlotLogsSelect<true>;
     'day-comments': DayCommentsSelect<false> | DayCommentsSelect<true>;
+    planners: PlannersSelect<false> | PlannersSelect<true>;
+    'planner-weeks': PlannerWeeksSelect<false> | PlannerWeeksSelect<true>;
+    'planner-cells': PlannerCellsSelect<false> | PlannerCellsSelect<true>;
     'auth-codes': AuthCodesSelect<false> | AuthCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -603,6 +609,43 @@ export interface DayComment {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "planners".
+ */
+export interface Planner {
+  id: number;
+  student: number | User;
+  baseDate: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "planner-weeks".
+ */
+export interface PlannerWeek {
+  id: number;
+  planner: number | Planner;
+  index: number;
+  rowCount: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "planner-cells".
+ */
+export interface PlannerCell {
+  id: number;
+  week: number | PlannerWeek;
+  row: number;
+  day: number;
+  text?: string | null;
+  done?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth-codes".
  */
 export interface AuthCode {
@@ -700,6 +743,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'day-comments';
         value: number | DayComment;
+      } | null)
+    | ({
+        relationTo: 'planners';
+        value: number | Planner;
+      } | null)
+    | ({
+        relationTo: 'planner-weeks';
+        value: number | PlannerWeek;
+      } | null)
+    | ({
+        relationTo: 'planner-cells';
+        value: number | PlannerCell;
       } | null)
     | ({
         relationTo: 'auth-codes';
@@ -1028,6 +1083,40 @@ export interface DayCommentsSelect<T extends boolean = true> {
   student?: T;
   date?: T;
   text?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "planners_select".
+ */
+export interface PlannersSelect<T extends boolean = true> {
+  student?: T;
+  baseDate?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "planner-weeks_select".
+ */
+export interface PlannerWeeksSelect<T extends boolean = true> {
+  planner?: T;
+  index?: T;
+  rowCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "planner-cells_select".
+ */
+export interface PlannerCellsSelect<T extends boolean = true> {
+  week?: T;
+  row?: T;
+  day?: T;
+  text?: T;
+  done?: T;
   updatedAt?: T;
   createdAt?: T;
 }

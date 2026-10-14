@@ -18,6 +18,9 @@ import { Media } from './collections/Media'
 import { ProgramPlanItems } from './collections/ProgramPlanItems'
 import { Programs } from './collections/Programs'
 import { DayComments } from './collections/DayComments'
+import { PlannerCells } from './collections/PlannerCells'
+import { PlannerWeeks } from './collections/PlannerWeeks'
+import { Planners } from './collections/Planners'
 import { SlotLogs } from './collections/SlotLogs'
 import { SlotTypes } from './collections/SlotTypes'
 import { StudentAssignments } from './collections/StudentAssignments'
@@ -66,6 +69,9 @@ export default buildConfig({
     StudentAssignments,
     SlotLogs,
     DayComments,
+    Planners,
+    PlannerWeeks,
+    PlannerCells,
     AuthCodes,
   ],
   // Content locales (the admin UI itself stays English). Missing translations fall back to English.

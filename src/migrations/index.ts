@@ -11,6 +11,7 @@ import * as migration_20261009_094359_slot_timer from './20261009_094359_slot_ti
 import * as migration_20261009_102257_day_comments from './20261009_102257_day_comments';
 import * as migration_20261009_124909_enrollment_one_open from './20261009_124909_enrollment_one_open';
 import * as migration_20261013_164708_student_card from './20261013_164708_student_card';
+import * as migration_20261014_103937_planner_core from './20261014_103937_planner_core';
 
 export const migrations = [
   {
@@ -76,6 +77,11 @@ export const migrations = [
   {
     up: migration_20261013_164708_student_card.up,
     down: migration_20261013_164708_student_card.down,
-    name: '20261013_164708_student_card'
+    name: '20261013_164708_student_card',
+  },
+  {
+    up: migration_20261014_103937_planner_core.up,
+    down: migration_20261014_103937_planner_core.down,
+    name: '20261014_103937_planner_core'
   },
 ];

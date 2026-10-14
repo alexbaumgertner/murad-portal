@@ -57,6 +57,13 @@ export const Users: CollectionConfig = {
           overrideAccess: true,
           req,
         })
+        // Story 022: her weekly planner (its weeks and cells go with it).
+        await req.payload.delete({
+          collection: 'planners',
+          where: { student: { equals: id } },
+          overrideAccess: true,
+          req,
+        })
       },
     ],
     beforeChange: [
