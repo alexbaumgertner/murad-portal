@@ -613,7 +613,11 @@
       "min_rows": "At least one priority row is required",
       "max_rows": "No more than 40 priority rows",
       "empty_task": "Write a task first",
-      "server": "Something went wrong. Try again"
+      "server": "Something went wrong. Try again",
+      "too_big": "The file is too large",
+      "invalid_json": "This is not a valid backup file",
+      "invalid_format": "This file is not a planner backup",
+      "unsupported_version": "This backup was made by a newer version"
     },
     "progress": {
       "week": "This week",
@@ -770,6 +774,15 @@
           "grainy-haze": "Grainy Haze",
           "moonlight": "Moonlight"
         }
+      },
+      "data": {
+        "title": "Data",
+        "export": "Export backup",
+        "import": "Import backup",
+        "reset": "Reset entire planner",
+        "exported": "Backup downloaded",
+        "importConfirm": "Replace this planner with the backup? Everything in it now will be lost.",
+        "resetConfirm": "Reset the entire planner? Every week, task, tick, note and setting will be deleted for good. This cannot be undone."
       }
     }
   }

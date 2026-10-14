@@ -1,6 +1,6 @@
 # Epic: Weekly Planner («Недельный планер ученика»)
 
-Status: approved · Oct 14, 2026 · source: Murad's ChatGPT mock `docs/references/14102026/learning-week-planner.html` + his master prompt (pasted in chat), answers of the owner: **live in the portal on the DB; take everything from the prompt**.
+Status: done · Oct 14, 2026 · source: Murad's ChatGPT mock `docs/references/14102026/learning-week-planner.html` + his master prompt (pasted in chat), answers of the owner: **live in the portal on the DB; take everything from the prompt**.
 
 ## Goal
 

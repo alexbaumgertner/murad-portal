@@ -3,12 +3,16 @@ import { getPayload, type Payload, type TypedUser } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { parseAppearance } from '@/features/planner/appearance'
+import { parseBackup } from '@/features/planner/backup'
 import {
   addRow,
   addWeek,
   createPlanner,
   deleteWeek,
   removeRow,
+  exportPlanner,
+  importPlanner,
+  resetPlanner,
   saveAppearance,
   saveHeader,
   saveNote,
@@ -392,6 +396,85 @@ describe('story 022 · planner core', () => {
     bg = parseAppearance((await weeksOf(anna)).planner.appearance).background
     expect(bg.image).toBeNull()
     expect(bg.blur).toBe(12)
+  })
+
+  it('028 1/2/6/7. export → reset → import restores everything; reset is blank; the student only exports', async () => {
+    const { planner, weeks } = await weeksOf(anna)
+    await saveHeader(payload, owner, {
+      plannerId: planner.id,
+      studentName: 'Anna',
+      goal: 'IELTS',
+      subtitle: 'ACADEMIC',
+      labels: { exercises: 'HOMEWORK' },
+    })
+    await setCellText(payload, owner, { weekId: weeks[0]!.id, row: 0, day: 4, text: 'WRITING' })
+    await setDone(payload, owner, { weekId: weeks[0]!.id, row: 0, day: 4, done: true })
+    await saveNote(payload, owner, {
+      weekId: weeks[0]!.id,
+      kind: 'questions',
+      day: 5,
+      text: 'Why?',
+    })
+
+    const exported = await exportPlanner(payload, anna, planner.id)
+    expect(exported.ok).toBe(true)
+    if (!exported.ok) return
+    const json = JSON.stringify(exported.backup)
+    expect(exported.backup).toMatchObject({
+      schemaVersion: 1,
+      planner: { studentName: 'Anna', goal: 'IELTS' },
+    })
+
+    expect(await resetPlanner(payload, anna, planner.id)).toEqual({ ok: false, error: 'forbidden' })
+    expect(await resetPlanner(payload, owner, planner.id)).toEqual({ ok: true })
+    const blank = await weeksOf(anna)
+    expect(blank.planner).toMatchObject({
+      studentName: '',
+      goal: '',
+      subtitle: '',
+      showWeekProgress: true,
+      showFourWeekProgress: false,
+    })
+    expect(blank.planner.labels).toBeNull()
+    expect(blank.weeks.map((w) => [w.index, w.rowCount])).toEqual([[0, 1]])
+    expect(await cells(blank.weeks[0]!.id)).toEqual([])
+    expect(parseAppearance(blank.planner.appearance)).toEqual(parseAppearance(null))
+
+    const parsed = parseBackup(json)
+    expect(parsed.ok).toBe(true)
+    if (!parsed.ok) return
+    expect(await importPlanner(payload, anna, planner.id, parsed.data)).toEqual({
+      ok: false,
+      error: 'forbidden',
+    })
+    expect(await importPlanner(payload, owner, planner.id, parsed.data)).toEqual({ ok: true })
+    const again = await exportPlanner(payload, owner, planner.id)
+    expect(again.ok && again.backup.planner).toEqual(exported.backup.planner)
+    expect(await exportPlanner(payload, boris, planner.id)).toEqual({
+      ok: false,
+      error: 'not_found',
+    })
+  })
+
+  it('028 4. a failing import changes nothing (one transaction)', async () => {
+    const { planner } = await weeksOf(anna)
+    const before = await exportPlanner(payload, owner, planner.id)
+    if (!before.ok) throw new Error('export failed')
+    const broken = {
+      ...before.backup.planner,
+      studentName: 'Changed',
+      weeks: [
+        {
+          index: 0,
+          rowCount: 1,
+          cells: [{ row: 0, day: 0, text: 'x'.repeat(501), done: false }],
+          notes: [],
+        },
+      ],
+    }
+    await expect(importPlanner(payload, owner, planner.id, broken)).rejects.toThrow()
+    const after = await exportPlanner(payload, owner, planner.id)
+    expect(after.ok && after.backup.planner).toEqual(before.backup.planner)
   })
 
   it('deleting the student deletes her planner', async () => {

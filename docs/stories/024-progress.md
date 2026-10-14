@@ -1,7 +1,7 @@
 ---
 id: 024
 title: Progress of the week, of every four weeks and of the exam deadline
-status: in-progress
+status: done
 ---
 
 # 024 — Progress

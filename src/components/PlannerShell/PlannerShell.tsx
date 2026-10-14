@@ -26,10 +26,12 @@ const SAVE_DELAY_MS = 600
 export function PlannerShell({
   plannerId,
   initial,
+  isOwner,
   ownerPanels,
   children,
 }: {
   plannerId: number
+  isOwner: boolean
   initial: Appearance
   /** Owner-only settings sections rendered inside the drawer. */
   ownerPanels?: ReactNode
@@ -82,7 +84,12 @@ export function PlannerShell({
     <PlannerContext.Provider value={value}>
       <PlannerBackground background={appearance.background} />
       <div style={style}>{children}</div>
-      <PlannerSettings open={open} onClose={() => setOpen(false)}>
+      <PlannerSettings
+        open={open}
+        onClose={() => setOpen(false)}
+        plannerId={plannerId}
+        isOwner={isOwner}
+      >
         {ownerPanels}
       </PlannerSettings>
     </PlannerContext.Provider>

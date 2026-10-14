@@ -1,6 +1,15 @@
 import 'server-only'
 
-import type { Payload, TypedUser } from 'payload'
+import {
+  commitTransaction,
+  createLocalReq,
+  initTransaction,
+  killTransaction,
+  type Payload,
+  type PayloadRequest,
+  type TypedUser,
+  type Where,
+} from 'payload'
 
 import { isOwner } from '@/access'
 
@@ -12,6 +21,7 @@ import type {
   SaveHeaderInput,
 } from './schema'
 import { parseAppearance } from './appearance'
+import { blankSettings, blankWeek, buildBackup, type Backup, type PlannerData } from './backup'
 import { MAX_ROWS, isAssignedTask, mondayOf } from './shape'
 
 /**
@@ -324,6 +334,190 @@ export async function saveAppearance(
     id: input.plannerId,
     data: { appearance: parseAppearance(input.appearance) },
     overrideAccess: true,
+  })
+  return ok
+}
+
+// ---- backup, import, reset (story 028) ----
+
+export type ExportResult =
+  { ok: true; backup: Backup; studentName: string } | { ok: false; error: PlannerError }
+
+/** The planner as `user` may read it (the student exports her own). */
+export async function exportPlanner(
+  payload: Payload,
+  user: TypedUser,
+  plannerId: number,
+): Promise<ExportResult> {
+  const planner = await payload.findByID({
+    collection: 'planners',
+    id: plannerId,
+    depth: 0,
+    overrideAccess: false,
+    user,
+    disableErrors: true,
+  })
+  if (!planner) return { ok: false, error: 'not_found' }
+  const find = <C extends 'planner-weeks' | 'planner-cells' | 'planner-notes'>(
+    collection: C,
+    where: Where,
+  ) =>
+    payload.find({
+      collection,
+      where,
+      pagination: false,
+      depth: 0,
+      sort: 'createdAt',
+      overrideAccess: false,
+      user,
+    })
+  const weeks = (await find('planner-weeks', { planner: { equals: plannerId } })).docs
+  const ids = weeks.map((w) => w.id)
+  const [cells, notes] = ids.length
+    ? await Promise.all([
+        find('planner-cells', { week: { in: ids } }),
+        find('planner-notes', { week: { in: ids } }),
+      ])
+    : [{ docs: [] }, { docs: [] }]
+  const weekOf = (rel: number | { id: number }) => (typeof rel === 'object' ? rel.id : rel)
+  const data: PlannerData = {
+    baseDate: planner.baseDate,
+    studentName: planner.studentName ?? '',
+    goal: planner.goal ?? '',
+    subtitle: planner.subtitle ?? '',
+    labels: (planner.labels as PlannerData['labels'] | null) ?? {},
+    settings: {
+      showWeekProgress: planner.showWeekProgress ?? true,
+      showFourWeekProgress: Boolean(planner.showFourWeekProgress),
+      showDeadlineProgress: Boolean(planner.showDeadlineProgress),
+      deadlineTitle: planner.deadlineTitle ?? '',
+      deadlineDate: planner.deadlineDate ?? '',
+    },
+    appearance: parseAppearance(planner.appearance),
+    weeks: weeks
+      .map((week) => ({
+        index: week.index,
+        rowCount: week.rowCount,
+        cells: cells.docs
+          .filter((c) => weekOf(c.week) === week.id)
+          .map((c) => ({ row: c.row, day: c.day, text: c.text ?? '', done: Boolean(c.done) })),
+        notes: notes.docs
+          .filter((n) => weekOf(n.week) === week.id)
+          .map((n) => ({ kind: n.kind, day: n.day, text: n.text })),
+      }))
+      .sort((a, b) => a.index - b.index),
+  }
+  const student = await payload.findByID({
+    collection: 'users',
+    id: typeof planner.student === 'object' ? planner.student.id : planner.student,
+    depth: 0,
+    overrideAccess: true, // a name for the file only
+    disableErrors: true,
+  })
+  return { ok: true, backup: buildBackup(data), studentName: student?.name ?? '' }
+}
+
+/** Replaces everything of a planner with `data` in ONE transaction; any failure changes nothing. */
+async function replaceContent(
+  payload: Payload,
+  plannerId: number,
+  data: PlannerData,
+): Promise<void> {
+  const req: Partial<PayloadRequest> = await createLocalReq({}, payload)
+  const started = await initTransaction(req as PayloadRequest)
+  try {
+    await payload.delete({
+      collection: 'planner-weeks',
+      where: { planner: { equals: plannerId } },
+      overrideAccess: true,
+      req: req as PayloadRequest,
+    })
+    await payload.update({
+      collection: 'planners',
+      id: plannerId,
+      data: {
+        baseDate: data.baseDate,
+        studentName: data.studentName,
+        goal: data.goal,
+        subtitle: data.subtitle,
+        labels: Object.keys(data.labels).length ? data.labels : null,
+        appearance: data.appearance,
+        ...data.settings,
+        deadlineDate: data.settings.deadlineDate || null,
+      },
+      overrideAccess: true,
+      req: req as PayloadRequest,
+    })
+    for (const week of data.weeks) {
+      const created = await payload.create({
+        collection: 'planner-weeks',
+        data: { planner: plannerId, index: week.index, rowCount: week.rowCount },
+        overrideAccess: true,
+        req: req as PayloadRequest,
+      })
+      for (const cell of week.cells)
+        await payload.create({
+          collection: 'planner-cells',
+          data: { week: created.id, ...cell },
+          overrideAccess: true,
+          req: req as PayloadRequest,
+        })
+      for (const note of week.notes)
+        await payload.create({
+          collection: 'planner-notes',
+          data: { week: created.id, ...note },
+          overrideAccess: true,
+          req: req as PayloadRequest,
+        })
+    }
+    if (started) await commitTransaction(req as PayloadRequest)
+  } catch (error) {
+    if (started) await killTransaction(req as PayloadRequest)
+    throw error
+  }
+}
+
+export async function importPlanner(
+  payload: Payload,
+  owner: TypedUser,
+  plannerId: number,
+  data: PlannerData,
+): Promise<Result> {
+  if (!isOwner(owner)) return fail('forbidden')
+  const planner = await payload.findByID({
+    collection: 'planners',
+    id: plannerId,
+    depth: 0,
+    disableErrors: true,
+  })
+  if (!planner) return fail('not_found')
+  await replaceContent(payload, plannerId, data)
+  return ok
+}
+
+/** Back to the blank planner: no name or goal, one empty week, default look. The start date stays. */
+export async function resetPlanner(
+  payload: Payload,
+  owner: TypedUser,
+  plannerId: number,
+): Promise<Result> {
+  if (!isOwner(owner)) return fail('forbidden')
+  const planner = await payload.findByID({
+    collection: 'planners',
+    id: plannerId,
+    depth: 0,
+    disableErrors: true,
+  })
+  if (!planner) return fail('not_found')
+  await replaceContent(payload, plannerId, {
+    baseDate: planner.baseDate,
+    studentName: '',
+    goal: '',
+    subtitle: '',
+    labels: {},
+    settings: blankSettings(),
+    appearance: parseAppearance(null),
+    weeks: [blankWeek(0)],
   })
   return ok
 }

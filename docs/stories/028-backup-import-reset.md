@@ -1,7 +1,7 @@
 ---
 id: 028
 title: Planner backup, import of the old mock and reset
-status: approved
+status: done
 ---
 
 # 028 — Backup, import, reset

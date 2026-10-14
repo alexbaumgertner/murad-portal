@@ -83,6 +83,8 @@ export type NoteInput = z.infer<typeof saveNoteSchema>
 
 export const saveAppearanceSchema = z.strictObject({ plannerId: id, appearance: z.unknown() })
 
+export const importSchema = z.strictObject({ plannerId: id, json: z.string().max(3_500_000) })
+
 export type PlannerError =
   | 'unauthorized'
   | 'forbidden'
@@ -94,5 +96,12 @@ export type PlannerError =
   | 'max_rows'
   | 'empty_task'
   | 'server'
+  | 'too_big'
+  | 'invalid_json'
+  | 'invalid_format'
+  | 'unsupported_version'
 
 export type PlannerActionState = { status: 'success' } | { status: 'error'; error: PlannerError }
+
+export type ExportState =
+  { status: 'success'; json: string; filename: string } | { status: 'error'; error: PlannerError }

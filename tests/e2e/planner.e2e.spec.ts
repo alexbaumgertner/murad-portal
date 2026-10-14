@@ -118,6 +118,20 @@ test.describe('Weekly planner (story 022)', () => {
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await expect.poll(moving).toBe(0)
       await page.emulateMedia({ reducedMotion: 'no-preference' })
+      // 028: the student downloads a backup of her own planner
+      await page.getByRole('button', { name: 'Настройки' }).click()
+      await drawer.getByText('Данные', { exact: true }).click()
+      expect(await drawer.getByLabel('Загрузить резервную копию').count()).toBe(0) // owner only
+      const download = page.waitForEvent('download')
+      await drawer.getByRole('button', { name: 'Скачать резервную копию' }).click()
+      const file = await download
+      expect(file.suggestedFilename()).toMatch(/^study-plan-.*\.json$/)
+      const backup = JSON.parse(
+        await (await import('node:fs/promises')).readFile((await file.path())!, 'utf8'),
+      )
+      expect(backup).toMatchObject({ app: 'murad-portal-planner', schemaVersion: 1 })
+      expect(JSON.stringify(backup.planner.weeks)).toContain('PODCAST')
+      await drawer.getByRole('button', { name: 'Закрыть настройки' }).click()
       // 7. print: tools are hidden, the sheet stays
       await expect(page.getByRole('button', { name: 'Печать' })).toBeVisible()
       await page.emulateMedia({ media: 'print' })

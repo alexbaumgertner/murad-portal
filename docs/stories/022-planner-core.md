@@ -1,7 +1,7 @@
 ---
 id: 022
 title: Murad plans a student's week as a grid and the student ticks tasks
-status: in-progress
+status: done
 ---
 
 # 022 — Planner core

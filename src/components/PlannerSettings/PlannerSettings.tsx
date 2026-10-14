@@ -5,6 +5,7 @@ import { useEffect, useRef, type ReactNode } from 'react'
 
 import { PlannerBackgroundSettings } from '@/components/PlannerSettings/PlannerBackgroundSettings'
 import { PlannerBarSettings } from '@/components/PlannerSettings/PlannerBarSettings'
+import { PlannerDataSettings } from '@/components/PlannerSettings/PlannerDataSettings'
 import { PlannerColorSettings } from '@/components/PlannerSettings/PlannerColorSettings'
 import { PlannerTypographySettings } from '@/components/PlannerSettings/PlannerTypographySettings'
 
@@ -14,10 +15,14 @@ import styles from './PlannerSettings.module.css'
 export function PlannerSettings({
   open,
   onClose,
+  plannerId,
+  isOwner,
   children,
 }: {
   open: boolean
   onClose: () => void
+  plannerId: number
+  isOwner: boolean
   children?: ReactNode
 }) {
   const t = useTranslations('Planner.settings')
@@ -55,6 +60,10 @@ export function PlannerSettings({
         <PlannerTypographySettings />
       </details>
       {children}
+      <details className={styles.section}>
+        <summary>{t('data.title')}</summary>
+        <PlannerDataSettings plannerId={plannerId} isOwner={isOwner} />
+      </details>
     </dialog>
   )
 }

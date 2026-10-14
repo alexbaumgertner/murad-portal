@@ -10,6 +10,7 @@ import { getPayloadClient } from '@/lib/payload'
 
 import {
   createPlannerSchema,
+  importSchema,
   plannerIdSchema,
   progressSettingsSchema,
   saveAppearanceSchema,
@@ -18,8 +19,10 @@ import {
   setDoneSchema,
   setTextSchema,
   weekIdSchema,
+  type ExportState,
   type PlannerActionState,
 } from './schema'
+import { parseBackup } from './backup'
 import * as service from './service'
 
 type Run<S extends z.ZodType> = (
@@ -107,5 +110,50 @@ export async function saveNoteAction(input: unknown): Promise<PlannerActionState
 export async function saveAppearanceAction(input: unknown): Promise<PlannerActionState> {
   return run('saveAppearanceAction', saveAppearanceSchema, input, (p, u, i) =>
     service.saveAppearance(p, u, i),
+  )
+}
+
+const slug = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9а-яё]+/gi, '-')
+    .replace(/^-+|-+$/g, '')
+
+/** The signed-in owner or student exports a planner she may read (a student: only her own). */
+export async function exportPlannerAction(input: unknown): Promise<ExportState> {
+  return monitorAction('exportPlannerAction', async () => {
+    const parsed = plannerIdSchema.safeParse(input)
+    if (!parsed.success) return { status: 'error', error: 'invalid_input' }
+    const payload = await getPayloadClient()
+    const user = await currentUser(payload, await headers())
+    if (!user) return { status: 'error', error: 'unauthorized' }
+    try {
+      const result = await service.exportPlanner(payload, user, parsed.data.plannerId)
+      if (!result.ok) return { status: 'error', error: result.error }
+      const date = result.backup.exportedAt.slice(0, 10)
+      return {
+        status: 'success',
+        json: JSON.stringify(result.backup, null, 2),
+        filename: `study-plan-${slug(result.studentName) || 'planner'}-${date}.json`,
+      }
+    } catch (error) {
+      console.error('[planner] export failed', error)
+      await captureServerError(error, 'planner')
+      return { status: 'error', error: 'server' }
+    }
+  })
+}
+
+export async function importPlannerAction(input: unknown): Promise<PlannerActionState> {
+  return run('importPlannerAction', importSchema, input, async (p, u, i) => {
+    const backup = parseBackup(i.json)
+    if (!backup.ok) return { ok: false, error: backup.error }
+    return service.importPlanner(p, u, i.plannerId, backup.data)
+  })
+}
+
+export async function resetPlannerAction(input: unknown): Promise<PlannerActionState> {
+  return run('resetPlannerAction', plannerIdSchema, input, (p, u, i) =>
+    service.resetPlanner(p, u, i.plannerId),
   )
 }
