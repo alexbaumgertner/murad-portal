@@ -1,0 +1,108 @@
+.header {
+  display: grid;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  padding: 1rem 1.25rem;
+  background: var(--pl-header, var(--planner-header));
+  color: #fff;
+}
+
+.title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+.scheduleLabel {
+  width: 13ch;
+  white-space: nowrap;
+  text-transform: uppercase;
+  font-family: var(--pl-t-scheduleLabel-font, inherit);
+  font-size: var(--pl-t-scheduleLabel-size, 1em);
+  font-weight: var(--pl-t-scheduleLabel-weight, 400);
+  font-style: var(--pl-t-scheduleLabel-style, normal);
+}
+
+.name {
+  min-width: 8ch;
+  text-transform: uppercase;
+  font-family: var(--pl-t-studentName-font, inherit);
+  font-size: var(--pl-t-studentName-size, 1em);
+  font-weight: var(--pl-t-studentName-weight, 400);
+  font-style: var(--pl-t-studentName-style, normal);
+}
+
+.goalBox {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.goalLabel {
+  width: 6ch;
+  opacity: 0.7;
+  text-transform: uppercase;
+  font-family: var(--pl-t-goalLabel-font, inherit);
+  font-size: var(--pl-t-goalLabel-size, 1em);
+  font-weight: var(--pl-t-goalLabel-weight, 400);
+  font-style: var(--pl-t-goalLabel-style, normal);
+}
+
+.goalText {
+  min-width: 10ch;
+  text-transform: uppercase;
+  font-family: var(--pl-t-goalText-font, inherit);
+  font-size: var(--pl-t-goalText-size, 1em);
+  font-weight: var(--pl-t-goalText-weight, 400);
+  font-style: var(--pl-t-goalText-style, normal);
+}
+
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1.5rem;
+  padding: 0.5rem 1.25rem;
+  background: var(--pl-strip, var(--planner-strip));
+  color: #fff;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.week {
+  margin: 0;
+  font-family: var(--pl-t-weekInfo-font, inherit);
+  font-size: var(--pl-t-weekInfo-size, 1em);
+  font-weight: var(--pl-t-weekInfo-weight, 400);
+  font-style: var(--pl-t-weekInfo-style, normal);
+}
+
+.subtitle {
+  flex: 1;
+  min-width: 10ch;
+  text-align: right;
+  font-family: var(--pl-t-subtitle-font, inherit);
+  font-size: var(--pl-t-subtitle-size, 1em);
+  font-weight: var(--pl-t-subtitle-weight, 400);
+  font-style: var(--pl-t-subtitle-style, normal);
+}
+
+.tools {
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media print {
+  .tools {
+    display: none;
+  }
+}

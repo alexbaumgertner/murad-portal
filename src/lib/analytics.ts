@@ -49,6 +49,8 @@ export const analyticsEvents = {
   // Story 017. Only the program's slug: never an id, a date or a name.
   program_paused: z.strictObject({ programSlug: slug }),
   program_resumed: z.strictObject({ programSlug: slug }),
+  // Story 022. Only the new state: never the task text, a student or a week.
+  planner_task_ticked: z.strictObject({ done: z.boolean() }),
 } satisfies Record<string, z.ZodType<Record<string, string | number | boolean>>>
 
 export type AnalyticsEvent = keyof typeof analyticsEvents

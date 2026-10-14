@@ -1,0 +1,53 @@
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1.5rem 2rem;
+}
+
+.column {
+  display: grid;
+  align-content: start;
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid var(--pl-text, var(--color-text));
+  font-family: var(--pl-t-diaryHeading-font, inherit);
+  font-size: var(--pl-t-diaryHeading-size, 1em);
+  font-weight: var(--pl-t-diaryHeading-weight, 400);
+  font-style: var(--pl-t-diaryHeading-style, normal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+  border-bottom: 1px solid var(--pl-grid, var(--color-border));
+}
+
+.day {
+  color: var(--pl-textMuted, var(--color-text-muted));
+  font-family: var(--pl-t-diaryDay-font, inherit);
+  font-size: var(--pl-t-diaryDay-size, 1em);
+  font-weight: var(--pl-t-diaryDay-weight, 400);
+  font-style: var(--pl-t-diaryDay-style, normal);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.text {
+  font-family: var(--pl-t-diaryText-font, inherit);
+  font-size: var(--pl-t-diaryText-size, 1em);
+  font-weight: var(--pl-t-diaryText-weight, 400);
+  font-style: var(--pl-t-diaryText-style, normal);
+}
+
+@media print {
+  .columns {
+    break-inside: avoid;
+  }
+}

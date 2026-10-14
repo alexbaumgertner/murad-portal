@@ -336,3 +336,14 @@ Revisit if: Murad wants a custom sound (then host a file ≤ 50 KB in `public/` 
 
 A student has no write access to `enrollments.status` or `enrollments.pauses`. «Пауза» and «Продолжить» are Server Actions that derive the enrollment from the session and write with the Local API and the `pauseTransition` context, which the collection hooks accept only for `status` + `pauses` and only active ⇄ paused (a request over HTTP cannot set a context).
 A pause begins today (that day is paused too) and ends yesterday on resume, so the program day stands still. Known limit: work logged on the day a pause begins is counted toward that program day, while the timer on the resume day starts from 0.
+
+## Planner fonts: next/font with 34 families, nothing from Google at runtime (story 025)
+
+The planner offers 34 Latin + Cyrillic families. `src/features/planner/fonts.ts` declares each one with `next/font/google` (`preload: false`, weights 400/700): Next downloads and self-hosts them at build time, so the CSP is unchanged (`font-src 'self'`) and visitors never contact Google. The browser fetches a face only when a section uses it, but all `@font-face` rules ship in the planner's CSS.
+Options must be literals in each `const x = Font({...})` call (no shared variables); `font-list.ts` holds the pure list so unit tests and the schema never import `next/font`.
+Cost: the build needs network access to fonts.googleapis.com. Revisit if the build moves offline or the CSS weight matters (then load a family on demand from `public/`).
+
+## Planner background photo: upload removed until it goes to Blob (story 026)
+
+A first version kept the resized photo as a `data:` URL inside `planners.appearance.background.image`. It was removed: base64 in the JSON is sent on every save, bloats the row and the page payload, and shows up in the admin. Today `image` accepts only an `https://` or `/` URL and drops everything else (`data:` included), and Settings has no upload control; color, opacity, overlay and grain remain. The mock's embedded picture is not imported from a backup.
+Revisit: a private upload collection on Vercel Blob (like `avatars`, one file per planner) that sets `background.image` to its URL; blur, brightness and mode show up in Settings once an image is set.

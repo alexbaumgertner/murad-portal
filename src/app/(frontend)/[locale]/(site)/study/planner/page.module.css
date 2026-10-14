@@ -1,0 +1,27 @@
+.page {
+  max-width: var(--width-content);
+  margin: 0 auto;
+  padding: clamp(2.5rem, 7vw, 4.5rem) var(--space-page) 3rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.noPrint {
+  display: block;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  .page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .noPrint {
+    display: none;
+  }
+}

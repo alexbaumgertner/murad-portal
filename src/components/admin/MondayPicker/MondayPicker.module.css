@@ -1,0 +1,20 @@
+.input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+  color: inherit;
+  background: var(--theme-input-bg);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+}
+
+.hint {
+  margin: 0.4rem 0 0;
+  color: var(--theme-elevation-500);
+  font-size: 0.85rem;
+}
+
+.error {
+  margin: 0.4rem 0 0;
+  color: var(--theme-error-500);
+}

@@ -1,0 +1,32 @@
+.sheet {
+  display: grid;
+  border: 1px solid var(--pl-grid, var(--color-border));
+  background: var(--pl-paper, var(--color-surface));
+  color: var(--pl-text, var(--color-text));
+}
+
+.body {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1rem 1.25rem 1.5rem;
+}
+
+.tool {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid currentcolor;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.tool:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
