@@ -42,7 +42,7 @@ describe('Planner settings panels (story 025)', () => {
     await renderPanel(<PlannerColorSettings />)
     const opacity = page.getByLabelText('Opacity: Main header')
     await opacity.fill('40')
-    expect(seen.current.colors.header).toEqual({ color: '#2b2d31', opacity: 40 })
+    expect(seen.current.colors.header).toEqual({ color: '#1b1a17', opacity: 40 })
     expect(seen.current.colors.strip.opacity).toBe(100)
     await userEvent.click(page.getByRole('button', { name: 'Reset colors' }))
     expect(seen.current.colors.header.opacity).toBe(100)

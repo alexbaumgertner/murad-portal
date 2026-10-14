@@ -397,7 +397,7 @@ describe('story 022 · planner core', () => {
     let stored = parseAppearance((await weeksOf(anna)).planner.appearance)
     expect(stored.colors.header).toEqual({ color: '#112233', opacity: 40 })
     expect(stored.type.tasks).toMatchObject({ font: 'lora', size: 20, bold: true })
-    expect(stored.colors.done.color).toBe('#7ed48f')
+    expect(stored.colors.done.color).toBe('#cdebd7')
     expect(
       await saveAppearance(payload, owner, {
         plannerId: planner.id,

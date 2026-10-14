@@ -21,10 +21,10 @@ import {
 import { FONTS } from '@/features/planner/font-list'
 
 describe('story 025 · appearance', () => {
-  it('2. the defaults are the original spreadsheet look', () => {
+  it('2. the defaults are the site palette', () => {
     const a = defaultAppearance()
-    expect(a.colors.header).toEqual({ color: '#2b2d31', opacity: 100 })
-    expect(a.colors.done.color).toBe('#7ed48f')
+    expect(a.colors.header).toEqual({ color: '#1b1a17', opacity: 100 })
+    expect(a.colors.done.color).toBe('#cdebd7')
     expect(a.type.tasks.font).toBe('default')
   })
 
@@ -150,7 +150,7 @@ describe('story 026 · background', () => {
 
   it('defaults: transparent-capable color, no image, no grain, neutral effects', () => {
     expect(defaultAppearance().background).toEqual({
-      color: '#ffffff',
+      color: '#fbfaf7',
       opacity: 100,
       image: null,
       mode: 'cover',

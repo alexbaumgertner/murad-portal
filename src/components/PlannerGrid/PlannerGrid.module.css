@@ -31,21 +31,17 @@
   display: grid;
   gap: 0.125rem;
   padding: 0.5rem;
-  background: var(--pl-header, #2b2d31);
+  background: var(--pl-header, #1b1a17);
   color: #fff;
   text-align: center;
 }
 
+/* An icon, not a word: the label lives in aria-label and the tooltip. */
 .corner {
   display: grid;
   place-items: center;
-  background: var(--pl-header, #2b2d31);
+  background: var(--pl-header, #1b1a17);
   color: #fff;
-  padding: 0 0.125rem;
-  overflow: hidden;
-  font-size: 0.6rem;
-  letter-spacing: 0;
-  text-transform: uppercase;
   opacity: 0.85;
 }
 
@@ -70,7 +66,7 @@
 .priority {
   display: grid;
   place-items: center;
-  background: var(--pl-priority, #cfe0f3);
+  background: var(--pl-priority, #f3f1ec);
   color: var(--pl-text, var(--color-text));
   font-family: var(--pl-t-priority-font, inherit);
   font-size: var(--pl-t-priority-size, 1em);
@@ -87,7 +83,7 @@
 }
 
 .cellDone {
-  background: var(--pl-done, #7ed48f);
+  background: var(--pl-done, #cdebd7);
 }
 
 .text,
@@ -197,5 +193,17 @@
   .cell,
   .cellDone {
     transition: none;
+  }
+}
+
+.hint {
+  margin: 0.5rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+@media print {
+  .hint {
+    display: none;
   }
 }

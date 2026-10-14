@@ -23,17 +23,17 @@ export const COLOR_KEYS = [
 ] as const
 export type ColorKey = (typeof COLOR_KEYS)[number]
 
-/** The look of the original spreadsheet. */
+/** The site's own palette (globals.css tokens), so a fresh planner looks like the rest of the portal. */
 export const DEFAULT_COLORS: Record<ColorKey, string> = {
-  header: '#2b2d31',
-  strip: '#6b6e75',
-  priority: '#cfe0f3',
-  done: '#7ed48f',
-  accent: '#2563eb',
+  header: '#1b1a17',
+  strip: '#6b675e',
+  priority: '#f3f1ec',
+  done: '#cdebd7',
+  accent: '#e8590c',
   paper: '#ffffff',
-  text: '#1f2328',
-  textMuted: '#6b7280',
-  grid: '#d9dce1',
+  text: '#1b1a17',
+  textMuted: '#6b675e',
+  grid: '#e6e2d9',
 }
 
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/)
@@ -128,7 +128,7 @@ export type Background = {
 }
 
 export const DEFAULT_BACKGROUND: Background = {
-  color: '#ffffff',
+  color: '#fbfaf7',
   opacity: 100,
   image: null,
   mode: 'cover',

@@ -110,8 +110,26 @@ export function PlannerGrid({
       <div className={styles.scroll}>
         <div className={styles.grid} role="table" aria-label={t('gridLabel')}>
           <div role="row" className={styles.row}>
-            <span role="columnheader" className={styles.corner} title={t('slotHint')}>
-              {t('slot')}
+            <span
+              role="columnheader"
+              className={styles.corner}
+              aria-label={t('slot')}
+              title={`${t('slot')}: ${t('slotHint')}`}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M10 6h11M10 12h11M10 18h11" />
+                <path d="M3 6l1.5-1v4M3 12.5h3L3 16h3.2M3 19h3v2H3" />
+              </svg>
             </span>
             {dates.map((iso, day) => (
               <span key={iso} role="columnheader" className={styles.head}>
@@ -209,6 +227,9 @@ export function PlannerGrid({
           − {t('removePriority')}
         </button>
       </div>
+      {!canEdit && taskTypes.length === 0 ? (
+        <p className={styles.hint}>{t('noTaskTypes')}</p>
+      ) : null}
       <p role="status" className={styles.error}>
         {error ? t(`errors.${error}`) : ''}
       </p>

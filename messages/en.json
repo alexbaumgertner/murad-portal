@@ -785,6 +785,7 @@
       "label": "One task type per line (up to {max}). The student picks from these in her cells.",
       "save": "Save task types",
       "saved": "Saved"
-    }
+    },
+    "noTaskTypes": "Your teacher has not added task types yet, so there is nothing to pick."
   }
 }
