@@ -118,14 +118,21 @@
   text-overflow: ellipsis;
 }
 
+/* No word in an empty cell: a quiet "+" says it can be filled (the select keeps its aria-label). */
 .pickEmpty {
-  color: var(--color-text-muted);
-  opacity: 0.6;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23a8a399' stroke-width='1.6' stroke-linecap='round'><path d='M8 3v10M3 8h10'/></svg>");
+  background-position: 0.625rem 0.625rem;
+  background-repeat: no-repeat;
+  color: transparent;
+}
+
+.pickEmpty option {
+  color: var(--color-text);
 }
 
 @media print {
   .pickEmpty {
-    color: transparent;
+    background-image: none;
   }
 }
 

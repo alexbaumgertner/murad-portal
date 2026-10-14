@@ -178,7 +178,7 @@ export function PlannerGrid({
                         disabled={pending}
                         onChange={(event) => void saveText(row, day, event.target.value)}
                       >
-                        <option value="">{t('pickTask')}</option>
+                        <option value="" label=" " />
                         {cell?.text && !taskTypes.includes(cell.text) ? (
                           <option value={cell.text}>{cell.text}</option>
                         ) : null}

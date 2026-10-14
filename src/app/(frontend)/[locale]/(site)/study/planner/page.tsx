@@ -8,10 +8,11 @@ import { PlannerShell } from '@/components/PlannerShell/PlannerShell'
 import { PlannerBoard } from '@/components/PlannerBoard/PlannerBoard'
 import { PlannerTaskTypes } from '@/components/PlannerTaskTypes/PlannerTaskTypes'
 import { PlannerProgressSettings } from '@/components/PlannerProgressSettings/PlannerProgressSettings'
+import { PlannerWeekNav } from '@/components/PlannerWeekNav/PlannerWeekNav'
 import { PlannerWeekBar } from '@/components/PlannerWeekBar/PlannerWeekBar'
 import { currentUser } from '@/features/auth/current-user'
 import { getPlannerView } from '@/features/planner/queries'
-import { mondayOf, weekLabel } from '@/features/planner/shape'
+import { mondayOf, weekDates, weekLabel } from '@/features/planner/shape'
 import { messagesFor, parseAddressForm } from '@/i18n/address-form'
 import { Link, redirect } from '@/i18n/navigation'
 import { routing } from '@/i18n/routing'
@@ -85,26 +86,22 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
             ) : null
           }
         >
-          <nav aria-label={t('weeksNav')} className={styles.noPrint}>
-            <ol className={styles.weeks}>
-              {view.weeks.map((week) => (
-                <li key={week.id}>
-                  <Link
-                    href={{
-                      pathname: '/study/planner',
-                      query: owner
-                        ? { student: studentId, week: week.index }
-                        : { week: week.index },
-                    }}
-                    className={styles.week}
-                    aria-current={week.id === view.active.id ? 'page' : undefined}
-                  >
-                    {weekLabel(week.index)}
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </nav>
+          <div className={styles.noPrint}>
+            <PlannerWeekNav
+              weeks={view.weeks.map((week) => {
+                const dates = weekDates(view.baseDate, week.index)
+                return {
+                  id: week.id,
+                  index: week.index,
+                  label: weekLabel(week.index),
+                  from: dates[0]!,
+                  to: dates[6]!,
+                }
+              })}
+              activeId={view.active.id}
+              studentId={owner ? studentId : undefined}
+            />
+          </div>
           <PlannerBoard
             key={`${view.active.id}-${view.active.rowCount}`}
             plannerId={view.plannerId}
