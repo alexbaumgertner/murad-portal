@@ -23,7 +23,8 @@
 }
 
 .scheduleLabel {
-  width: 11ch;
+  width: 13ch;
+  white-space: nowrap;
   text-transform: uppercase;
   font-family: var(--pl-t-scheduleLabel-font, inherit);
   font-size: var(--pl-t-scheduleLabel-size, 1em);

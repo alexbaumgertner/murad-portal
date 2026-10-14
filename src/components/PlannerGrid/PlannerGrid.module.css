@@ -9,13 +9,13 @@
 
 .grid {
   display: grid;
-  min-width: 52rem;
+  min-width: 62rem;
   border: 1px solid var(--pl-grid, var(--color-border));
 }
 
 .row {
   display: grid;
-  grid-template-columns: 3rem repeat(7, minmax(0, 1fr));
+  grid-template-columns: 3rem repeat(7, minmax(8.5rem, 1fr));
 }
 
 .corner,
@@ -49,6 +49,7 @@
 }
 
 .day {
+  white-space: nowrap;
   font-family: var(--pl-t-weekdays-font, inherit);
   font-size: var(--pl-t-weekdays-size, 1em);
   font-weight: var(--pl-t-weekdays-weight, 400);
@@ -94,7 +95,7 @@
   font-size: var(--pl-t-tasks-size, 1em);
   font-weight: var(--pl-t-tasks-weight, 400);
   font-style: var(--pl-t-tasks-style, normal);
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   resize: none;
 }
 
