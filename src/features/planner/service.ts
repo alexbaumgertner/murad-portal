@@ -459,7 +459,8 @@ export async function exportPlanner(
     collection: 'users',
     id: typeof planner.student === 'object' ? planner.student.id : planner.student,
     depth: 0,
-    overrideAccess: true, // a name for the file only
+    overrideAccess: false, // the owner reads any student, a student only herself
+    user,
     disableErrors: true,
   })
   return { ok: true, backup: buildBackup(data), studentName: student?.name ?? '' }
