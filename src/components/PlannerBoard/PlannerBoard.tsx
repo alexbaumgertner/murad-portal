@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { PlannerDiary } from '@/components/PlannerDiary/PlannerDiary'
 import { PlannerGrid } from '@/components/PlannerGrid/PlannerGrid'
 import { PlannerHeader } from '@/components/PlannerHeader/PlannerHeader'
+import { useOptionalPlanner } from '@/components/PlannerShell/planner-context'
 import { PlannerProgress } from '@/components/PlannerProgress/PlannerProgress'
 import { saveHeaderAction } from '@/features/planner/actions'
 import type { CellView, HeaderView, OtherTask, ProgressSettings } from '@/features/planner/queries'
@@ -46,6 +47,7 @@ export function PlannerBoard({
   ...grid
 }: Props) {
   const t = useTranslations('Planner')
+  const shell = useOptionalPlanner()
   const [live, setLive] = useState(grid.cells)
   const activeCells = Object.entries(live).map(([key, cell]) => ({
     ...cell,
@@ -72,9 +74,21 @@ export function PlannerBoard({
         canEdit={grid.canEdit}
         progress={<PlannerProgress {...progress} part="strip" />}
         tools={
-          <button type="button" className={styles.tool} onClick={() => window.print()}>
-            {t('print')}
-          </button>
+          <>
+            <button type="button" className={styles.tool} onClick={() => window.print()}>
+              {t('print')}
+            </button>
+            {shell ? (
+              <button
+                type="button"
+                className={styles.tool}
+                aria-label={t('settings.open')}
+                onClick={shell.openSettings}
+              >
+                ⚙
+              </button>
+            ) : null}
+          </>
         }
       />
       <div className={styles.body}>

@@ -653,6 +653,59 @@
       "entryLabel": "{kind}, {day}"
     },
     "print": "Печать",
-    "dayNameLabel": "Название дня недели {n}"
+    "dayNameLabel": "Название дня недели {n}",
+    "settings": {
+      "title": "Настройки",
+      "open": "Настройки",
+      "close": "Закрыть настройки",
+      "colors": "Цвета",
+      "typography": "Шрифты",
+      "opacity": "Прозрачность",
+      "colorOf": "Цвет: {name}",
+      "opacityOf": "Прозрачность: {name}",
+      "lowContrast": "Часть цветов текста может плохо читаться на этой бумаге.",
+      "resetColors": "Сбросить цвета",
+      "originalFont": "Исходный шрифт",
+      "fontGroup": {
+        "sans": "Без засечек",
+        "serif": "С засечками",
+        "expressive": "Выразительные"
+      },
+      "globalFont": "Шрифт для всех разделов",
+      "applyToAll": "Применить шрифт ко всем разделам",
+      "restoreFonts": "Вернуть исходный шрифт везде",
+      "resetTypography": "Сбросить все шрифты",
+      "fontOf": "Шрифт: {name}",
+      "sizeOf": "Размер: {name}",
+      "boldOf": "Жирный: {name}",
+      "italicOf": "Курсив: {name}",
+      "color": {
+        "header": "Главная шапка",
+        "strip": "Вторая полоса",
+        "priority": "Колонка приоритетов",
+        "done": "Выполненное задание",
+        "accent": "Акцент",
+        "paper": "Бумага",
+        "text": "Текст",
+        "textMuted": "Второстепенный текст",
+        "grid": "Линии сетки"
+      },
+      "section": {
+        "scheduleLabel": "Подпись расписания",
+        "studentName": "Имя ученика",
+        "goalLabel": "Подпись цели",
+        "goalText": "Цель",
+        "subtitle": "Подзаголовок экзамена",
+        "weekInfo": "Информация о неделе",
+        "dates": "Даты",
+        "weekdays": "Дни недели",
+        "priority": "Приоритеты",
+        "tasks": "Задания",
+        "diaryHeading": "Заголовки «Упражнения» и «Вопросы»",
+        "diaryDay": "Дни недели в дневнике",
+        "diaryText": "Текст дневника",
+        "progress": "Прогресс"
+      }
+    }
   }
 }

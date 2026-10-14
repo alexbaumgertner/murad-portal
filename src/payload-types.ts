@@ -629,6 +629,15 @@ export interface Planner {
     | number
     | boolean
     | null;
+  appearance?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   showWeekProgress?: boolean | null;
   showFourWeekProgress?: boolean | null;
   showDeadlineProgress?: boolean | null;
@@ -1133,6 +1142,7 @@ export interface PlannersSelect<T extends boolean = true> {
   goal?: T;
   subtitle?: T;
   labels?: T;
+  appearance?: T;
   showWeekProgress?: T;
   showFourWeekProgress?: T;
   showDeadlineProgress?: T;

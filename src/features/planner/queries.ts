@@ -4,6 +4,7 @@ import type { Payload, TypedUser } from 'payload'
 
 import { DEFAULT_TIMEZONE, todayIn } from '@/features/enrollments/shape'
 
+import { parseAppearance, type Appearance } from './appearance'
 import type { Labels } from './schema'
 import { isAssignedTask, weekDates } from './shape'
 
@@ -32,6 +33,7 @@ export type PlannerView = {
   baseDate: string
   weeks: { id: number; index: number }[]
   header: HeaderView
+  appearance: Appearance
   settings: ProgressSettings
   today: string
   otherTasks: OtherTask[]
@@ -114,6 +116,7 @@ export async function getPlannerView(
       subtitle: planner.subtitle ?? '',
       labels: (planner.labels as Labels | null) ?? {},
     },
+    appearance: parseAppearance(planner.appearance),
     settings: {
       showWeekProgress: planner.showWeekProgress ?? true,
       showFourWeekProgress: Boolean(planner.showFourWeekProgress),

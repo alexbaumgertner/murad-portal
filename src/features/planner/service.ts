@@ -11,6 +11,7 @@ import type {
   ProgressSettingsInput,
   SaveHeaderInput,
 } from './schema'
+import { parseAppearance } from './appearance'
 import { MAX_ROWS, isAssignedTask, mondayOf } from './shape'
 
 /**
@@ -300,5 +301,29 @@ export async function saveNote(
       data: { week: input.weekId, kind: input.kind, day: input.day, text: input.text },
       overrideAccess: true,
     })
+  return ok
+}
+
+/** The owner or the student of this planner saves how it looks. Anything invalid becomes default. */
+export async function saveAppearance(
+  payload: Payload,
+  user: TypedUser,
+  input: { plannerId: number; appearance: unknown },
+): Promise<Result> {
+  const planner = await payload.findByID({
+    collection: 'planners',
+    id: input.plannerId,
+    depth: 0,
+    overrideAccess: false,
+    user,
+    disableErrors: true,
+  })
+  if (!planner) return fail('not_found')
+  await payload.update({
+    collection: 'planners',
+    id: input.plannerId,
+    data: { appearance: parseAppearance(input.appearance) },
+    overrideAccess: true,
+  })
   return ok
 }

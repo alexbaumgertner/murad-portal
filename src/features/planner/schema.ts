@@ -81,6 +81,8 @@ export const saveNoteSchema = z.strictObject({
 
 export type NoteInput = z.infer<typeof saveNoteSchema>
 
+export const saveAppearanceSchema = z.strictObject({ plannerId: id, appearance: z.unknown() })
+
 export type PlannerError =
   | 'unauthorized'
   | 'forbidden'

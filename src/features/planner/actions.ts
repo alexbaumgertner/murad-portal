@@ -12,6 +12,7 @@ import {
   createPlannerSchema,
   plannerIdSchema,
   progressSettingsSchema,
+  saveAppearanceSchema,
   saveHeaderSchema,
   saveNoteSchema,
   setDoneSchema,
@@ -101,4 +102,10 @@ export async function saveHeaderAction(input: unknown): Promise<PlannerActionSta
 
 export async function saveNoteAction(input: unknown): Promise<PlannerActionState> {
   return run('saveNoteAction', saveNoteSchema, input, (p, u, i) => service.saveNote(p, u, i))
+}
+
+export async function saveAppearanceAction(input: unknown): Promise<PlannerActionState> {
+  return run('saveAppearanceAction', saveAppearanceSchema, input, (p, u, i) =>
+    service.saveAppearance(p, u, i),
+  )
 }

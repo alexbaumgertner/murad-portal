@@ -62,6 +62,21 @@ test.describe('Weekly planner (story 022)', () => {
       await expect(
         page.getByRole('button', { name: /Отметить выполненным: PODCAST/ }),
       ).toHaveAttribute('aria-pressed', 'true')
+      // 025: the drawer opens, a font applies to the sheet, Cyrillic text keeps a real face
+      await page.getByRole('button', { name: 'Настройки' }).click()
+      const drawer = page.getByRole('dialog')
+      await drawer.getByText('Шрифты', { exact: true }).click()
+      await drawer.getByLabel('Шрифт для всех разделов').selectOption('lora')
+      await drawer.getByRole('button', { name: 'Применить шрифт ко всем разделам' }).click()
+      await drawer.getByRole('button', { name: 'Закрыть настройки' }).click()
+      const family = await page
+        .getByText('PODCAST')
+        .first()
+        .evaluate((el) => getComputedStyle(el).fontFamily)
+      expect(family).toMatch(/Lora/i)
+      await expect
+        .poll(() => page.evaluate(() => document.fonts.check('14px Lora', 'Привет')))
+        .toBe(true)
       // 7. print: tools are hidden, the sheet stays
       await expect(page.getByRole('button', { name: 'Печать' })).toBeVisible()
       await page.emulateMedia({ media: 'print' })

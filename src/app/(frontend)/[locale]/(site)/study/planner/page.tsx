@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 
 import { isOwner } from '@/access'
+import { PlannerShell } from '@/components/PlannerShell/PlannerShell'
 import { PlannerBoard } from '@/components/PlannerBoard/PlannerBoard'
 import { PlannerProgressSettings } from '@/components/PlannerProgressSettings/PlannerProgressSettings'
 import { PlannerWeekBar } from '@/components/PlannerWeekBar/PlannerWeekBar'
@@ -70,7 +71,15 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
           <p className={shared.lead}>{t('none')}</p>
         )
       ) : (
-        <>
+        <PlannerShell
+          plannerId={view.plannerId}
+          initial={view.appearance}
+          ownerPanels={
+            owner ? (
+              <PlannerProgressSettings plannerId={view.plannerId} initial={view.settings} />
+            ) : null
+          }
+        >
           <nav aria-label={t('weeksNav')} className={styles.noPrint}>
             <ol className={styles.weeks}>
               {view.weeks.map((week) => (
@@ -116,10 +125,9 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
                 weekId={view.active.id}
                 lastWeek={view.weeks.length <= 1}
               />
-              <PlannerProgressSettings plannerId={view.plannerId} initial={view.settings} />
             </div>
           ) : null}
-        </>
+        </PlannerShell>
       )}
     </div>
   )

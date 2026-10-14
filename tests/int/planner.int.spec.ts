@@ -2,12 +2,14 @@ import config from '@payload-config'
 import { getPayload, type Payload, type TypedUser } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
+import { parseAppearance } from '@/features/planner/appearance'
 import {
   addRow,
   addWeek,
   createPlanner,
   deleteWeek,
   removeRow,
+  saveAppearance,
   saveHeader,
   saveNote,
   saveProgressSettings,
@@ -346,6 +348,32 @@ describe('story 022 · planner core', () => {
         data: { week: w1.id, kind: 'exercises', day: 0, text: 'x'.repeat(2001) },
       }),
     ).rejects.toThrow()
+  })
+
+  it('025 11/10. the owner and the student save appearance; strangers cannot; garbage becomes default', async () => {
+    const { planner } = await weeksOf(anna)
+    const look = {
+      colors: { header: { color: '#112233', opacity: 40 } },
+      type: { tasks: { font: 'lora', size: 20, bold: true } },
+    }
+    expect(
+      await saveAppearance(payload, anna, { plannerId: planner.id, appearance: look }),
+    ).toEqual({ ok: true })
+    let stored = parseAppearance((await weeksOf(anna)).planner.appearance)
+    expect(stored.colors.header).toEqual({ color: '#112233', opacity: 40 })
+    expect(stored.type.tasks).toMatchObject({ font: 'lora', size: 20, bold: true })
+    expect(stored.colors.done.color).toBe('#7ed48f')
+    expect(
+      await saveAppearance(payload, owner, {
+        plannerId: planner.id,
+        appearance: { type: { tasks: { size: 500, font: 'x' } } },
+      }),
+    ).toEqual({ ok: true })
+    stored = parseAppearance((await weeksOf(anna)).planner.appearance)
+    expect(stored.type.tasks).toMatchObject({ font: 'default', size: 14 })
+    expect(
+      await saveAppearance(payload, boris, { plannerId: planner.id, appearance: look }),
+    ).toEqual({ ok: false, error: 'not_found' })
   })
 
   it('deleting the student deletes her planner', async () => {

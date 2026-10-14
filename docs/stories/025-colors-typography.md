@@ -1,7 +1,7 @@
 ---
 id: 025
 title: Planner colors with transparency and typography per section
-status: approved
+status: done
 ---
 
 # 025 — Colors and typography

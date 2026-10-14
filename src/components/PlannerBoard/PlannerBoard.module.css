@@ -1,7 +1,8 @@
 .sheet {
   display: grid;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  border: 1px solid var(--pl-grid, var(--color-border));
+  background: var(--pl-paper, var(--color-surface));
+  color: var(--pl-text, var(--color-text));
 }
 
 .body {

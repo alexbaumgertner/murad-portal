@@ -653,6 +653,59 @@
       "entryLabel": "{kind}, {day}"
     },
     "print": "Print",
-    "dayNameLabel": "Weekday {n} name"
+    "dayNameLabel": "Weekday {n} name",
+    "settings": {
+      "title": "Settings",
+      "open": "Settings",
+      "close": "Close settings",
+      "colors": "Colors",
+      "typography": "Typography",
+      "opacity": "Opacity",
+      "colorOf": "Color: {name}",
+      "opacityOf": "Opacity: {name}",
+      "lowContrast": "Some text colors may be hard to read on this paper.",
+      "resetColors": "Reset colors",
+      "originalFont": "Original font",
+      "fontGroup": {
+        "sans": "Sans-serif",
+        "serif": "Serif",
+        "expressive": "Expressive"
+      },
+      "globalFont": "Font for all sections",
+      "applyToAll": "Apply font to all sections",
+      "restoreFonts": "Restore original font everywhere",
+      "resetTypography": "Reset all typography",
+      "fontOf": "Font: {name}",
+      "sizeOf": "Size: {name}",
+      "boldOf": "Bold: {name}",
+      "italicOf": "Italic: {name}",
+      "color": {
+        "header": "Main header",
+        "strip": "Secondary header",
+        "priority": "Priority column",
+        "done": "Completed task",
+        "accent": "Accent",
+        "paper": "Paper",
+        "text": "Text",
+        "textMuted": "Secondary text",
+        "grid": "Grid lines"
+      },
+      "section": {
+        "scheduleLabel": "Schedule label",
+        "studentName": "Student name",
+        "goalLabel": "Goal label",
+        "goalText": "Goal",
+        "subtitle": "Exam subtitle",
+        "weekInfo": "Week information",
+        "dates": "Calendar dates",
+        "weekdays": "Weekday names",
+        "priority": "Priority labels",
+        "tasks": "Assignments",
+        "diaryHeading": "Exercises / Questions headings",
+        "diaryDay": "Diary weekday labels",
+        "diaryText": "Diary text",
+        "progress": "Progress"
+      }
+    }
   }
 }

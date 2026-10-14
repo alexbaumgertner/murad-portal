@@ -1,0 +1,3200 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <meta content="#252525" name="theme-color" />
+  <title>Weekly Study Planner — Ambient Edition</title>
+  <style>
+    :root {
+      --hero: #383838;
+      --strip: #666666;
+      --priority: #709ee8;
+      --done: #00ee25;
+      --accent: #598ff0;
+      --paper: #fff;
+      --ink: #292929;
+      --muted: #797979;
+      --line: #e1e1e1;
+      --radius: 4px;
+      --font: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      background: #f1f1f1;
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased
+    }
+
+    button,
+    input {
+      font: inherit
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    [contenteditable]:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px
+    }
+
+    [contenteditable]:focus {
+      background: rgba(125, 125, 125, .08);
+      border-radius: 2px
+    }
+
+    [contenteditable]:empty:before {
+      content: attr(data-placeholder);
+      color: #999;
+      font-style: normal
+    }
+
+    .shell {
+      max-width: 1630px;
+      margin: 28px auto 70px;
+      background: var(--paper);
+      box-shadow: 0 12px 50px rgba(0, 0, 0, .045);
+      min-height: 780px
+    }
+
+    .hero {
+      background: var(--hero);
+      color: #fff;
+      min-height: 125px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.17fr) 58px;
+      align-items: end;
+      gap: 18px;
+      padding: 24px 35px 19px
+    }
+
+    .owner-line {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+      line-height: 1.08
+    }
+
+    .owner-label {
+      font-weight: 400;
+      font-size: clamp(14px, 1.9vw, 25px);
+      white-space: nowrap
+    }
+
+    .owner-name {
+      font-size: clamp(17px, 2.1vw, 29px);
+      font-weight: 450;
+      overflow-wrap: anywhere;
+      min-width: 110px
+    }
+
+    .goal-line {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: center;
+      font-weight: 300;
+      font-size: clamp(27px, 4.1vw, 62px);
+      line-height: 1;
+      letter-spacing: .3px;
+      font-style: italic
+    }
+
+    .goal-main {
+      min-width: 10px
+    }
+
+    .goal-accent {
+      color: var(--accent)
+    }
+
+    .icon-btn {
+      border: 1px solid transparent;
+      background: transparent;
+      color: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 37px;
+      height: 37px;
+      border-radius: 5px;
+      transition: background .15s
+    }
+
+    .icon-btn:hover {
+      background: rgba(140, 140, 140, .17)
+    }
+
+    .icon-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    .header-tools {
+      align-self: start;
+      justify-self: end
+    }
+
+    .week-strip {
+      background: var(--strip);
+      color: #fff;
+      padding: 11px 35px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px
+    }
+
+    .strip-left {
+      display: flex;
+      gap: 16px;
+      align-items: baseline;
+      min-width: 0
+    }
+
+    .strip-label {
+      font-weight: 500;
+      letter-spacing: .04em
+    }
+
+    .strip-date {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font-weight: 700;
+      text-transform: none;
+      padding: 3px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, .55);
+      white-space: nowrap
+    }
+
+    .strip-date:hover {
+      border-color: #fff
+    }
+
+    .strip-subtitle {
+      font-style: italic;
+      text-align: right;
+      font-size: 14px;
+      min-width: 0
+    }
+
+    .content {
+      padding: 21px 30px 44px
+    }
+
+    .week-nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 22px
+    }
+
+    .week-tabs {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      padding: 2px 1px 5px;
+      flex: 1
+    }
+
+    .week-tab {
+      border: 1px solid #dedede;
+      background: #fff;
+      border-radius: 3px;
+      padding: 9px 14px;
+      white-space: nowrap;
+      color: var(--ink);
+      min-width: 112px;
+      text-align: left
+    }
+
+    .week-tab strong {
+      font-size: 12px;
+      font-weight: 650;
+      display: block
+    }
+
+    .week-tab small {
+      display: block;
+      color: var(--muted);
+      margin-top: 4px;
+      font-size: 11px
+    }
+
+    .week-tab[aria-current="true"] {
+      background: #292929;
+      color: #fff;
+      border-color: #292929
+    }
+
+    .week-tab[aria-current="true"] small {
+      color: #d9d9d9
+    }
+
+    .add-week {
+      border: 1px dashed #bcbcbc;
+      background: #fafafa;
+      color: #303030;
+      border-radius: 3px;
+      min-width: 40px;
+      height: 40px;
+      font-size: 22px;
+      flex-shrink: 0
+    }
+
+    .add-week:hover {
+      background: #ececec
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0
+    }
+
+    .outline-btn {
+      border: 1px solid #dedede;
+      border-radius: 4px;
+      background: #fff;
+      color: #4a4a4a;
+      padding: 9px 12px
+    }
+
+    .outline-btn:hover {
+      background: #f4f4f4
+    }
+
+    .calendar-wrap {
+      overflow-x: auto
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: 86px repeat(7, minmax(115px, 1fr));
+      min-width: 920px
+    }
+
+    .dayhead {
+      padding: 12px 5px 15px;
+      text-align: center;
+      min-height: 64px
+    }
+
+    .dayhead .day-date {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 5px
+    }
+
+    .dayhead .day-name {
+      font-size: 17px;
+      font-weight: 750;
+      line-height: 1.15
+    }
+
+    .dayhead.spacer {
+      padding: 0
+    }
+
+    .priority-cell,
+    .task-cell {
+      min-height: 48px;
+      border-right: 1px solid #fff;
+      border-bottom: 1px solid #fff
+    }
+
+    .priority-cell {
+      background: var(--priority);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #222;
+      font-size: 15px;
+      font-style: italic
+    }
+
+    .priority-cell [contenteditable] {
+      min-width: 26px;
+      text-align: center
+    }
+
+    .task-cell {
+      position: relative;
+      background: #fff;
+      box-shadow: inset 0 0 0 1px #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .16s
+    }
+
+    .task-cell.is-done {
+      background: var(--done);
+      box-shadow: none
+    }
+
+    .task-cell .task-content {
+      padding: 13px 28px 13px 13px;
+      min-height: 42px;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-wrap: anywhere;
+      line-height: 1.2;
+      font-size: 14px;
+      white-space: pre-wrap
+    }
+
+    .task-cell.is-done .task-content {
+      font-style: italic
+    }
+
+    .paint-btn {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #aaa;
+      background: rgba(255, 255, 255, .85);
+      border-radius: 50%;
+      padding: 0;
+      position: absolute;
+      right: 7px;
+      top: calc(50% - 10px);
+      display: grid;
+      place-items: center;
+      opacity: .1;
+      color: #222;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1
+    }
+
+    .task-cell:hover .paint-btn,
+    .paint-btn:focus-visible {
+      opacity: 1
+    }
+
+    .task-cell.is-done .paint-btn {
+      border-color: #22642c;
+      background: #205829;
+      color: #fff;
+      opacity: .65
+    }
+
+    .task-cell.is-done .paint-btn:after {
+      content: '✓'
+    }
+
+    .task-cell.is-done:hover .paint-btn {
+      opacity: 1
+    }
+
+    .task-content[contenteditable]:empty:before {
+      content: ''
+    }
+
+    .task-cell:hover .task-content[contenteditable]:empty:before,
+    .task-content[contenteditable]:focus:empty:before {
+      content: '+';
+      color: #999
+    }
+
+    .task-cell .task-content:focus {
+      background: rgba(255, 255, 255, .18)
+    }
+
+    .subbar {
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6
+    }
+
+    .text-btn {
+      background: none;
+      border: 0;
+      color: var(--ink);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      padding: 4px 0;
+      font-size: 12px
+    }
+
+    .text-btn:hover {
+      color: #111
+    }
+
+    .mini-actions {
+      display: flex;
+      gap: 14px;
+      align-items: center
+    }
+
+    .notes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(30px, 10vw, 180px);
+      margin-top: 43px
+    }
+
+    .notes-title {
+      font-size: 21px;
+      letter-spacing: -.02em;
+      font-weight: 800;
+      margin-bottom: 14px;
+      min-height: 25px
+    }
+
+    .note-row {
+      display: grid;
+      grid-template-columns: minmax(100px, auto) 1fr;
+      gap: 12px;
+      align-items: baseline;
+      border-bottom: 1px solid #dadada;
+      min-height: 42px;
+      padding: 8px 2px 5px
+    }
+
+    .note-day {
+      font-size: 15px;
+      font-weight: 500;
+      white-space: nowrap
+    }
+
+    .note-text {
+      font-size: 15px;
+      min-width: 50px;
+      min-height: 23px;
+      outline-offset: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.4
+    }
+
+    .note-text[contenteditable]:empty:before {
+      content: ''
+    }
+
+    .note-text[contenteditable]:focus:empty:before {
+      content: 'Write…';
+      color: #999
+    }
+
+    .footer {
+      border-top: 1px solid #f0f0f0;
+      margin-top: 52px;
+      padding-top: 15px;
+      color: var(--muted);
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    .utility-menu {
+      position: relative
+    }
+
+    .menu-pop {
+      position: absolute;
+      z-index: 10;
+      right: 0;
+      top: 44px;
+      width: 230px;
+      padding: 6px;
+      background: #fff;
+      box-shadow: 0 10px 35px #0002;
+      border: 1px solid #ddd;
+      border-radius: 5px
+    }
+
+    .menu-pop[hidden] {
+      display: none
+    }
+
+    .menu-pop button {
+      width: 100%;
+      text-align: left;
+      padding: 11px 13px;
+      border: 0;
+      background: white;
+      color: #333
+    }
+
+    .menu-pop button:hover {
+      background: #f1f1f1
+    }
+
+    .menu-pop .danger {
+      color: #a02929
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: #0006;
+      z-index: 50;
+      display: none;
+      justify-content: flex-end
+    }
+
+    .overlay.open {
+      display: flex
+    }
+
+    .drawer {
+      background: white;
+      width: min(405px, 100vw);
+      height: 100%;
+      padding: 27px 28px;
+      overflow-y: auto;
+      box-shadow: -10px 0 40px #0001
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    .drawer h2 {
+      font-size: 24px;
+      margin: 0 0 5px
+    }
+
+    .drawer h3 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      margin: 33px 0 15px
+    }
+
+    .muted {
+      color: #777;
+      font-size: 12px;
+      line-height: 1.6
+    }
+
+    .color-field {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+      margin: 14px 0
+    }
+
+    .color-field label {
+      font-size: 13px
+    }
+
+    .color-field input {
+      height: 36px;
+      width: 52px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #fff;
+      padding: 3px;
+      cursor: pointer
+    }
+
+    .drawer input[type=date] {
+      width: 100%;
+      padding: 11px 12px;
+      background: #fff;
+      border: 1px solid #d3d3d3;
+      border-radius: 3px;
+      margin: 10px 0 0
+    }
+
+    .drawer .block-btn {
+      display: block;
+      width: 100%;
+      border: 1px solid #d8d8d8;
+      background: #fff;
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: 3px;
+      margin-bottom: 9px
+    }
+
+    .drawer .block-btn:hover {
+      background: #f6f6f6
+    }
+
+    .drawer .reset-btn {
+      color: #b12c2c
+    }
+
+    .divider {
+      height: 1px;
+      background: #e9e9e9;
+      margin: 26px 0 0
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translate(-50%, 20px);
+      background: #222;
+      color: white;
+      padding: 11px 18px;
+      border-radius: 4px;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all .2s;
+      z-index: 80
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0)
+    }
+
+    .date-input-hidden {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 1px;
+      height: 1px
+    }
+
+    .mobile-msg {
+      display: none
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0)
+    }
+
+    @media(max-width:850px) {
+      .shell {
+        margin: 0 auto;
+        min-height: 100vh
+      }
+
+      .hero {
+        grid-template-columns: 1fr auto;
+        padding: 22px 22px 18px;
+        gap: 12px
+      }
+
+      .owner-line {
+        grid-column: 1;
+        grid-row: 1
+      }
+
+      .goal-line {
+        grid-column: 1/-1;
+        grid-row: 2;
+        justify-content: flex-start;
+        font-size: 40px
+      }
+
+      .header-tools {
+        grid-column: 2;
+        grid-row: 1
+      }
+
+      .week-strip {
+        padding: 11px 22px
+      }
+
+      .content {
+        padding: 17px 18px 40px
+      }
+
+      .notes {
+        gap: 35px
+      }
+
+      .dayhead .day-name {
+        font-size: 15px
+      }
+
+      .mobile-msg {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+        margin-bottom: 3px
+      }
+    }
+
+    @media(max-width:620px) {
+      .hero {
+        min-height: 130px
+      }
+
+      .owner-line {
+        display: block
+      }
+
+      .owner-label {
+        font-size: 13px
+      }
+
+      .owner-name {
+        font-size: 21px;
+        margin-top: 5px
+      }
+
+      .goal-line {
+        font-size: 35px;
+        gap: 8px
+      }
+
+      .week-strip {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px
+      }
+
+      .strip-subtitle {
+        text-align: left;
+        font-size: 12px
+      }
+
+      .notes {
+        grid-template-columns: 1fr;
+        gap: 38px;
+        margin-top: 38px
+      }
+
+      .notes-title {
+        font-size: 19px
+      }
+
+      .footer {
+        display: block
+      }
+
+      .nav-actions>.outline-btn {
+        display: none
+      }
+
+      .calendar {
+        grid-template-columns: 60px repeat(7, 130px);
+        min-width: 970px
+      }
+
+      .hint {
+        font-size: 11px
+      }
+
+      .paint-btn {
+        opacity: .65
+      }
+    }
+
+    @media print {
+      body {
+        background: white
+      }
+
+      .shell {
+        box-shadow: none;
+        margin: 0;
+        max-width: none
+      }
+
+      .hero {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact
+      }
+
+      .week-strip,
+      .priority-cell,
+      .task-cell.is-done {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact
+      }
+
+      .week-nav,
+      .subbar,
+      .header-tools,
+      .footer,
+      .paint-btn,
+      .overlay {
+        display: none !important
+      }
+
+      .content {
+        padding: 20px 0
+      }
+
+      .calendar {
+        min-width: 0;
+        grid-template-columns: 65px repeat(7, minmax(0, 1fr))
+      }
+
+      .dayhead .day-name {
+        font-size: 11px
+      }
+
+      .dayhead .day-date {
+        font-size: 11px
+      }
+
+      .task-cell .task-content {
+        font-size: 10px;
+        padding: 10px 3px
+      }
+
+      .notes {
+        gap: 30px
+      }
+
+      .notes-title {
+        font-size: 17px
+      }
+
+      .note-day,
+      .note-text {
+        font-size: 11px
+      }
+    }
+  </style>
+  <style id="typeOverrides"></style>
+  <style>
+    /* Compact typography studio: lives inside the hidden settings drawer. */
+    .drawer {
+      width: min(450px, 100vw)
+    }
+
+    .drawer select,
+    .drawer input[type="number"] {
+      font: inherit;
+      color: #282828;
+      background: #fff;
+      border: 1px solid #d6d6d6;
+      border-radius: 4px
+    }
+
+    .type-all-panel {
+      background: #f7f7f7;
+      border: 1px solid #e1e1e1;
+      border-radius: 5px;
+      padding: 16px 15px 15px;
+      margin: 17px 0 24px
+    }
+
+    .type-all-heading {
+      font-size: 13px;
+      font-weight: 800;
+      color: #262626;
+      margin: 0 0 4px;
+      letter-spacing: -.01em
+    }
+
+    .type-all-help {
+      font-size: 11px;
+      line-height: 1.5;
+      color: #747474;
+      margin: 0 0 11px
+    }
+
+    .type-all-panel .type-field-label {
+      margin: 0 0 7px
+    }
+
+    .type-all-panel .type-select {
+      background: #fff
+    }
+
+    .type-all-preview {
+      background: #fff;
+      border: 1px solid #e3e3e3;
+      border-radius: 3px;
+      margin: 10px 0;
+      padding: 10px 12px;
+      min-height: 42px;
+      line-height: 1.3;
+      color: #333;
+      font-size: 18px;
+      overflow-wrap: anywhere
+    }
+
+    .type-all-apply {
+      background: #292929;
+      color: #fff;
+      border: 1px solid #292929;
+      border-radius: 4px;
+      min-height: 43px;
+      width: 100%;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background .15s
+    }
+
+    .type-all-apply:hover {
+      background: #454545
+    }
+
+    .type-all-apply:disabled {
+      background: #aaa;
+      border-color: #aaa;
+      cursor: not-allowed
+    }
+
+    .type-all-summary {
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      margin: 8px 0 0;
+      line-height: 1.5
+    }
+
+    .type-section-heading {
+      font-size: 12px;
+      color: #333;
+      font-weight: 800;
+      letter-spacing: .01em;
+      margin: 0 0 4px
+    }
+
+    .type-section-help {
+      font-size: 11px;
+      color: #888;
+      line-height: 1.4;
+      margin: 0 0 7px
+    }
+
+    .type-intro {
+      margin: 0 0 15px
+    }
+
+    .type-field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #484848;
+      margin: 18px 0 7px
+    }
+
+    .type-select {
+      display: block;
+      width: 100%;
+      padding: 12px 11px;
+      min-height: 43px;
+      cursor: pointer
+    }
+
+    .type-preview {
+      margin: 14px 0 18px;
+      border: 1px solid #e2e2e2;
+      border-radius: 5px;
+      background: #fafafa;
+      padding: 18px 16px 14px;
+      overflow: hidden
+    }
+
+    .type-preview-caption {
+      font-size: 10px;
+      color: #888;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      font-weight: 750
+    }
+
+    .type-preview-line {
+      margin: 13px 0 8px;
+      font-size: 27px;
+      line-height: 1.3;
+      color: #252525;
+      min-height: 37px;
+      overflow-wrap: anywhere
+    }
+
+    .type-preview-foot {
+      font-size: 11px;
+      color: #999
+    }
+
+    .type-size-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 17px 0 10px
+    }
+
+    .type-size-top label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #484848
+    }
+
+    .type-size-value {
+      color: #6f6f6f;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap
+    }
+
+    .type-size-box {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .type-size-box input[type=range] {
+      width: 100%;
+      accent-color: #2a2a2a;
+      cursor: pointer
+    }
+
+    .type-size-box input[type=number] {
+      width: 70px;
+      padding: 9px 7px;
+      text-align: center;
+      flex-shrink: 0
+    }
+
+    .type-toggles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 15px
+    }
+
+    .type-toggle {
+      background: #fff;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      min-height: 42px;
+      padding: 8px 12px;
+      color: #3c3c3c;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px
+    }
+
+    .type-toggle[aria-pressed=true] {
+      color: #fff;
+      background: #292929;
+      border-color: #292929
+    }
+
+    .type-toggle .sample-letter {
+      font-size: 18px;
+      line-height: 1
+    }
+
+    .type-toggle:hover {
+      border-color: #777
+    }
+
+    .type-reset-line {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px
+    }
+
+    .type-reset-line button {
+      font-size: 12px;
+      color: #777;
+      background: none;
+      border: 0;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      padding: 4px 0
+    }
+
+    .type-picks-title {
+      font-size: 11px;
+      font-weight: 750;
+      color: #858585;
+      letter-spacing: .05em;
+      margin: 18px 0 9px;
+      text-transform: uppercase
+    }
+
+    .type-font-picks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px
+    }
+
+    .type-pick {
+      height: 67px;
+      background: white;
+      border: 1px solid #e1e1e1;
+      border-radius: 4px;
+      padding: 9px 11px;
+      text-align: left;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      color: #222
+    }
+
+    .type-pick:hover {
+      border-color: #9a9a9a;
+      background: #fbfbfb
+    }
+
+    .type-pick[aria-pressed=true] {
+      border-color: #333;
+      background: #f2f2f2;
+      box-shadow: inset 0 0 0 1px #333
+    }
+
+    .type-pick-name {
+      font-size: 10px;
+      color: #868686;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif
+    }
+
+    .type-pick-sample {
+      font-size: 22px;
+      line-height: 1.18;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .type-note {
+      font-size: 11px;
+      color: #888;
+      line-height: 1.5;
+      margin: 12px 0
+    }
+
+    @media(max-width:480px) {
+      .drawer {
+        padding: 21px
+      }
+
+      .type-preview-line {
+        font-size: 24px
+      }
+    }
+
+    /* Paper designer: paper tint, uploaded photograph, image-only blur & grain. */
+    .shell {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden
+    }
+
+    .shell::before,
+    .shell::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0
+    }
+
+    .shell::before {
+      inset: -32px;
+      background-color: var(--paper);
+      background-image: var(--paper-image, none);
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      filter: blur(var(--paper-blur, 0px)) brightness(var(--paper-brightness, 1));
+      will-change: filter
+    }
+
+    .shell::after {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' seed='8' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.78'/%3E%3C/svg%3E");
+      background-size: 160px 160px;
+      opacity: var(--paper-grain, 0)
+    }
+
+    .shell>.hero,
+    .shell>.week-strip,
+    .shell>.content {
+      position: relative;
+      z-index: 1
+    }
+
+    .dayhead .day-date,
+    .hint,
+    .mobile-msg,
+    .footer {
+      color: var(--muted)
+    }
+
+    .week-tab:not([aria-current=true]) {
+      color: var(--ink)
+    }
+
+    .week-tab:not([aria-current=true]) small {
+      color: var(--muted)
+    }
+
+    .outline-btn,
+    .text-btn {
+      color: var(--ink)
+    }
+
+    .text-btn:hover {
+      color: var(--ink)
+    }
+
+    .shell.has-paper-image .week-tab:not([aria-current=true]) {
+      background: rgba(255, 255, 255, .13);
+      border-color: var(--muted)
+    }
+
+    .shell.has-paper-image .task-cell:not(.is-done) {
+      background: rgba(255, 255, 255, .1);
+      box-shadow: inset 0 0 0 1px rgba(128, 128, 128, .35)
+    }
+
+    .shell.has-paper-image .outline-btn,
+    .shell.has-paper-image .add-week {
+      background: rgba(255, 255, 255, .12);
+      color: var(--ink);
+      border-color: var(--muted)
+    }
+
+    .shell.has-paper-image .dayhead .day-name,
+    .shell.has-paper-image .note-day,
+    .shell.has-paper-image .notes-title {
+      text-shadow: 0 1px 1px rgba(127, 127, 127, .1)
+    }
+
+    .background-panel {
+      margin: 13px 0 0;
+      padding: 14px;
+      border: 1px solid #e5e5e5;
+      border-radius: 5px;
+      background: #f8f8f8
+    }
+
+    .bg-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #eee;
+      border-radius: 4px;
+      padding: 3px;
+      gap: 4px;
+      margin-bottom: 12px
+    }
+
+    .bg-tab {
+      border: 0;
+      background: transparent;
+      color: #555;
+      border-radius: 3px;
+      padding: 9px;
+      font-weight: 650;
+      font-size: 12px
+    }
+
+    .bg-tab[aria-pressed=true] {
+      background: #262626;
+      color: #fff
+    }
+
+    .bg-upload-row {
+      display: flex;
+      gap: 7px;
+      align-items: center
+    }
+
+    .bg-upload-btn {
+      border: 1px solid #ccc;
+      background: #fff;
+      color: #252525;
+      padding: 11px 12px;
+      border-radius: 4px;
+      flex: 1;
+      text-align: center;
+      font-weight: 700;
+      font-size: 12px
+    }
+
+    .bg-remove-btn {
+      background: transparent;
+      border: 1px solid #ddd;
+      color: #777;
+      padding: 11px 12px;
+      border-radius: 4px
+    }
+
+    .bg-image-info {
+      font-size: 11px;
+      color: #747474;
+      line-height: 1.5;
+      margin: 9px 0 11px;
+      overflow-wrap: anywhere
+    }
+
+    .bg-preview {
+      border: 1px solid #ddd;
+      min-height: 105px;
+      border-radius: 4px;
+      background: var(--paper);
+      position: relative;
+      overflow: hidden;
+      margin: 8px 0 13px;
+      isolation: isolate;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .bg-preview::before {
+      content: "";
+      position: absolute;
+      inset: -16px;
+      background-color: var(--paper);
+      background-image: var(--paper-image, none);
+      background-size: cover;
+      background-position: center;
+      filter: blur(var(--paper-blur, 0px)) brightness(var(--paper-brightness, 1));
+      z-index: -2
+    }
+
+    .bg-preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' seed='8' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: var(--paper-grain, 0);
+      z-index: -1
+    }
+
+    .bg-preview-label {
+      position: relative;
+      background: rgba(255, 255, 255, .88);
+      color: #252525;
+      font-size: 11px;
+      font-weight: 650;
+      border-radius: 3px;
+      padding: 8px 12px;
+      letter-spacing: .02em
+    }
+
+    .bg-range-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 9px;
+      margin: 15px 0 5px;
+      font-size: 12px;
+      color: #333
+    }
+
+    .bg-range-line output {
+      color: #666;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700
+    }
+
+    .bg-range {
+      display: block;
+      width: 100%;
+      accent-color: #282828;
+      cursor: pointer
+    }
+
+    .bg-note {
+      font-size: 11px;
+      color: #7a7a7a;
+      line-height: 1.55;
+      margin: 10px 0
+    }
+
+    @media print {
+
+      .shell::before,
+      .shell::after {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact
+      }
+
+      .shell {
+        overflow: visible
+      }
+    }
+  </style>
+  <style id="styleV5">
+    /* V5: restrained controls, per-color transparency and scalable film grain. */
+    .shell,
+    .bg-preview {
+      background: transparent
+    }
+
+    .task-cell:not(.is-done) {
+      background: rgba(255, 255, 255, .07)
+    }
+
+    .shell::after,
+    .bg-preview::after {
+      background-size: var(--grain-tile, 160px) var(--grain-tile, 160px)
+    }
+
+    .subbar {
+      margin-top: 17px;
+      justify-content: flex-end
+    }
+
+    .mini-actions {
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: flex-end
+    }
+
+    .priority-remove {
+      color: var(--ink)
+    }
+
+    .color-field {
+      gap: 9px;
+      margin: 12px 0
+    }
+
+    .color-field label {
+      flex: 1;
+      min-width: 105px;
+      font-size: 12px
+    }
+
+    .color-field input[type=color] {
+      width: 43px;
+      height: 34px;
+      flex-shrink: 0
+    }
+
+    .opacity-range {
+      width: 90px;
+      max-width: 24%;
+      min-width: 48px;
+      accent-color: #333;
+      cursor: pointer
+    }
+
+    .opacity-value {
+      font-size: 11px;
+      color: #666;
+      min-width: 34px;
+      text-align: right;
+      font-variant-numeric: tabular-nums
+    }
+
+    @media(max-width:430px) {
+      .opacity-range {
+        width: 63px
+      }
+
+      .color-field {
+        gap: 6px
+      }
+    }
+
+    @media print {
+      .subbar {
+        display: none !important
+      }
+    }
+  </style>
+  <style id="styleV6">
+    /* V6: compact weekly completion readout and fluid four-week milestones. */
+    .week-strip {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      column-gap: 20px
+    }
+
+    .week-strip .strip-subtitle {
+      justify-self: end
+    }
+
+    .week-progress {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-self: center;
+      white-space: nowrap;
+      color: inherit;
+      font-size: 12px;
+      letter-spacing: .07em;
+      min-width: 0
+    }
+
+    .week-progress[hidden],
+    .four-week-progress[hidden] {
+      display: none !important
+    }
+
+    .wp-label {
+      font-weight: 600;
+      opacity: .85;
+      font-size: 10px
+    }
+
+    .wp-value {
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+      min-width: 35px;
+      text-align: right;
+      font-size: 14px;
+      letter-spacing: 0
+    }
+
+    .wp-track {
+      display: block;
+      width: 78px;
+      height: 4px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, .28);
+      overflow: hidden
+    }
+
+    .wp-fill {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: #f4f4f4;
+      border-radius: 100px;
+      transition: width .5s cubic-bezier(.2, .8, .2, 1)
+    }
+
+    .four-week-progress {
+      margin-top: 52px;
+      border-top: 1px solid var(--muted);
+      padding-top: 20px;
+      color: var(--ink)
+    }
+
+    .cycle-section-heading {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      margin: 0 0 18px
+    }
+
+    .cycle-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 345px), 1fr));
+      gap: 19px 35px
+    }
+
+    .cycle-card {
+      min-width: 0;
+      padding: 14px 15px 17px;
+      border: 1px solid rgba(115, 115, 115, .35);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, .065)
+    }
+
+    .cycle-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 13px
+    }
+
+    .cycle-title {
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .06em;
+      white-space: nowrap
+    }
+
+    .cycle-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 13px;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums
+    }
+
+    .cycle-count {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .cycle-percent {
+      font-size: 22px;
+      font-weight: 650;
+      letter-spacing: -.04em
+    }
+
+    .cycle-meter {
+      height: 27px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 5px;
+      border: 1px solid rgba(100, 100, 100, .15);
+      background: rgba(115, 115, 115, .14);
+      isolation: isolate
+    }
+
+    .liquid-fill {
+      position: relative;
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 900ms cubic-bezier(.22, .8, .16, 1);
+      border-radius: 0 11px 11px 0;
+      isolation: isolate;
+      overflow: visible
+    }
+
+    .liquid-fill.liquid-empty {
+      visibility: hidden
+    }
+
+    .liquid-fill::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 10%, rgba(255, 255, 255, .38) 33%, transparent 55%, rgba(255, 255, 255, .24) 75%, transparent 93%);
+      background-size: 280px 100%;
+      animation: liquid-drift 5s linear infinite;
+      pointer-events: none
+    }
+
+    .liquid-fill::after {
+      content: '';
+      position: absolute;
+      right: -7px;
+      top: -5px;
+      width: 16px;
+      height: 35px;
+      background: var(--accent);
+      border-radius: 48% 58% 37% 60%;
+      transform-origin: center;
+      animation: liquid-edge 3s ease-in-out infinite;
+      pointer-events: none
+    }
+
+    .liquid-shimmer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+      pointer-events: none;
+      border-radius: 0 11px 11px 0
+    }
+
+    .liquid-shimmer::before {
+      content: '';
+      position: absolute;
+      left: -25%;
+      width: 160%;
+      height: 11px;
+      top: -7px;
+      background: rgba(255, 255, 255, .36);
+      border-radius: 50%;
+      transform: rotate(-4deg);
+      animation: liquid-surface 4.5s ease-in-out infinite alternate
+    }
+
+    @keyframes liquid-drift {
+      from {
+        background-position: 0 0
+      }
+
+      to {
+        background-position: 280px 0
+      }
+    }
+
+    @keyframes liquid-edge {
+
+      0%,
+      100% {
+        transform: translateY(-2px) rotate(-9deg)
+      }
+
+      50% {
+        transform: translateY(2px) rotate(9deg)
+      }
+    }
+
+    @keyframes liquid-surface {
+      from {
+        transform: translateX(-9%) rotate(-3deg)
+      }
+
+      to {
+        transform: translateX(8%) rotate(3deg)
+      }
+    }
+
+    .progress-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 14px 0;
+      border-bottom: 1px solid #eee
+    }
+
+    .progress-option label {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      cursor: pointer;
+      color: #2d2d2d;
+      font-size: 13px;
+      font-weight: 700
+    }
+
+    .progress-option small {
+      font-weight: 400;
+      font-size: 11px;
+      color: #888
+    }
+
+    .progress-option input[type=checkbox] {
+      appearance: none;
+      position: relative;
+      width: 44px;
+      height: 25px;
+      background: #d2d2d2;
+      border-radius: 30px;
+      transition: background .2s;
+      cursor: pointer;
+      flex-shrink: 0;
+      outline-offset: 3px
+    }
+
+    .progress-option input[type=checkbox]::before {
+      content: '';
+      position: absolute;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      box-shadow: 0 1px 3px #0003;
+      transition: transform .2s
+    }
+
+    .progress-option input[type=checkbox]:checked {
+      background: #292929
+    }
+
+    .progress-option input[type=checkbox]:checked::before {
+      transform: translateX(19px)
+    }
+
+    @media(max-width:980px) {
+      .week-strip {
+        grid-template-columns: minmax(0, 1fr) auto;
+        row-gap: 8px
+      }
+
+      .week-strip .strip-subtitle {
+        grid-column: 1/-1;
+        justify-self: start;
+        text-align: left
+      }
+
+      .week-progress {
+        justify-self: end
+      }
+    }
+
+    @media(max-width:620px) {
+      .week-strip {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch
+      }
+
+      .week-progress {
+        justify-self: start;
+        align-self: flex-start
+      }
+
+      .cycle-list {
+        grid-template-columns: 1fr
+      }
+
+      .four-week-progress {
+        margin-top: 35px
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      .liquid-fill,
+      .wp-fill,
+      .liquid-fill::before,
+      .liquid-fill::after,
+      .liquid-shimmer::before {
+        animation: none !important;
+        transition: none !important
+      }
+    }
+
+    @media print {
+
+      .cycle-card,
+      .cycle-meter,
+      .liquid-fill {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact
+      }
+
+      .liquid-fill::before,
+      .liquid-fill::after,
+      .liquid-shimmer::before {
+        animation: none !important
+      }
+    }
+  </style>
+  <style id="styleV8">
+    /* Independent four-week & deadline progress designs */
+    .cycle-meter {
+      background: var(--bar-track, #e4e7ed)
+    }
+
+    .cycle-meter .liquid-fill {
+      background: var(--bar-fill, var(--accent))
+    }
+
+    .cycle-meter .liquid-fill::after {
+      background: var(--bar-fill, var(--accent))
+    }
+
+    .cycle-dates {
+      margin-top: 5px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 450;
+      letter-spacing: 0;
+      white-space: normal;
+      line-height: 1.35
+    }
+
+    .cycle-label-wrap {
+      min-width: 0
+    }
+
+    .deadline-progress {
+      margin-top: 28px;
+      border-top: 1px solid var(--muted);
+      padding-top: 22px;
+      color: var(--ink)
+    }
+
+    .deadline-progress[hidden] {
+      display: none !important
+    }
+
+    .deadline-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 17px
+    }
+
+    .deadline-title {
+      margin-bottom: 5px;
+      overflow-wrap: anywhere
+    }
+
+    .deadline-dates {
+      font-size: 12px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums
+    }
+
+    .deadline-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 15px;
+      flex-shrink: 0
+    }
+
+    .deadline-percent {
+      font-size: 23px;
+      letter-spacing: -.04em
+    }
+
+    .deadline-meter {
+      height: 32px
+    }
+
+    .bar-designer {
+      padding: 14px 14px 16px;
+      background: #f9f9f9;
+      border: 1px solid #e8e8e8;
+      border-radius: 5px;
+      margin: 12px 0 20px
+    }
+
+    .bar-designer-heading {
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .02em;
+      color: #323232;
+      margin-bottom: 6px
+    }
+
+    .bar-color-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 13px 0;
+      color: #444;
+      font-size: 12px
+    }
+
+    .bar-color-row input[type=color] {
+      border: 1px solid #d6d6d6;
+      background: #fff;
+      padding: 3px;
+      width: 52px;
+      height: 34px;
+      border-radius: 3px;
+      cursor: pointer
+    }
+
+    .planner-text-input {
+      width: 100%;
+      height: 42px;
+      border: 1px solid #d6d6d6;
+      border-radius: 4px;
+      padding: 10px 12px;
+      background: #fff;
+      color: #333
+    }
+
+    .bar-demo {
+      border: 1px solid #e8e8e8;
+      background: #fff;
+      padding: 13px 12px 10px;
+      border-radius: 4px;
+      margin-top: 14px
+    }
+
+    .bar-demo .cycle-meter {
+      height: 23px
+    }
+
+    .bar-demo>span {
+      display: block;
+      margin-top: 8px;
+      font-size: 9px;
+      letter-spacing: .07em;
+      color: #8a8a8a;
+      font-variant-numeric: tabular-nums;
+      text-align: right
+    }
+
+    .bar-help {
+      font-size: 11px;
+      color: #777;
+      line-height: 1.55;
+      margin: 12px 0 0
+    }
+
+    .owner-name[contenteditable]:empty:before,
+    .goal-main[contenteditable]:empty:before {
+      color: rgba(255, 255, 255, .63);
+      font-style: italic
+    }
+
+    .goal-line .goal-accent:empty {
+      display: inline-block;
+      min-width: 15px;
+      min-height: .75em
+    }
+
+    /* Version 8: ambient / cinematic progress textures. No rapid scanning, sharp bands or repeating geometric motifs. */
+    .cycle-meter {
+      background: var(--bar-track, #e4e7ed)
+    }
+
+    .cycle-meter .liquid-fill {
+      background: var(--bar-fill, var(--accent));
+      border-radius: 0 5px 5px 0;
+      overflow: hidden;
+      isolation: isolate;
+      transition: width 1450ms cubic-bezier(.22, .85, .22, 1);
+      will-change: width;
+    }
+
+    .cycle-meter .liquid-fill::before,
+    .cycle-meter .liquid-fill::after,
+    .cycle-meter .liquid-shimmer::before,
+    .cycle-meter .liquid-shimmer::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      transform-origin: 50% 50%;
+      animation: none;
+      opacity: 0;
+    }
+
+    .cycle-meter .liquid-shimmer {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: inherit;
+      pointer-events: none
+    }
+
+    /* Diffuse light fields: every transition is eased and reverses gradually at its turning point. */
+    .cycle-meter .liquid-fill::before {
+      inset: -65% -35%;
+      background:
+        radial-gradient(ellipse 42% 64% at 23% 58%, color-mix(in srgb, var(--bar-highlight, #fff) 50%, transparent), transparent 100%),
+        radial-gradient(ellipse 58% 70% at 81% 32%, color-mix(in srgb, var(--bar-highlight, #fff) 30%, transparent), transparent 100%);
+      filter: blur(5px);
+    }
+
+    .cycle-meter .liquid-fill::after {
+      inset: -75% -40%;
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      background:
+        radial-gradient(ellipse 48% 60% at 65% 50%, color-mix(in srgb, var(--bar-highlight, #fff) 34%, transparent), transparent 100%);
+      filter: blur(7px);
+    }
+
+    .cycle-meter .liquid-shimmer::before {
+      inset: -55% -60%;
+      height: auto;
+      width: auto;
+      border-radius: 0;
+      top: -55%;
+      background: linear-gradient(106deg, transparent 9%, color-mix(in srgb, var(--bar-highlight, #fff) 15%, transparent) 48%, transparent 89%);
+      filter: blur(13px);
+    }
+
+    /* Continuous-tone random grain, never circles, stripes, scanlines or sparkle patterns. */
+    .cycle-meter .liquid-shimmer::after {
+      inset: -4%;
+      background-image: url("data:image/png;base64,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");
+      background-size: 164px 164px;
+      background-repeat: repeat;
+      mix-blend-mode: soft-light;
+      opacity: var(--bar-grain-opacity, 0);
+    }
+
+    .cycle-meter[data-animation="none"] .liquid-fill {
+      transition: width 1450ms cubic-bezier(.22, .85, .22, 1)
+    }
+
+    /* Soft flow: gentle lateral shift of two translucent pools of light. */
+    .cycle-meter[data-animation="flow"] .liquid-fill::before {
+      opacity: .52;
+      animation: ambient-float-a 24s ease-in-out infinite alternate
+    }
+
+    .cycle-meter[data-animation="flow"] .liquid-fill::after {
+      opacity: .3;
+      animation: ambient-float-b 33s ease-in-out infinite alternate
+    }
+
+    /* Soft aurora: low-contrast luminous color fog. */
+    .cycle-meter[data-animation="aurora"] .liquid-fill::before {
+      opacity: .65;
+      animation: ambient-aurora 35s ease-in-out infinite alternate
+    }
+
+    .cycle-meter[data-animation="aurora"] .liquid-fill::after {
+      opacity: .32;
+      animation: ambient-float-b 28s ease-in-out infinite alternate-reverse
+    }
+
+    /* Morning mist: airy, broad gradients with barely-visible movement. */
+    .cycle-meter[data-animation="mist"] .liquid-fill::before {
+      opacity: .26;
+      filter: blur(15px);
+      animation: ambient-cloud 41s ease-in-out infinite alternate
+    }
+
+    .cycle-meter[data-animation="mist"] .liquid-fill::after {
+      opacity: .38;
+      filter: blur(13px);
+      animation: ambient-breathe 31s ease-in-out infinite
+    }
+
+    /* Silk light: diffused satin reflection without a hard glint. */
+    .cycle-meter[data-animation="silk"] .liquid-shimmer::before {
+      opacity: .72;
+      animation: ambient-silk 27s ease-in-out infinite alternate
+    }
+
+    .cycle-meter[data-animation="silk"] .liquid-fill::after {
+      opacity: .25;
+      animation: ambient-float-a 38s ease-in-out infinite alternate
+    }
+
+    /* Cloud bloom: softly overlapping translucent fields. */
+    .cycle-meter[data-animation="cloud"] .liquid-fill::before {
+      opacity: .5;
+      filter: blur(11px);
+      animation: ambient-cloud 38s ease-in-out infinite alternate
+    }
+
+    .cycle-meter[data-animation="cloud"] .liquid-fill::after {
+      opacity: .47;
+      filter: blur(9px);
+      animation: ambient-float-b 32s ease-in-out infinite alternate-reverse
+    }
+
+    /* Slow tide: extremely gentle expansion and contraction, no ocean-wave lines. */
+    .cycle-meter[data-animation="tide"] .liquid-fill::before {
+      opacity: .46;
+      animation: ambient-tide 29s ease-in-out infinite alternate
+    }
+
+    .cycle-meter[data-animation="tide"] .liquid-fill::after {
+      opacity: .29;
+      animation: ambient-breathe 36s ease-in-out infinite
+    }
+
+    /* Velvet breathing: quiet changes in diffuse luminosity. */
+    .cycle-meter[data-animation="velvet"] .liquid-fill::before {
+      opacity: .42;
+      filter: blur(14px);
+      animation: ambient-breathe 23s ease-in-out infinite
+    }
+
+    .cycle-meter[data-animation="velvet"] .liquid-shimmer::before {
+      opacity: .27;
+      animation: ambient-breathe 31s ease-in-out infinite alternate-reverse
+    }
+
+    /* Film grain & grainy haze: real fine-grain texture, light itself moves slowly. */
+    .cycle-meter[data-animation="film"] .liquid-fill::before {
+      opacity: .35;
+      animation: ambient-breathe 32s ease-in-out infinite
+    }
+
+    .cycle-meter[data-animation="film"] .liquid-fill::after {
+      opacity: .19;
+      animation: ambient-float-a 40s ease-in-out infinite alternate
+    }
+
+    .cycle-meter[data-animation="haze"] .liquid-fill::before {
+      opacity: .39;
+      filter: blur(15px);
+      animation: ambient-cloud 45s ease-in-out infinite alternate
+    }
+
+    .cycle-meter[data-animation="haze"] .liquid-fill::after {
+      opacity: .28;
+      animation: ambient-breathe 34s ease-in-out infinite
+    }
+
+    /* Moonlight: a broad pale wash with a very slow orbit. */
+    .cycle-meter[data-animation="moonlight"] .liquid-shimmer::before {
+      opacity: .43;
+      filter: blur(17px);
+      animation: ambient-moon 36s ease-in-out infinite alternate
+    }
+
+    .cycle-meter[data-animation="moonlight"] .liquid-fill::before {
+      opacity: .25;
+      animation: ambient-float-b 42s ease-in-out infinite alternate-reverse
+    }
+
+    @keyframes ambient-float-a {
+      from {
+        transform: translate3d(-4%, 1%, 0) scale(1.03)
+      }
+
+      to {
+        transform: translate3d(5%, -1%, 0) scale(1.09)
+      }
+    }
+
+    @keyframes ambient-float-b {
+      from {
+        transform: translate3d(5%, -2%, 0) scale(1.05)
+      }
+
+      to {
+        transform: translate3d(-5%, 2%, 0) scale(1.11)
+      }
+    }
+
+    @keyframes ambient-aurora {
+      from {
+        transform: translate3d(-7%, 0, 0) scale(1.08);
+        opacity: .38
+      }
+
+      to {
+        transform: translate3d(7%, 0, 0) scale(1.16);
+        opacity: .69
+      }
+    }
+
+    @keyframes ambient-cloud {
+      from {
+        transform: translate3d(-4%, 1%, 0) scale(1.05);
+        opacity: .25
+      }
+
+      to {
+        transform: translate3d(4%, -1%, 0) scale(1.15);
+        opacity: .48
+      }
+    }
+
+    @keyframes ambient-breathe {
+
+      0%,
+      100% {
+        transform: translate3d(0, 0, 0) scale(1.06);
+        opacity: .30
+      }
+
+      50% {
+        transform: translate3d(1%, 0, 0) scale(1.13);
+        opacity: .44
+      }
+    }
+
+    @keyframes ambient-silk {
+      from {
+        transform: translate3d(-9%, 0, 0) scale(1.1);
+        opacity: .3
+      }
+
+      to {
+        transform: translate3d(9%, 0, 0) scale(1.16);
+        opacity: .68
+      }
+    }
+
+    @keyframes ambient-tide {
+      from {
+        transform: translate3d(-2%, 0, 0) scale(1.04);
+        opacity: .32
+      }
+
+      to {
+        transform: translate3d(3%, 0, 0) scale(1.14);
+        opacity: .52
+      }
+    }
+
+    @keyframes ambient-moon {
+      from {
+        transform: translate3d(-5%, -1%, 0) scale(1.03);
+        opacity: .24
+      }
+
+      to {
+        transform: translate3d(6%, 1%, 0) scale(1.12);
+        opacity: .46
+      }
+    }
+
+    /* The fine grain remains still: no strobing or frame-to-frame flicker. */
+    @media(prefers-reduced-motion:reduce) {
+
+      .cycle-meter .liquid-fill,
+      .cycle-meter .liquid-fill::before,
+      .cycle-meter .liquid-fill::after,
+      .cycle-meter .liquid-shimmer::before,
+      .cycle-meter .liquid-shimmer::after {
+        animation: none !important;
+        transition: none !important
+      }
+    }
+
+    @media print {
+
+      .cycle-meter .liquid-fill,
+      .cycle-meter .liquid-fill::before,
+      .cycle-meter .liquid-fill::after,
+      .cycle-meter .liquid-shimmer::before,
+      .cycle-meter .liquid-shimmer::after {
+        animation: none !important
+      }
+    }
+
+    /* Keep the settings discreet, with immediate animated previews. */
+    .bar-grain-field {
+      margin: 15px 0 10px;
+      color: #444;
+      font-size: 12px
+    }
+
+    .bar-grain-field label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 9px
+    }
+
+    .bar-grain-field output {
+      color: #737373;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums
+    }
+
+    .bar-grain-field input[type=range] {
+      width: 100%;
+      accent-color: #363636;
+      cursor: pointer
+    }
+
+    .bar-designer-heading+.type-field-label {
+      margin-top: 11px
+    }
+
+    @media(max-width:600px) {
+      .deadline-top {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px
+      }
+
+      .deadline-meta {
+        width: 100%;
+        justify-content: space-between
+      }
+
+      .cycle-top {
+        gap: 5px
+      }
+
+      .cycle-meta {
+        gap: 8px
+      }
+
+      .cycle-count {
+        font-size: 10px
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      .cycle-meter .liquid-fill,
+      .cycle-meter .liquid-fill::before,
+      .cycle-meter .liquid-fill::after,
+      .cycle-meter .liquid-shimmer::before {
+        animation: none !important;
+        transition: none !important
+      }
+    }
+
+    @media print {
+
+      .cycle-meter .liquid-fill,
+      .cycle-meter .liquid-fill::before,
+      .cycle-meter .liquid-fill::after,
+      .cycle-meter .liquid-shimmer::before {
+        animation: none !important
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <header class="hero">
+      <div class="owner-line"><span class="owner-label" contenteditable="true" data-global="ownerLabel"
+          spellcheck="false">NAME:</span><span class="owner-name" contenteditable="true" data-global="student"
+          data-placeholder="Name" spellcheck="false"></span></div>
+      <div class="goal-line"><span contenteditable="true" data-global="goalLabel" spellcheck="false">GOAL:</span><span
+          class="goal-main" contenteditable="true" data-global="goal" spellcheck="false"
+          data-placeholder="Goal"></span><span class="goal-accent" contenteditable="true" data-global="goalAccent"
+          spellcheck="false"></span></div>
+      <div class="header-tools"><button aria-label="Open settings" class="icon-btn" id="settingsBtn"
+          title="Appearance settings"><svg viewbox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.07.07-1.89 1.9-.07-.08a1.7 1.7 0 0 0-1.89-.34l-.1.04a1.7 1.7 0 0 0-1.02 1.56V21H9.15v-.1a1.7 1.7 0 0 0-1.02-1.56l-.1-.04a1.7 1.7 0 0 0-1.89.34l-.07.08-1.89-1.9.07-.07A1.7 1.7 0 0 0 4.59 15l-.04-.1A1.7 1.7 0 0 0 3 13.85H3v-3.7h.1A1.7 1.7 0 0 0 4.56 9.1l.04-.1a1.7 1.7 0 0 0-.34-1.88l-.07-.07 1.89-1.9.07.08a1.7 1.7 0 0 0 1.89.34l.1-.04A1.7 1.7 0 0 0 9.16 4V3h5.7v1a1.7 1.7 0 0 0 1.02 1.56l.1.04a1.7 1.7 0 0 0 1.89-.34l.07-.08 1.89 1.9-.07.07A1.7 1.7 0 0 0 19.4 9l.04.1A1.7 1.7 0 0 0 21 10.15h.1v3.7H21a1.7 1.7 0 0 0-1.56 1.02z">
+            </path>
+          </svg></button></div>
+    </header>
+    <section class="week-strip">
+      <div class="strip-left"><span class="strip-label" contenteditable="true" data-global="weekLabel"
+          spellcheck="false">WEEK:</span><button class="strip-date" id="stripDate"
+          title="Change this week’s start date">August 31</button></div>
+      <div class="week-progress" id="weekProgress" role="progressbar" aria-label="Weekly task completion"
+        aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="wp-label">PROGRESS</span><span
+          class="wp-value" id="weekProgressValue">0%</span><span class="wp-track" aria-hidden="true"><span
+            class="wp-fill" id="weekProgressFill"></span></span></div><span class="strip-subtitle"
+        contenteditable="true" data-global="subtitle" spellcheck="false"></span>
+    </section>
+    <main class="content">
+      <nav aria-label="Weeks" class="week-nav">
+        <div class="week-tabs" id="weekTabs"></div><button aria-label="Add week" class="add-week" id="addWeek"
+          title="Add next week">+</button>
+        <div class="nav-actions"><button class="outline-btn" id="printBtn" title="Print current week">Print</button>
+          <div class="utility-menu"><button aria-expanded="false" aria-label="More actions" class="icon-btn"
+              id="moreBtn" style="color:#333;border:1px solid #e5e5e5">···</button>
+            <div class="menu-pop" hidden="" id="moreMenu"><button id="resetWeekBtn">Clear week
+                checkmarks</button><button class="danger" id="deleteWeekBtn">Delete current week</button></div>
+          </div>
+        </div>
+      </nav>
+
+      <section aria-label="Weekly study tasks" class="calendar-wrap">
+        <div class="calendar" id="calendar"></div>
+      </section>
+      <div class="subbar">
+        <div class="mini-actions"><button class="text-btn" id="clearMarksBtn">Clear checkmarks</button><button
+            class="text-btn" id="addRowBtn">+ Add priority</button><button class="text-btn priority-remove"
+            id="removeRowBtn" type="button">− Remove priority</button></div>
+      </div>
+      <div class="notes" id="notes"></div>
+      <section class="four-week-progress" id="fourWeekProgress" aria-label="Four-week task progress" hidden>
+        <h2 class="cycle-section-heading">FOUR-WEEK PROGRESS</h2>
+        <div class="cycle-list" id="cycleList"></div>
+      </section>
+      <section class="deadline-progress" id="deadlineProgress" aria-label="Deadline task progress" hidden>
+        <div class="deadline-top">
+          <div>
+            <h2 class="cycle-section-heading deadline-title" id="deadlineTitle">EXAM DEADLINE</h2>
+            <div class="deadline-dates" id="deadlineDates">Set a deadline date in Settings</div>
+          </div>
+          <div class="deadline-meta"><span class="cycle-count" id="deadlineCount">0 / 0 tasks</span><strong
+              class="deadline-percent" id="deadlinePercent">0%</strong></div>
+        </div>
+        <div class="cycle-meter deadline-meter" id="deadlineMeter" role="progressbar"
+          aria-label="Deadline task completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="liquid-fill liquid-empty"><span class="liquid-shimmer"></span></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+  <input aria-label="Start date of selected week" class="date-input-hidden" id="inlineDate" type="date" />
+  <div aria-hidden="true" class="overlay" id="overlay">
+    <aside aria-label="Settings" aria-modal="true" class="drawer" role="dialog">
+      <div class="drawer-header">
+        <div>
+          <h2>Settings</h2>
+          <p class="muted" style="margin:0">Fonts · Colors · Calendar · Data</p>
+        </div><button aria-label="Close settings" class="icon-btn" id="closeSettings"
+          style="color:#333;font-size:24px">×</button>
+      </div>
+      <h3>Color palette</h3>
+      <div class="color-field"><label for="colorHero">Header</label><input data-color="hero" id="colorHero"
+          type="color" /><input aria-label="Header opacity" class="opacity-range" data-opacity="hero" id="opacityHero"
+          max="100" min="0" step="1" title="Opacity" type="range" value="100" /><output class="opacity-value"
+          id="opacityHeroValue">100%</output></div>
+      <div class="color-field"><label for="colorStrip">Week strip</label><input data-color="strip" id="colorStrip"
+          type="color" /><input aria-label="Week strip opacity" class="opacity-range" data-opacity="strip"
+          id="opacityStrip" max="100" min="0" step="1" title="Opacity" type="range" value="100" /><output
+          class="opacity-value" id="opacityStripValue">100%</output></div>
+      <div class="color-field"><label for="colorPriority">Priority cells</label><input data-color="priority"
+          id="colorPriority" type="color" /><input aria-label="Priority cells opacity" class="opacity-range"
+          data-opacity="priority" id="opacityPriority" max="100" min="0" step="1" title="Opacity" type="range"
+          value="100" /><output class="opacity-value" id="opacityPriorityValue">100%</output></div>
+      <div class="color-field"><label for="colorDone">Completed tasks</label><input data-color="done" id="colorDone"
+          type="color" /><input aria-label="Completed tasks opacity" class="opacity-range" data-opacity="done"
+          id="opacityDone" max="100" min="0" step="1" title="Opacity" type="range" value="100" /><output
+          class="opacity-value" id="opacityDoneValue">100%</output></div>
+      <div class="color-field"><label for="colorAccent">Goal accent</label><input data-color="accent" id="colorAccent"
+          type="color" /><input aria-label="Goal accent opacity" class="opacity-range" data-opacity="accent"
+          id="opacityAccent" max="100" min="0" step="1" title="Opacity" type="range" value="100" /><output
+          class="opacity-value" id="opacityAccentValue">100%</output></div>
+      <div class="color-field"><label for="colorPaper">Page background</label><input data-color="paper" id="colorPaper"
+          type="color" /><input aria-label="Page background opacity" class="opacity-range" data-opacity="paper"
+          id="opacityPaper" max="100" min="0" step="1" title="Opacity" type="range" value="100" /><output
+          class="opacity-value" id="opacityPaperValue">100%</output></div>
+      <div class="color-field"><label for="colorInk">Primary text</label><input data-color="ink" id="colorInk"
+          type="color" /><input aria-label="Primary text opacity" class="opacity-range" data-opacity="ink"
+          id="opacityInk" max="100" min="0" step="1" title="Opacity" type="range" value="100" /><output
+          class="opacity-value" id="opacityInkValue">100%</output></div>
+      <div class="color-field"><label for="colorMuted">Secondary text</label><input data-color="muted" id="colorMuted"
+          type="color" /><input aria-label="Secondary text opacity" class="opacity-range" data-opacity="muted"
+          id="opacityMuted" max="100" min="0" step="1" title="Opacity" type="range" value="100" /><output
+          class="opacity-value" id="opacityMutedValue">100%</output></div>
+      <button class="block-btn" id="resetColorsBtn" style="margin-top:16px">Reset colors</button>
+      <div class="divider"></div>
+      <h3>Background</h3>
+
+      <div class="background-panel">
+        <div aria-label="Background mode" class="bg-tabs" role="group">
+          <button aria-pressed="true" class="bg-tab" id="bgModeColor" type="button">Color</button>
+          <button aria-pressed="false" class="bg-tab" id="bgModeImage" type="button">Image</button>
+        </div>
+        <div id="bgImageControls">
+          <div class="bg-upload-row"><button class="bg-upload-btn" id="bgUploadBtn" type="button">↑ Upload
+              image</button><button class="bg-remove-btn" id="bgRemoveBtn" type="button">Remove</button></div>
+          <input accept="image/png,image/jpeg,image/webp,image/avif,image/gif" hidden="" id="bgImageFile" type="file" />
+          <div class="bg-image-info" id="bgImageInfo" role="status">No image uploaded</div>
+        </div>
+        <div class="bg-preview" id="bgPreview"><span class="bg-preview-label">BACKGROUND PREVIEW</span></div>
+        <label class="bg-range-line" for="bgBlur">Blur <output id="bgBlurValue">0 px</output></label><input
+          class="bg-range" id="bgBlur" max="24" min="0" step="1" type="range" value="0" />
+        <label class="bg-range-line" for="bgGrain">Grain intensity <output id="bgGrainValue">0%</output></label><input
+          class="bg-range" id="bgGrain" max="100" min="0" step="1" type="range" value="0" /><label class="bg-range-line"
+          for="bgGrainSize">Grain size <output id="bgGrainSizeValue">2</output></label><input class="bg-range"
+          id="bgGrainSize" max="12" min="1" step="1" type="range" value="2" />
+        <label class="bg-range-line" for="bgDarken">Darken <output id="bgDarkenValue">0%</output></label><input
+          class="bg-range" id="bgDarken" max="75" min="0" step="1" type="range" value="0" />
+        <label class="bg-range-line" for="bgLighten">Lighten <output id="bgLightenValue">0%</output></label><input
+          class="bg-range" id="bgLighten" max="100" min="0" step="1" type="range" value="0" />
+
+        <button class="block-btn" id="bgResetBtn" type="button">Reset background</button>
+      </div>
+      <div class="divider"></div>
+      <h3>Progress tracking</h3>
+      <div class="progress-option"><label for="showWeekProgress"><span>Weekly progress</span><small>Show in the week
+            strip</small></label><input id="showWeekProgress" type="checkbox" checked
+          aria-label="Show weekly progress" /></div>
+      <div class="progress-option"><label for="showFourWeekProgress"><span>Four-week progress</span><small>Show bars for
+            weeks 1–4, 5–8, etc.</small></label><input id="showFourWeekProgress" type="checkbox"
+          aria-label="Show four-week progress" /></div>
+      <div id="fourWeekStyleOptions" class="bar-designer">
+        <div class="bar-designer-heading">Four-week bar appearance</div>
+        <label class="type-field-label" for="fourWeekAnimation">Animation</label><select class="type-select"
+          id="fourWeekAnimation"></select>
+        <div class="bar-color-row"><label for="fourWeekFill">Fill color</label><input type="color" id="fourWeekFill" />
+        </div>
+        <div class="bar-color-row"><label for="fourWeekTrack">Track color</label><input type="color"
+            id="fourWeekTrack" /></div>
+        <div class="bar-color-row"><label for="fourWeekHighlight">Highlight color</label><input type="color"
+            id="fourWeekHighlight" /></div>
+        <div class="bar-grain-field"><label for="fourWeekGrain">Film grain <output
+              id="fourWeekGrainValue">0%</output></label><input type="range" id="fourWeekGrain" min="0" max="100"
+            step="1" value="0" aria-label="fourWeek progress bar grain intensity" /></div>
+        <div class="bar-demo">
+          <div class="cycle-meter" id="fourWeekDemoMeter" aria-label="Four-week bar preview">
+            <div class="liquid-fill" style="width:68%"><span class="liquid-shimmer"></span></div>
+          </div><span>68% · LIVE PREVIEW</span>
+        </div>
+      </div>
+      <div class="progress-option"><label for="showDeadlineProgress"><span>Deadline progress</span><small>Task
+            completion through your chosen date</small></label><input id="showDeadlineProgress" type="checkbox"
+          aria-label="Show deadline progress" /></div>
+      <div id="deadlineStyleOptions" class="bar-designer">
+        <div class="bar-designer-heading">Deadline tracker</div>
+        <label class="type-field-label" for="deadlineNameInput">Deadline name</label><input class="planner-text-input"
+          id="deadlineNameInput" type="text" maxlength="90" placeholder="EXAM DEADLINE" />
+        <label class="type-field-label" for="deadlineDateInput">Target date (inclusive)</label><input
+          id="deadlineDateInput" type="date" />
+        <label class="type-field-label" for="deadlineAnimation">Animation</label><select class="type-select"
+          id="deadlineAnimation"></select>
+        <div class="bar-color-row"><label for="deadlineFill">Fill color</label><input type="color" id="deadlineFill" />
+        </div>
+        <div class="bar-color-row"><label for="deadlineTrack">Track color</label><input type="color"
+            id="deadlineTrack" /></div>
+        <div class="bar-color-row"><label for="deadlineHighlight">Highlight color</label><input type="color"
+            id="deadlineHighlight" /></div>
+        <div class="bar-grain-field"><label for="deadlineGrain">Film grain <output
+              id="deadlineGrainValue">0%</output></label><input type="range" id="deadlineGrain" min="0" max="100"
+            step="1" value="0" aria-label="deadline progress bar grain intensity" /></div>
+        <div class="bar-demo">
+          <div class="cycle-meter" id="deadlineDemoMeter" aria-label="Deadline bar preview">
+            <div class="liquid-fill" style="width:68%"><span class="liquid-shimmer"></span></div>
+          </div><span>68% · LIVE PREVIEW</span>
+        </div>
+        <p class="bar-help">Only tasks planned on or before the target date count. No assigned tasks means 0%.</p>
+      </div>
+      <div class="divider"></div>
+      <h3>Typography</h3>
+
+      <div aria-label="Global font for all sections" class="type-all-panel">
+        <div class="type-all-heading">One font for every section</div>
+
+        <label class="type-field-label" for="typeAllFamily">Global font</label>
+        <select aria-label="Global font for all sections" class="type-select" id="typeAllFamily"></select>
+        <div aria-hidden="true" class="type-all-preview" id="typeAllPreview">Aa Bb · GOAL: B2 EXAM</div>
+        <button class="type-all-apply" id="typeApplyAll" type="button">Apply to all sections</button>
+        <p class="type-all-summary" id="typeAllStatus" role="status">Global typography</p>
+      </div>
+      <div class="type-section-heading">Individual sections</div>
+
+      <label class="type-field-label" for="typeSection">Section</label>
+      <select aria-label="Choose typography section" class="type-select" id="typeSection"></select>
+      <div aria-live="polite" class="type-preview">
+        <div class="type-preview-caption">PREVIEW</div>
+        <div class="type-preview-line" id="typePreviewLine">Make every day count.</div>
+        <div class="type-preview-foot">Aa Bb Cc · 123</div>
+      </div>
+      <label class="type-field-label" for="typeFamily">Font family</label>
+      <select aria-label="Choose font" class="type-select" id="typeFamily"></select>
+      <div class="type-size-top"><label for="typeSize">Font size</label><span class="type-size-value"
+          id="typeSizeStatus">Default</span></div>
+      <div class="type-size-box"><input aria-label="Font size in pixels" id="typeSize" max="90" min="9" step="1"
+          type="range" /><input aria-label="Exact font size" id="typeSizeNumber" max="90" min="9" step="1"
+          type="number" /></div>
+      <div class="type-toggles">
+        <button aria-pressed="false" class="type-toggle" id="typeBold" type="button"><span
+            class="sample-letter"><b>B</b></span> Bold</button>
+        <button aria-pressed="false" class="type-toggle" id="typeItalic" type="button"><span
+            class="sample-letter"><i>I</i></span> Italic</button>
+      </div>
+      <div class="type-reset-line"><button id="resetTypeSection" type="button">↶ Reset section</button></div>
+      <div class="type-picks-title">Featured fonts</div>
+      <div class="type-font-picks" id="typeFontPicks"></div>
+      <p class="type-note">Additional fonts require internet access.</p>
+      <button class="block-btn" id="resetTypographyBtn" type="button">Reset all typography</button>
+      <div class="divider"></div>
+      <h3>Calendar</h3><label for="startDate">First week start date</label><input id="startDate" type="date" />
+      <div class="divider"></div>
+      <h3>Data</h3><button class="block-btn" id="exportBtn">Export backup (.json)</button><button class="block-btn"
+        id="importBtn">Import backup</button><input accept=".json,application/json" hidden="" id="importFile"
+        type="file" /><button class="block-btn" id="printSettingsBtn">Print / Save as PDF</button><button
+        class="block-btn reset-btn" id="resetAllBtn">Reset entire planner</button>
+    </aside>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script>
+    (() => {
+      'use strict';
+      const STORAGE = 'sergei-week-planner-v2'; // Keep existing saved planners compatible
+      const initialColors = { hero: '#383838', strip: '#666666', priority: '#709ee8', done: '#00ee25', accent: '#598ff0', paper: '#ffffff', ink: '#292929', muted: '#797979' };
+      const defaultColorOpacity = () => Object.fromEntries(Object.keys(initialColors).map(k => [k, 100]));
+      const defaultBackground = () => ({ mode: 'color', image: null, imageName: '', blur: 0, grain: 0, grainSize: 2, darken: 0, lighten: 0 });
+      const defaultDays = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+      const oldRussianDays = ['ПОНЕДЕЛЬНИК', 'ВТОРНИК', 'СРЕДА', 'ЧЕТВЕРГ', 'ПЯТНИЦА', 'СУББОТА', 'ВОСКРЕСЕНЬЕ'];
+      const defaultPriorities = ['I', 'II', 'III'];
+      const animationOptions = [['none', 'Still · No animation'], ['flow', 'Ambient flow'], ['aurora', 'Soft aurora'], ['mist', 'Morning mist'], ['silk', 'Silk light'], ['cloud', 'Cloud bloom'], ['tide', 'Slow tide'], ['velvet', 'Velvet breathing'], ['film', 'Film grain'], ['haze', 'Grainy haze'], ['moonlight', 'Moonlight']];
+      // Existing saved plans keep their colors, dates, and completion. Older flashy presets map to a similar, softer ambient effect.
+      const legacyAnimations = { liquid: 'flow', shimmer: 'silk', wave: 'tide', stripes: 'aurora', pulse: 'velvet', glow: 'velvet', gradient: 'aurora', bubbles: 'cloud', scanline: 'moonlight', sparkle: 'film' };
+      const presetGrain = { film: 27, haze: 18, mist: 7 };
+      const animationIds = animationOptions.map(o => o[0]);
+      const defaultBarStyle = () => ({ fill: '#598ff0', track: '#e4e7ed', highlight: '#ffffff', animation: 'flow', grain: 0 });
+      const defaultProgress = () => ({ weekly: true, fourWeek: false, deadline: false, fourWeekStyle: defaultBarStyle(), deadlineStyle: { ...defaultBarStyle(), fill: '#6087b9', animation: 'silk' }, deadlineName: 'EXAM DEADLINE', deadlineDate: '' });
+      function currentMonday() { const date = new Date(); const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12)); d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7); return iso(d); }
+      const defaultNotes = ['MONDAY:', 'TUESDAY:', 'WEDNESDAY:', 'THURSDAY:', 'FRIDAY:', 'SATURDAY:', 'SUNDAY:'];
+      const el = id => document.getElementById(id);
+      const pad = n => String(n).padStart(2, '0');
+      function makeWeek() { return { priorities: ['I'], cells: [Array.from({ length: 7 }, () => ({ text: '', done: false }))], notes: { exercises: Array(7).fill(''), questions: Array(7).fill('') } }; }
+      function initialState() { return { baseDate: currentMonday(), active: 0, colors: { ...initialColors }, colorOpacity: defaultColorOpacity(), background: defaultBackground(), progress: defaultProgress(), typography: {}, global: { ownerLabel: 'NAME:', student: '', goalLabel: 'GOAL:', goal: '', goalAccent: '', weekLabel: 'WEEK:', subtitle: '', exerciseTitle: 'EXERCISES', questionTitle: 'QUESTIONS', dayHeaders: [...defaultDays], noteDayLabels: [...defaultNotes] }, weeks: [makeWeek()] }; }
+
+      // Friendly Cyrillic and Latin font library. Keep the existing page fonts untouched for "default".
+      const fontGroups = [
+        { label: 'As in original', fonts: [['default', 'Original font (default)']] },
+        { label: 'Modern · Minimal', fonts: [['Inter', 'Inter'], ['Manrope', 'Manrope'], ['Montserrat', 'Montserrat'], ['Onest', 'Onest'], ['Rubik', 'Rubik'], ['Golos Text', 'Golos Text'], ['Jost', 'Jost'], ['Comfortaa', 'Comfortaa']] },
+        { label: 'Expressive · Display', fonts: [['Unbounded', 'Unbounded'], ['Oswald', 'Oswald'], ['Russo One', 'Russo One'], ['Poiret One', 'Poiret One'], ['Roboto Condensed', 'Roboto Condensed'], ['Kelly Slab', 'Kelly Slab']] },
+        { label: 'Elegant · Editorial', fonts: [['Playfair Display', 'Playfair Display'], ['Cormorant Garamond', 'Cormorant Garamond'], ['Prata', 'Prata'], ['Literata', 'Literata'], ['PT Serif', 'PT Serif'], ['Yeseva One', 'Yeseva One']] },
+        { label: 'Handwritten · Creative', fonts: [['Caveat', 'Caveat'], ['Marck Script', 'Marck Script'], ['Bad Script', 'Bad Script'], ['Neucha', 'Neucha'], ['Pacifico', 'Pacifico'], ['Lobster', 'Lobster'], ['Pangolin', 'Pangolin'], ['Balsamiq Sans', 'Balsamiq Sans']] },
+        { label: 'Typewriter', fonts: [['Anonymous Pro', 'Anonymous Pro'], ['IBM Plex Mono', 'IBM Plex Mono']] }
+      ];
+      const fontList = fontGroups.flatMap(g => g.fonts.map(x => x[0]));
+      const sections = [
+        { id: 'ownerLabel', title: 'Header · SCHEDULE label', selector: '.owner-label', baseSize: 25, bold: false, italic: false, preview: 'SCHEDULE:' },
+        { id: 'student', title: 'Header · Student name', selector: '.owner-name', baseSize: 29, bold: false, italic: false, preview: 'Name' },
+        { id: 'goal', title: 'Header · Main goal', selector: '.goal-line', baseSize: 62, bold: false, italic: true, preview: 'GOAL: Your goal' },
+        { id: 'weekMeta', title: 'Week strip · Label & date', selector: '.strip-left', baseSize: 14, bold: false, italic: false, preview: 'WEEK: August 31' },
+        { id: 'subtitle', title: 'Week strip · Exam name', selector: '.strip-subtitle', baseSize: 14, bold: false, italic: true, preview: 'Exam or course' },
+        { id: 'tabs', title: 'Week tabs', selector: '.week-tab, .week-tab strong, .week-tab small', baseSize: 12, bold: false, italic: false, preview: 'WEEK 01 · Aug 31 — Sep 6' },
+        { id: 'dates', title: 'Calendar dates', selector: '.dayhead .day-date', baseSize: 15, bold: false, italic: false, preview: 'Aug 31 · Sep 1 · Sep 2' },
+        { id: 'days', title: 'Weekday headings', selector: '.dayhead .day-name', baseSize: 17, bold: true, italic: false, preview: 'MONDAY' },
+        { id: 'priorities', title: 'Priorities · I, II, III', selector: '.priority-cell', baseSize: 15, bold: false, italic: true, preview: 'I   II   III' },
+        { id: 'tasks', title: 'Tasks · Colored cells', selector: '.task-cell .task-content', baseSize: 14, bold: false, italic: false, preview: 'B2 TRAINING · ANKI' },
+        { id: 'notesTitles', title: 'Notes · Section titles', selector: '.notes-title', baseSize: 21, bold: true, italic: false, preview: 'EXERCISES / QUESTIONS' },
+        { id: 'notesDays', title: 'Notes · Weekday labels', selector: '.note-day', baseSize: 15, bold: false, italic: false, preview: 'MONDAY: · TUESDAY:' },
+        { id: 'notesText', title: 'Notes · Entries', selector: '.note-text', baseSize: 15, bold: false, italic: false, preview: 'Learned 30 new words.' },
+        { id: 'progressWeekly', title: 'Progress · Weekly', selector: '.week-progress, .week-progress .wp-label, .week-progress .wp-value', baseSize: 12, bold: false, italic: false, preview: 'PROGRESS 75%' },
+        { id: 'progressFourWeek', title: 'Progress · Four-week', selector: '.four-week-progress, .cycle-title, .cycle-percent', baseSize: 14, bold: false, italic: false, preview: 'WEEKS 01–04 · 75%' },
+        { id: 'progressDeadline', title: 'Progress · Deadline', selector: '.deadline-progress, .deadline-title, .deadline-percent', baseSize: 14, bold: false, italic: false, preview: 'EXAM DEADLINE · 75%' }
+      ];
+      const sectionMap = Object.fromEntries(sections.map(section => [section.id, section]));
+      const typeKeys = ['font', 'size', 'bold', 'italic'];
+      function validateTypography(value) {
+        const clean = {}; if (!value || typeof value !== 'object' || Array.isArray(value)) return clean;
+        for (const section of sections) {
+          const raw = value[section.id]; if (!raw || typeof raw !== 'object') continue;
+          let v = {}; if (fontList.includes(raw.font) && raw.font !== 'default') v.font = raw.font;
+          if (Number.isInteger(raw.size) && raw.size >= 9 && raw.size <= 90) v.size = raw.size;
+          if (typeof raw.bold === 'boolean') v.bold = raw.bold;
+          if (typeof raw.italic === 'boolean') v.italic = raw.italic;
+          if (Object.keys(v).length) clean[section.id] = v;
+        } return clean;
+      }
+      let activeTypeSection = 'student';
+      const typeFontLoaded = new Set();
+      function loadFont(name) {
+        if (name === 'default' || !fontList.includes(name) || typeFontLoaded.has(name)) return;
+        typeFontLoaded.add(name);
+        const link = document.createElement('link'); link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(name).replace(/%20/g, '+') + '&display=swap';
+        link.dataset.typeFont = name; document.head.appendChild(link);
+      }
+      function fontStack(name) { return name === 'default' ? 'inherit' : '"' + name.replace(/"/g, '') + '",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif'; }
+      function typeValue(section) { return state.typography[section.id] || {}; }
+      function applyTypography() {
+        let rules = [];
+        for (const section of sections) {
+          const t = typeValue(section); const styles = [];
+          if (t.font && t.font !== 'default') { loadFont(t.font); styles.push('font-family:' + fontStack(t.font) + '!important') }
+          if (t.size) styles.push('font-size:' + t.size + 'px!important');
+          if (typeof t.bold === 'boolean') styles.push('font-weight:' + (t.bold ? '700' : '400') + '!important');
+          if (typeof t.italic === 'boolean') styles.push('font-style:' + (t.italic ? 'italic' : 'normal') + '!important');
+          if (styles.length) rules.push(section.selector + '{' + styles.join(';') + '}');
+        }
+        el('typeOverrides').textContent = rules.join('\n');
+      }
+      function initTypographyUI() {
+        const sectionSelect = el('typeSection'); sectionSelect.replaceChildren();
+        sections.forEach(section => { let option = node('option', '', section.title); option.value = section.id; sectionSelect.append(option) });
+        const family = el('typeFamily'), allFamily = el('typeAllFamily');
+        family.replaceChildren(); allFamily.replaceChildren();
+        const mixed = node('option', '', 'Mixed fonts — choose one'); mixed.value = ''; mixed.disabled = true; allFamily.append(mixed);
+        for (const group of fontGroups) {
+          for (const target of [family, allFamily]) {
+            const optgroup = node('optgroup'); optgroup.label = group.label;
+            group.fonts.forEach(([name, label]) => { const opt = node('option', '', label); opt.value = name; optgroup.append(opt) });
+            target.append(optgroup);
+          }
+        }
+        allFamily.addEventListener('change', () => refreshAllFontPreview());
+        el('typeApplyAll').addEventListener('click', applyAllFonts);
+        const picks = el('typeFontPicks'); picks.replaceChildren();
+        for (const font of ['Manrope', 'Cormorant Garamond', 'Caveat', 'Marck Script']) {
+          const b = node('button', 'type-pick'); b.type = 'button'; b.dataset.fontPick = font;
+          const title = node('span', 'type-pick-name', font), sample = node('span', 'type-pick-sample', font === 'Manrope' ? 'Clean and simple' : font === 'Cormorant Garamond' ? 'Timeless design' : font === 'Caveat' ? 'My notes' : 'Inspired');
+          sample.style.fontFamily = fontStack(font); b.append(title, sample); b.setAttribute('aria-label', 'Select font ' + font);
+          b.addEventListener('click', () => { changeType('font', font); }); picks.append(b);
+        }
+        sectionSelect.value = activeTypeSection;
+        sectionSelect.addEventListener('change', e => { activeTypeSection = e.target.value; refreshTypographyUI() });
+        family.addEventListener('change', e => changeType('font', e.target.value));
+        el('typeSize').addEventListener('input', e => changeType('size', Number(e.target.value)));
+        el('typeSizeNumber').addEventListener('change', e => changeType('size', Math.min(90, Math.max(9, Math.round(Number(e.target.value) || sectionMap[activeTypeSection].baseSize)))));
+        el('typeBold').addEventListener('click', () => { const section = sectionMap[activeTypeSection]; const setting = typeValue(section); changeType('bold', !(setting.bold ?? section.bold)) });
+        el('typeItalic').addEventListener('click', () => { const section = sectionMap[activeTypeSection]; const setting = typeValue(section); changeType('italic', !(setting.italic ?? section.italic)) });
+        el('resetTypeSection').addEventListener('click', () => { delete state.typography[activeTypeSection]; applyTypography(); refreshTypographyUI(); save(); toast('Section typography reset') });
+        el('resetTypographyBtn').addEventListener('click', () => { state.typography = {}; applyTypography(); refreshTypographyUI(); save(); toast('Default typography restored') });
+        refreshTypographyUI();
+      }
+      function applyAllFonts() {
+        const chosen = el('typeAllFamily').value;
+        if (!fontList.includes(chosen)) return;
+        for (const section of sections) {
+          const setting = { ...(state.typography[section.id] || {}) };
+          if (chosen === 'default') delete setting.font;
+          else setting.font = chosen;
+          if (Object.keys(setting).length) state.typography[section.id] = setting;
+          else delete state.typography[section.id];
+        }
+        applyTypography(); refreshTypographyUI(); save();
+        toast(chosen === 'default' ? 'Original font applied to all sections' : 'Font “' + chosen + '” applied to all sections');
+      }
+      function refreshAllFontPreview() {
+        const chosen = el('typeAllFamily').value, sample = el('typeAllPreview');
+        if (chosen && chosen !== 'default') loadFont(chosen);
+        sample.style.fontFamily = chosen ? (chosen === 'default' ? 'Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif' : fontStack(chosen)) : 'Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif';
+        el('typeApplyAll').disabled = !fontList.includes(chosen);
+      }
+      function syncAllFontUI() {
+        const currentFonts = sections.map(section => typeValue(section).font || 'default');
+        const same = currentFonts.every(font => font === currentFonts[0]);
+        el('typeAllFamily').value = same ? currentFonts[0] : '';
+        el('typeAllStatus').textContent = same ? 'All sections: ' + (currentFonts[0] === 'default' ? 'original font' : currentFonts[0]) : 'Different fonts across sections';
+        refreshAllFontPreview();
+      }
+      function changeType(key, value) {
+        const setting = state.typography[activeTypeSection] ?? (state.typography[activeTypeSection] = {});
+        if (key === 'font') { if (!fontList.includes(value)) return; if (value === 'default') delete setting.font; else setting.font = value; }
+        else setting[key] = value;
+        if (!Object.keys(setting).length) delete state.typography[activeTypeSection];
+        applyTypography(); refreshTypographyUI(); save();
+      }
+      function refreshTypographyUI() {
+        syncAllFontUI();
+        const section = sectionMap[activeTypeSection], t = typeValue(section);
+        el('typeSection').value = activeTypeSection;
+        el('typeFamily').value = t.font || 'default';
+        const px = t.size ?? section.baseSize; el('typeSize').value = px; el('typeSizeNumber').value = px;
+        el('typeSizeStatus').textContent = t.size ? px + ' px' : 'Default · ≈' + section.baseSize + ' px';
+        el('typeBold').setAttribute('aria-pressed', String(t.bold ?? section.bold));
+        el('typeItalic').setAttribute('aria-pressed', String(t.italic ?? section.italic));
+        const example = el('typePreviewLine'); example.textContent = section.preview;
+        example.style.fontFamily = t.font ? fontStack(t.font) : 'Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif';
+        example.style.fontWeight = (t.bold ?? section.bold) ? '700' : '400';
+        example.style.fontStyle = (t.italic ?? section.italic) ? 'italic' : 'normal';
+        example.style.fontSize = Math.min(42, Math.max(16, px)) + 'px';
+        document.querySelectorAll('[data-font-pick]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.fontPick === t.font)));
+      }
+      function validateBackground(bg) {
+        const safe = defaultBackground();
+        if (!bg || typeof bg !== 'object' || Array.isArray(bg)) return safe;
+        safe.mode = bg.mode === 'image' ? 'image' : 'color';
+        // Image data is self-contained; never fetch untrusted external links from JSON files.
+        if (typeof bg.image === 'string' && bg.image.length < 3600000 && /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(bg.image)) safe.image = bg.image;
+        safe.imageName = typeof bg.imageName === 'string' ? bg.imageName.slice(0, 150) : '';
+        for (const [key, max] of [['blur', 24], ['grain', 100], ['grainSize', 12], ['darken', 75], ['lighten', 100]]) { const n = Number(bg[key]); if (Number.isFinite(n)) safe[key] = Math.max(0, Math.min(max, Math.round(n))); }
+        safe.grainSize = Math.max(1, safe.grainSize);
+        if (!safe.image && safe.mode === 'image') safe.mode = 'color';
+        return safe;
+      }
+      function validISODate(v) { if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false; const [y, m, d] = v.split('-').map(Number); const dt = new Date(Date.UTC(y, m - 1, d, 12)); return dt.getUTCFullYear() === y && dt.getUTCMonth() + 1 === m && dt.getUTCDate() === d; }
+      function validateState(obj) {
+        if (!obj || !Array.isArray(obj.weeks) || !obj.weeks.length || obj.weeks.length > 500 || !obj.global || !/^(\d{4})-(\d{2})-(\d{2})$/.test(obj.baseDate) || !obj.weeks.every(w => Array.isArray(w.cells) && Array.isArray(w.notes?.exercises) && Array.isArray(w.notes?.questions))) throw Error('Invalid backup file format');
+        const d = initialState();
+        obj.colors = { ...d.colors, ...obj.colors };
+        obj.colorOpacity = { ...defaultColorOpacity(), ...(obj.colorOpacity && typeof obj.colorOpacity === 'object' ? obj.colorOpacity : {}) };
+        for (const key of Object.keys(initialColors)) {
+          const v = Number(obj.colorOpacity[key]); obj.colorOpacity[key] = Number.isFinite(v) ? Math.max(0, Math.min(100, Math.round(v))) : 100;
+        }
+        obj.typography = validateTypography(obj.typography);
+        obj.background = validateBackground(obj.background);
+        const priorProgress = obj.progress || {};
+        const pd = defaultProgress();
+        const safeStyle = raw => {
+          const style = defaultBarStyle(); if (raw && typeof raw === 'object') {
+            for (const key of ['fill', 'track', 'highlight']) if (typeof raw[key] === 'string' && /^#[0-9a-fA-F]{6}$/.test(raw[key])) style[key] = raw[key];
+            if (animationIds.includes(raw.animation)) style.animation = raw.animation;
+            else if (typeof raw.animation === 'string' && legacyAnimations[raw.animation]) style.animation = legacyAnimations[raw.animation];
+            const g = Number(raw.grain); style.grain = Number.isFinite(g) && raw.grain !== undefined ? Math.min(100, Math.max(0, Math.round(g))) : (presetGrain[style.animation] || 0);
+          } return style;
+        };
+        obj.progress = {
+          weekly: priorProgress.weekly !== false, fourWeek: priorProgress.fourWeek === true, deadline: priorProgress.deadline === true,
+          fourWeekStyle: safeStyle(priorProgress.fourWeekStyle), deadlineStyle: safeStyle(priorProgress.deadlineStyle),
+          deadlineName: typeof priorProgress.deadlineName === 'string' ? priorProgress.deadlineName.slice(0, 90) : pd.deadlineName,
+          deadlineDate: typeof priorProgress.deadlineDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(priorProgress.deadlineDate) && validISODate(priorProgress.deadlineDate) ? priorProgress.deadlineDate : ''
+        };
+        if (!priorProgress.deadlineStyle) obj.progress.deadlineStyle = { ...pd.deadlineStyle };
+        const legacyPriorities = Array.isArray(obj.global.priorities) && obj.global.priorities.length ? obj.global.priorities : defaultPriorities;
+        obj.global = { ...d.global, ...obj.global };
+        // Switch only untouched Russian defaults to English. Keep user-customized day headings.
+        obj.global.dayHeaders = Array.from({ length: 7 }, (_, i) => {
+          const value = String(obj.global.dayHeaders?.[i] ?? defaultDays[i]);
+          return value.trim().toUpperCase() === oldRussianDays[i] ? defaultDays[i] : value;
+        });
+        obj.global.noteDayLabels = Array.from({ length: 7 }, (_, i) => String(obj.global.noteDayLabels?.[i] ?? defaultNotes[i]));
+        delete obj.global.priorities; // Older versions stored one common set for every week.
+        obj.weeks = obj.weeks.map(w => {
+          const source = Array.isArray(w.priorities) && w.priorities.length ? w.priorities : legacyPriorities;
+          const priorities = source.slice(0, 30).map(x => String(x));
+          return {
+            priorities,
+            cells: Array.from({ length: priorities.length }, (_, r) => Array.from({ length: 7 }, (_, i) => ({ text: String(w.cells?.[r]?.[i]?.text ?? ''), done: !!w.cells?.[r]?.[i]?.done }))),
+            notes: { exercises: Array.from({ length: 7 }, (_, i) => String(w.notes.exercises[i] ?? '')), questions: Array.from({ length: 7 }, (_, i) => String(w.notes.questions[i] ?? '')) }
+          };
+        });
+        obj.active = Math.max(0, Math.min(obj.weeks.length - 1, Number(obj.active) || 0));
+        Object.keys(d.global).filter(k => typeof d.global[k] === 'string').forEach(k => obj.global[k] = String(obj.global[k] ?? d.global[k]));
+        for (const key of Object.keys(initialColors)) { if (!/^#[0-9a-fA-F]{6}$/.test(obj.colors[key])) obj.colors[key] = initialColors[key] }
+        return obj;
+      }
+      let state; try { const saved = localStorage.getItem(STORAGE); state = saved ? validateState(JSON.parse(saved)) : initialState(); } catch (e) { state = initialState(); }
+      let timer; function save() { try { localStorage.setItem(STORAGE, JSON.stringify(state)); return true; } catch (e) { toast('Could not save: check browser storage space.'); return false; } }
+      function toast(str) { const t = el('toast'); t.textContent = str; t.classList.add('show'); clearTimeout(timer); timer = setTimeout(() => t.classList.remove('show'), 2200); }
+      function mondayOf(value) { const [y, m, d] = value.split('-').map(Number); const dt = new Date(Date.UTC(y, m - 1, d, 12)); dt.setUTCDate(dt.getUTCDate() - (dt.getUTCDay() + 6) % 7); return dt; }
+      function iso(d) { return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`; }
+      function atWeek(day = 0, index = state.active) { const d = mondayOf(state.baseDate); d.setUTCDate(d.getUTCDate() + index * 7 + day); return d; }
+      const monthShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthLong = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      const fmtDate = d => `${monthShort[d.getUTCMonth()]} ${d.getUTCDate()}`;
+      const fmtLong = d => `${monthLong[d.getUTCMonth()]} ${d.getUTCDate()}`;
+      const fmtDateRange = (a, b) => `${fmtDate(a)}${a.getUTCFullYear() !== b.getUTCFullYear() ? ', ' + a.getUTCFullYear() : ''} – ${fmtDate(b)}, ${b.getUTCFullYear()}`;
+      function node(tag, classes = '', text = null) { const x = document.createElement(tag); if (classes) x.className = classes; if (text !== null) x.textContent = text; return x; }
+      function editable(x, data, callback) { x.contentEditable = 'true'; x.spellcheck = false; if (!x.hasAttribute('data-placeholder')) x.dataset.placeholder = ''; x.addEventListener('input', () => { const value = x.innerText.replace(/\r/g, ''); callback(value); save(); }); x.addEventListener('paste', e => { e.preventDefault(); const plain = (e.clipboardData || window.clipboardData).getData('text/plain'); document.execCommand('insertText', false, plain); }); return x; }
+      /* PAPER_CONTROLS */
+      function rgba(hex, opacity) { const values = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)); return `rgba(${values.join(',')},${(opacity / 100).toFixed(2)})`; }
+      function applyColors() {
+        Object.entries(state.colors).forEach(([key, val]) => document.documentElement.style.setProperty('--' + key, rgba(val, state.colorOpacity[key] ?? 100)));
+        document.querySelectorAll('[data-color]').forEach(inp => inp.value = state.colors[inp.dataset.color]);
+        document.querySelectorAll('[data-opacity]').forEach(inp => {
+          const value = state.colorOpacity[inp.dataset.opacity] ?? 100;
+          inp.value = String(value); el(inp.id + 'Value').textContent = value + '%';
+        });
+      }
+      function applyBackground() {
+        const bg = state.background;
+        const hasImage = bg.mode === 'image' && !!bg.image;
+        const shell = document.querySelector('.shell'); shell.classList.toggle('has-paper-image', hasImage);
+        const cssUrl = hasImage ? 'url("' + bg.image + '")' : 'none';
+        for (const element of [shell, el('bgPreview')]) {
+          element.style.setProperty('--paper-image', cssUrl);
+          element.style.setProperty('--paper-blur', bg.blur + 'px');
+          element.style.setProperty('--paper-grain', String(Math.round(bg.grain * .5) / 100));
+          element.style.setProperty('--grain-tile', (Math.round(80 * bg.grainSize)) + 'px');
+          element.style.setProperty('--paper-brightness', String((100 + bg.lighten - bg.darken) / 100));
+        }
+        for (const mode of ['Color', 'Image']) el('bgMode' + mode).setAttribute('aria-pressed', String(bg.mode === mode.toLowerCase()));
+        for (const [key, label, suffix] of [['blur', 'bgBlurValue', ' px'], ['grain', 'bgGrainValue', '%'], ['grainSize', 'bgGrainSizeValue', ''], ['darken', 'bgDarkenValue', '%'], ['lighten', 'bgLightenValue', '%']]) {
+          el('bg' + key.charAt(0).toUpperCase() + key.slice(1)).value = bg[key]; el(label).textContent = bg[key] + suffix;
+        }
+        el('bgImageInfo').textContent = bg.image ? 'Uploaded: ' + (bg.imageName || 'My image') + (bg.mode === 'image' ? ' · active' : ' · saved, currently hidden') : 'No image uploaded';
+        el('bgRemoveBtn').disabled = !bg.image;
+      }
+      function resetPaper() { state.background = defaultBackground(); state.colors.paper = initialColors.paper; state.colorOpacity.paper = 100; applyColors(); applyBackground(); save(); toast('White background restored'); }
+      async function loadPaperImage(file) {
+        if (!file) return;
+        if (!/^image\/(?:png|jpeg|webp|avif|gif)$/.test(file.type)) { toast('Choose JPG, PNG, WEBP, AVIF, or GIF'); return; }
+        if (file.size > 20000000) { toast('Image too large (20 MB maximum)'); return; }
+        const upload = el('bgUploadBtn'); upload.disabled = true; upload.textContent = 'Uploading…';
+        let url;
+        try {
+          url = URL.createObjectURL(file);
+          const img = new Image(); img.decoding = 'async';
+          const loaded = new Promise((resolve, reject) => { img.onload = resolve; img.onerror = () => reject(Error('Could not open image')); });
+          img.src = url; await loaded;
+          const maxSide = 1600, scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+          if (!img.naturalWidth || !img.naturalHeight) throw Error('Invalid image dimensions');
+          const canvas = document.createElement('canvas'); canvas.width = Math.max(1, Math.round(img.naturalWidth * scale)); canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+          const context = canvas.getContext('2d'); if (!context) throw Error('Canvas unavailable');
+          context.drawImage(img, 0, 0, canvas.width, canvas.height);
+          let encoded = canvas.toDataURL('image/jpeg', .80);
+          if (encoded.length > 3000000) {
+            const ratio = Math.min(1, Math.sqrt(2000000 / encoded.length));
+            const smaller = document.createElement('canvas'); smaller.width = Math.max(1, Math.round(canvas.width * ratio)); smaller.height = Math.max(1, Math.round(canvas.height * ratio));
+            smaller.getContext('2d').drawImage(canvas, 0, 0, smaller.width, smaller.height);
+            encoded = smaller.toDataURL('image/jpeg', .65);
+          }
+          if (encoded.length > 3500000) throw Error('Processed image is too large');
+          const previous = state.background;
+          state.background = { ...previous, mode: 'image', image: encoded, imageName: file.name.slice(0, 140) };
+          applyBackground();
+          if (!save()) { state.background = previous; applyBackground(); throw Error('Not enough browser storage space'); }
+          toast('Background uploaded and saved');
+        } catch (err) { toast('Upload error: ' + err.message); }
+        finally { if (url) URL.revokeObjectURL(url); el('bgImageFile').value = ''; upload.disabled = false; upload.textContent = '↑ Upload image'; }
+      }
+      function initBackgroundUI() {
+        el('bgModeColor').addEventListener('click', () => { state.background.mode = 'color'; applyBackground(); save() });
+        el('bgModeImage').addEventListener('click', () => { if (!state.background.image) { el('bgImageFile').click(); return; } state.background.mode = 'image'; applyBackground(); save() });
+        el('bgUploadBtn').addEventListener('click', () => el('bgImageFile').click());
+        el('bgImageFile').addEventListener('change', e => loadPaperImage(e.target.files[0]));
+        el('bgRemoveBtn').addEventListener('click', () => { state.background.image = null; state.background.imageName = ''; state.background.mode = 'color'; applyBackground(); save(); toast('Image removed') });
+        for (const key of ['blur', 'grain', 'grainSize', 'darken', 'lighten']) {
+          const input = el('bg' + key[0].toUpperCase() + key.slice(1));
+          input.addEventListener('input', () => {
+            state.background[key] = Number(input.value);
+            if (key === 'lighten' && state.background.lighten > 0) state.background.darken = 0;
+            if (key === 'darken' && state.background.darken > 0) state.background.lighten = 0;
+            applyBackground(); save();
+          });
+        }
+        el('bgResetBtn').addEventListener('click', resetPaper);
+      }
+
+      function updateGlobals() { document.querySelectorAll('[data-global]').forEach(x => { if (document.activeElement !== x) x.textContent = state.global[x.dataset.global] }); }
+      function updateDateUI() { el('stripDate').textContent = fmtLong(atWeek()); el('startDate').value = iso(atWeek(0, 0)); el('inlineDate').value = iso(atWeek()); }
+      function renderTabs() { const list = el('weekTabs'); list.replaceChildren(); state.weeks.forEach((_, idx) => { const b = node('button', 'week-tab'); b.type = 'button'; b.setAttribute('aria-current', idx === state.active ? 'true' : 'false'); const first = node('strong', '', `WEEK ${String(idx + 1).padStart(2, '0')}`), last = node('small', '', `${fmtDate(atWeek(0, idx))} — ${fmtDate(atWeek(6, idx))}`); b.append(first, last); b.addEventListener('click', () => { state.active = idx; render(); save() }); list.append(b) }); const selected = list.querySelector('[aria-current="true"]'); selected?.scrollIntoView({ inline: 'nearest', block: 'nearest' }); }
+      function isAssignedTask(text) { return typeof text === 'string' && !!text.trim() && !/^[—–-]+$/.test(text.trim()); }
+      function taskMetrics(week) {
+        let tasks = 0, done = 0;
+        for (const row of week.cells) { for (const cell of row) { if (isAssignedTask(cell.text)) { tasks++; if (cell.done) done++; } } }
+        return { tasks, done, percentage: tasks ? Math.round(done * 100 / tasks) : 0 };
+      }
+      function applyCycleMetrics(card, start) {
+        let tasks = 0, done = 0;
+        for (let i = start; i < Math.min(start + 4, state.weeks.length); i++) { const metric = taskMetrics(state.weeks[i]); tasks += metric.tasks; done += metric.done; }
+        const percentage = tasks ? Math.round(done * 100 / tasks) : 0;
+        card.querySelector('.cycle-percent').textContent = percentage + '%';
+        card.querySelector('.cycle-count').textContent = done + ' / ' + tasks + ' tasks';
+        const bar = card.querySelector('.cycle-meter');
+        bar.setAttribute('aria-valuenow', String(percentage));
+        bar.setAttribute('aria-valuetext', done + ' of ' + tasks + ' tasks completed');
+        const fill = card.querySelector('.liquid-fill'); fill.style.width = percentage + '%';
+        fill.classList.toggle('liquid-empty', percentage === 0);
+      }
+      function makeCycle(start) {
+        const card = node('div', 'cycle-card'); card.dataset.start = String(start);
+        const top = node('div', 'cycle-top');
+        const labelWrap = node('div', 'cycle-label-wrap');
+        const text = node('div', 'cycle-title', `WEEKS ${pad(start + 1)}–${pad(start + 4)}`);
+        const dates = node('div', 'cycle-dates', fmtDateRange(atWeek(0, start), atWeek(6, start + 3)));
+        labelWrap.append(text, dates);
+        const meta = node('div', 'cycle-meta'); meta.append(node('span', 'cycle-count', '0 / 0 tasks'), node('strong', 'cycle-percent', '0%'));
+        top.append(labelWrap, meta);
+        const bar = node('div', 'cycle-meter'); bar.setAttribute('role', 'progressbar'); bar.setAttribute('aria-label', `Tasks completed in weeks ${start + 1} through ${start + 4}`); bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', '100'); bar.setAttribute('aria-valuenow', '0');
+        const fill = node('div', 'liquid-fill liquid-empty'); fill.append(node('span', 'liquid-shimmer')); bar.append(fill);
+        card.append(top, bar); applyMeterStyle(bar, state.progress.fourWeekStyle); return card;
+      }
+      function applyMeterStyle(meter, style) {
+        meter.style.setProperty('--bar-fill', style.fill);
+        meter.style.setProperty('--bar-track', style.track);
+        meter.style.setProperty('--bar-highlight', style.highlight);
+        meter.style.setProperty('--bar-grain-opacity', String((Math.max(0, Math.min(100, Number(style.grain) || 0)) / 100 * 0.38).toFixed(3)));
+        meter.dataset.animation = style.animation;
+      }
+      function deadlineMetrics() {
+        let tasks = 0, done = 0;
+        const deadline = state.progress.deadlineDate;
+        if (!deadline || !validISODate(deadline)) return { tasks, done, percentage: 0 };
+        for (let weekIndex = 0; weekIndex < state.weeks.length; weekIndex++) {
+          const week = state.weeks[weekIndex];
+          for (let d = 0; d < 7; d++) {
+            if (iso(atWeek(d, weekIndex)) > deadline) continue;
+            for (const row of week.cells) { const cell = row[d]; if (isAssignedTask(cell.text)) { tasks++; if (cell.done) done++; } }
+          }
+        }
+        return { tasks, done, percentage: tasks ? Math.round(done * 100 / tasks) : 0 };
+      }
+      function deadlineTiming() {
+        const date = state.progress.deadlineDate;
+        if (!date) return 'Set a target date in Settings';
+        const dt = new Date(date + 'T12:00:00Z');
+        const today = new Date(); const todayUTC = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 12);
+        const days = Math.round((dt.getTime() - todayUTC) / 86400000);
+        const relative = days > 0 ? `${days} day${days === 1 ? '' : 's'} remaining` : days === 0 ? 'Due today' : `${Math.abs(days)} day${days === -1 ? '' : 's'} overdue`;
+        return `${fmtDate(dt)}, ${dt.getUTCFullYear()}  ·  ${relative}`;
+      }
+      function updateProgress(rebuild = false) {
+        const weekly = el('weekProgress'); weekly.hidden = !state.progress.weekly;
+        if (state.progress.weekly) { const result = taskMetrics(state.weeks[state.active]); el('weekProgressValue').textContent = result.percentage + '%'; el('weekProgressFill').style.width = result.percentage + '%'; weekly.setAttribute('aria-valuenow', String(result.percentage)); weekly.setAttribute('aria-valuetext', `${result.done} of ${result.tasks} tasks completed`); weekly.title = `${result.done} / ${result.tasks} completed tasks`; }
+        const four = el('fourWeekProgress'); four.hidden = !state.progress.fourWeek;
+        if (state.progress.fourWeek) {
+          const list = el('cycleList'), count = Math.ceil(state.weeks.length / 4);
+          if (rebuild || list.children.length !== count) { list.replaceChildren(); for (let i = 0; i < count; i++)list.append(makeCycle(i * 4)); }
+          for (let i = 0; i < count; i++) {
+            const card = list.children[i]; applyCycleMetrics(card, i * 4);
+            card.querySelector('.cycle-dates').textContent = fmtDateRange(atWeek(0, i * 4), atWeek(6, i * 4 + 3));
+            applyMeterStyle(card.querySelector('.cycle-meter'), state.progress.fourWeekStyle);
+          }
+        }
+        const deadline = el('deadlineProgress'); deadline.hidden = !state.progress.deadline;
+        if (state.progress.deadline) {
+          const result = deadlineMetrics();
+          el('deadlineTitle').textContent = state.progress.deadlineName || 'DEADLINE';
+          el('deadlineDates').textContent = deadlineTiming();
+          el('deadlinePercent').textContent = result.percentage + '%';
+          el('deadlineCount').textContent = result.done + ' / ' + result.tasks + ' tasks';
+          const bar = el('deadlineMeter'); applyMeterStyle(bar, state.progress.deadlineStyle);
+          bar.setAttribute('aria-valuenow', String(result.percentage));
+          bar.setAttribute('aria-valuetext', `${result.done} of ${result.tasks} tasks completed by deadline`);
+          const fill = bar.querySelector('.liquid-fill'); fill.style.width = result.percentage + '%'; fill.classList.toggle('liquid-empty', !result.percentage);
+        }
+      }
+      function updateBarDemo(key) {
+        const kind = key === 'fourWeek' ? 'fourWeek' : 'deadline';
+        applyMeterStyle(el(kind + 'DemoMeter'), state.progress[kind + 'Style']);
+      }
+      function initProgressControls() {
+        for (const [id, key] of [['showWeekProgress', 'weekly'], ['showFourWeekProgress', 'fourWeek'], ['showDeadlineProgress', 'deadline']]) {
+          const control = el(id); control.checked = state.progress[key];
+          control.addEventListener('change', () => { state.progress[key] = control.checked; updateProgress(true); save(); });
+        }
+        for (const kind of ['fourWeek', 'deadline']) {
+          const select = el(kind + 'Animation'); select.replaceChildren();
+          for (const [value, label] of animationOptions) { const opt = node('option', '', label); opt.value = value; select.append(opt); }
+          select.addEventListener('change', () => {
+            const style = state.progress[kind + 'Style']; style.animation = select.value;
+            // Grain-focused presets start with a subtle texture; every preset can be adjusted to completely smooth.
+            style.grain = presetGrain[select.value] || 0;
+            el(kind + 'Grain').value = String(style.grain); el(kind + 'GrainValue').textContent = style.grain + '%';
+            updateBarDemo(kind); updateProgress(); save();
+          });
+          el(kind + 'Grain').addEventListener('input', e => {
+            const amount = Math.min(100, Math.max(0, Number(e.target.value) || 0));
+            state.progress[kind + 'Style'].grain = amount;
+            el(kind + 'GrainValue').textContent = amount + '%';
+            updateBarDemo(kind); updateProgress(); save();
+          });
+          for (const field of ['Fill', 'Track', 'Highlight']) {
+            const input = el(kind + field), key = field.toLowerCase();
+            input.addEventListener('input', () => { state.progress[kind + 'Style'][key] = input.value; updateBarDemo(kind); updateProgress(); save(); });
+          }
+        }
+        el('deadlineNameInput').addEventListener('input', e => { state.progress.deadlineName = e.target.value.slice(0, 90); updateProgress(); save() });
+        el('deadlineDateInput').addEventListener('change', e => { state.progress.deadlineDate = validISODate(e.target.value) ? e.target.value : ''; updateProgress(); save() });
+        syncProgressControls();
+      }
+      function syncProgressControls() {
+        for (const [id, key] of [['showWeekProgress', 'weekly'], ['showFourWeekProgress', 'fourWeek'], ['showDeadlineProgress', 'deadline']]) el(id).checked = state.progress[key];
+        for (const kind of ['fourWeek', 'deadline']) {
+          const style = state.progress[kind + 'Style']; el(kind + 'Animation').value = style.animation;
+          el(kind + 'Grain').value = String(style.grain || 0); el(kind + 'GrainValue').textContent = (style.grain || 0) + '%';
+          for (const field of ['Fill', 'Track', 'Highlight']) el(kind + field).value = style[field.toLowerCase()];
+          updateBarDemo(kind);
+        }
+        el('deadlineNameInput').value = state.progress.deadlineName;
+        el('deadlineDateInput').value = state.progress.deadlineDate;
+      }
+      function renderCalendar() { const area = el('calendar'); area.replaceChildren(); area.append(node('div', 'dayhead spacer')); for (let d = 0; d < 7; d++) { const col = node('div', 'dayhead'); col.append(node('div', 'day-date', fmtDate(atWeek(d)))); const day = editable(node('div', 'day-name', state.global.dayHeaders[d]), null, v => state.global.dayHeaders[d] = v); day.setAttribute('aria-label', `Weekday ${d + 1}`); col.append(day); area.append(col) } let week = state.weeks[state.active]; for (let r = 0; r < week.priorities.length; r++) { const p = node('div', 'priority-cell'); p.append(editable(node('span', '', week.priorities[r]), null, v => week.priorities[r] = v)); area.append(p); for (let d = 0; d < 7; d++) { const item = week.cells[r][d]; const cell = node('div', 'task-cell' + (item.done ? ' is-done' : '')); const text = editable(node('div', 'task-content', item.text), null, v => { item.text = v; if (!isAssignedTask(v) && item.done) { item.done = false; cell.classList.remove('is-done'); b.setAttribute('aria-pressed', 'false'); } updateProgress(); }); text.dataset.placeholder = '+'; text.setAttribute('role', 'textbox'); text.setAttribute('aria-label', `Task: priority ${r + 1}, day ${d + 1}`); const b = node('button', 'paint-btn'); b.type = 'button'; b.title = 'Toggle completion'; b.setAttribute('aria-label', `Toggle task: priority ${r + 1}, day ${d + 1}`); b.setAttribute('aria-pressed', String(item.done)); b.addEventListener('click', () => { if (!isAssignedTask(item.text)) { toast('Write a task before marking it complete'); return; } item.done = !item.done; cell.classList.toggle('is-done', item.done); b.setAttribute('aria-pressed', String(item.done)); updateProgress(); save() }); cell.addEventListener('click', e => { if (e.target === cell) b.click() }); cell.append(text, b); area.append(cell) } } }
+      function renderNotes() { let place = el('notes'), week = state.weeks[state.active]; place.replaceChildren();[['exercises', 'exerciseTitle'], ['questions', 'questionTitle']].forEach(([type, title]) => { const col = node('section', 'note-col'); col.append(editable(node('div', 'notes-title', state.global[title]), null, v => state.global[title] = v)); for (let d = 0; d < 7; d++) { const row = node('div', 'note-row'); row.append(editable(node('div', 'note-day', state.global.noteDayLabels[d]), null, v => state.global.noteDayLabels[d] = v)); row.append(editable(node('div', 'note-text', week.notes[type][d]), null, v => week.notes[type][d] = v)); col.append(row) } place.append(col) }) }
+      function render() { applyColors(); applyBackground(); applyTypography(); refreshTypographyUI(); updateGlobals(); updateDateUI(); renderTabs(); renderCalendar(); renderNotes(); syncProgressControls(); updateProgress(true); }
+      document.querySelectorAll('[data-global]').forEach(x => editable(x, null, v => state.global[x.dataset.global] = v));
+      function addWeek() { state.weeks.push(makeWeek()); state.active = state.weeks.length - 1; render(); save(); toast('Week added with one empty priority'); }
+      function clearMarks() { state.weeks[state.active].cells.forEach(row => row.forEach(c => c.done = false)); renderCalendar(); updateProgress(); save(); toast('Checkmarks cleared'); }
+      function roman(i) { let out = ''; for (const [num, val] of [[10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]) { while (i >= num) { out += val; i -= num } } return out; }
+      function addPriority() {
+        const week = state.weeks[state.active];
+        if (week.priorities.length >= 30) return toast('Maximum of 30 priorities');
+        week.priorities.push(roman(week.priorities.length + 1));
+        week.cells.push(Array.from({ length: 7 }, () => ({ text: '', done: false })));
+        renderCalendar(); updateProgress(); save();
+      }
+      function removePriority() {
+        const week = state.weeks[state.active];
+        if (week.priorities.length <= 1) return toast('At least one priority must remain');
+        if (!confirm('Remove the last priority and all its tasks from this week? This cannot be undone.')) return;
+        week.priorities.pop(); week.cells.pop(); renderCalendar(); updateProgress(); save();
+      }
+      function setSelectedWeekDate(value) { if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return; const selected = mondayOf(value); selected.setUTCDate(selected.getUTCDate() - 7 * state.active); state.baseDate = iso(selected); render(); save(); toast('Week dates updated'); }
+      function setStartDate(value) { if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return; state.baseDate = iso(mondayOf(value)); render(); save(); toast('Calendar updated'); }
+      function openDrawer() { ['Manrope', 'Cormorant Garamond', 'Caveat', 'Marck Script'].forEach(loadFont); el('overlay').classList.add('open'); el('overlay').setAttribute('aria-hidden', 'false'); el('closeSettings').focus(); }
+      function closeDrawer() { el('overlay').classList.remove('open'); el('overlay').setAttribute('aria-hidden', 'true'); el('settingsBtn').focus(); }
+      function more(show) { el('moreMenu').hidden = !show; el('moreBtn').setAttribute('aria-expanded', String(show)); }
+      function resetAll() { if (!confirm('Reset the entire planner, including every week and task? This cannot be undone.')) return; state = initialState(); render(); save(); closeDrawer(); toast('Planner reset'); }
+      function exportData() { const blob = new Blob([JSON.stringify({ ...state, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' }); const href = URL.createObjectURL(blob); const a = node('a'); a.href = href; a.download = 'study-plan-' + (state.global.student.toLowerCase().replace(/[^a-z0-9а-яё]+/gi, '-') || 'new') + '.json'; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(href), 2000); toast('Backup downloaded'); }
+      function importData(file) { if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const imported = validateState(JSON.parse(reader.result)); if (!confirm('Replace the current planner with the imported backup?')) return; state = imported; render(); save(); closeDrawer(); toast('Backup imported'); } catch (e) { alert('Could not read backup: ' + e.message) } finally { el('importFile').value = ''; } }; reader.readAsText(file, 'utf-8'); }
+      initProgressControls();
+      el('addWeek').addEventListener('click', addWeek); el('clearMarksBtn').addEventListener('click', clearMarks); el('addRowBtn').addEventListener('click', addPriority); el('removeRowBtn').addEventListener('click', removePriority);
+      el('settingsBtn').addEventListener('click', openDrawer); el('closeSettings').addEventListener('click', closeDrawer); el('overlay').addEventListener('click', e => { if (e.target === el('overlay')) closeDrawer() }); document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (el('overlay').classList.contains('open')) closeDrawer(); more(false) } });
+      el('stripDate').addEventListener('click', () => { const input = el('inlineDate'); input.value = iso(atWeek()); try { input.showPicker() } catch (e) { input.style.opacity = 1; input.style.pointerEvents = 'auto'; input.style.width = '170px'; input.focus() } }); el('inlineDate').addEventListener('change', e => { setSelectedWeekDate(e.target.value); e.target.style.opacity = '0'; e.target.style.pointerEvents = 'none'; e.target.style.width = '1px' });
+      el('startDate').addEventListener('change', e => setStartDate(e.target.value)); document.querySelectorAll('[data-opacity]').forEach(inp => inp.addEventListener('input', e => { state.colorOpacity[e.target.dataset.opacity] = Number(e.target.value); applyColors(); save() })); document.querySelectorAll('[data-color]').forEach(inp => inp.addEventListener('input', e => { state.colors[e.target.dataset.color] = e.target.value; applyColors(); applyBackground(); save() })); el('resetColorsBtn').addEventListener('click', () => { state.colors = { ...initialColors }; state.colorOpacity = defaultColorOpacity(); applyColors(); applyBackground(); save(); toast('Colors reset') });
+      el('printBtn').addEventListener('click', () => window.print()); el('printSettingsBtn').addEventListener('click', () => window.print()); el('moreBtn').addEventListener('click', e => { e.stopPropagation(); more(el('moreMenu').hidden) }); document.addEventListener('click', e => { if (!e.target.closest('.utility-menu')) more(false) });
+      el('resetWeekBtn').addEventListener('click', () => { clearMarks(); more(false) }); el('deleteWeekBtn').addEventListener('click', () => { more(false); if (state.weeks.length === 1) return toast('You cannot delete the only week'); if (!confirm(`Delete week ${state.active + 1} and all its tasks? This cannot be undone.`)) return; state.weeks.splice(state.active, 1); state.active = Math.min(state.active, state.weeks.length - 1); render(); save(); toast('Week deleted') });
+      el('exportBtn').addEventListener('click', exportData); el('importBtn').addEventListener('click', () => el('importFile').click()); el('importFile').addEventListener('change', e => importData(e.target.files[0])); el('resetAllBtn').addEventListener('click', resetAll);
+      initTypographyUI();
+      initBackgroundUI();
+      render();
+    })();
+  </script>
+</body>
+
+</html>
