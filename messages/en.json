@@ -705,6 +705,34 @@
         "diaryDay": "Diary weekday labels",
         "diaryText": "Diary text",
         "progress": "Progress"
+      },
+      "background": {
+        "title": "Background",
+        "color": "Background color",
+        "image": "Background image",
+        "mode": "Image mode",
+        "modes": {
+          "cover": "Cover",
+          "contain": "Contain",
+          "center": "Center",
+          "fit": "Fit to screen"
+        },
+        "sliders": {
+          "opacity": "Color opacity",
+          "blur": "Image blur",
+          "brightness": "Image brightness",
+          "overlay": "Darken ← → Lighten",
+          "grain": "Grain intensity",
+          "grainSize": "Grain size"
+        },
+        "remove": "Remove image",
+        "reset": "Reset background",
+        "errors": {
+          "unsupported_type": "Use a JPG, PNG or WebP image",
+          "too_large": "The file is larger than 10 MB",
+          "decode_failed": "This image could not be read",
+          "still_too_big": "The image is too detailed to store. Try a smaller one"
+        }
       }
     }
   }

@@ -1,0 +1,29 @@
+.stack {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.image {
+  position: absolute;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.fill,
+.grain {
+  position: absolute;
+  inset: 0;
+}
+
+.grain {
+  mix-blend-mode: overlay;
+}
+
+@media print {
+  .stack {
+    display: none;
+  }
+}

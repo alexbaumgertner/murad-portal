@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, type ReactNode } from 'react'
 
+import { PlannerBackgroundSettings } from '@/components/PlannerSettings/PlannerBackgroundSettings'
 import { PlannerColorSettings } from '@/components/PlannerSettings/PlannerColorSettings'
 import { PlannerTypographySettings } from '@/components/PlannerSettings/PlannerTypographySettings'
 
@@ -39,6 +40,10 @@ export function PlannerSettings({
       <details className={styles.section} open>
         <summary>{t('colors')}</summary>
         <PlannerColorSettings />
+      </details>
+      <details className={styles.section}>
+        <summary>{t('background.title')}</summary>
+        <PlannerBackgroundSettings />
       </details>
       <details className={styles.section}>
         <summary>{t('typography')}</summary>

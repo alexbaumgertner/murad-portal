@@ -1,5 +1,5 @@
 import { NextIntlClientProvider } from 'next-intl'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { describe, expect, test } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
 import { render } from 'vitest-browser-react'
@@ -10,10 +10,12 @@ import { PlannerTypographySettings } from '@/components/PlannerSettings/PlannerT
 import { defaultAppearance, type Appearance } from '@/features/planner/appearance'
 import { messagesFor } from '@/i18n/address-form'
 
-let latest: Appearance
+const seen = { current: defaultAppearance() }
 function Harness({ children }: { children: React.ReactNode }) {
   const [appearance, setAppearance] = useState<Appearance>(defaultAppearance())
-  latest = appearance
+  useEffect(() => {
+    seen.current = appearance
+  })
   return (
     <PlannerContext.Provider
       value={{
@@ -40,10 +42,10 @@ describe('Planner settings panels (story 025)', () => {
     await renderPanel(<PlannerColorSettings />)
     const opacity = page.getByLabelText('Opacity: Main header')
     await opacity.fill('40')
-    expect(latest.colors.header).toEqual({ color: '#2b2d31', opacity: 40 })
-    expect(latest.colors.strip.opacity).toBe(100)
+    expect(seen.current.colors.header).toEqual({ color: '#2b2d31', opacity: 40 })
+    expect(seen.current.colors.strip.opacity).toBe(100)
     await userEvent.click(page.getByRole('button', { name: 'Reset colors' }))
-    expect(latest.colors.header.opacity).toBe(100)
+    expect(seen.current.colors.header.opacity).toBe(100)
   })
 
   test('9. a low-contrast text color shows a warning but is still allowed', async () => {
@@ -52,17 +54,17 @@ describe('Planner settings panels (story 025)', () => {
     await expect
       .element(page.getByText('Some text colors may be hard to read on this paper.'))
       .toBeVisible()
-    expect(latest.colors.text.opacity).toBe(20)
+    expect(seen.current.colors.text.opacity).toBe(20)
   })
 
   test('5. size, bold and italic apply to one section only', async () => {
     await renderPanel(<PlannerTypographySettings />)
     await page.getByLabelText('Size: Assignments').fill('30')
     await userEvent.click(page.getByRole('button', { name: 'Italic: Assignments' }))
-    expect(latest.type.tasks).toMatchObject({ size: 30, italic: true })
-    expect(latest.type.dates.size).toBe(12)
+    expect(seen.current.type.tasks).toMatchObject({ size: 30, italic: true })
+    expect(seen.current.type.dates.size).toBe(12)
     await page.getByLabelText('Size: Assignments').fill('5')
-    expect(latest.type.tasks.size).toBe(30) // out of the 9–90 range: ignored
+    expect(seen.current.type.tasks.size).toBe(30) // out of the 9–90 range: ignored
   })
 
   test('6/7. apply to all keeps sizes; restore only fonts; reset everything', async () => {
@@ -70,14 +72,14 @@ describe('Planner settings panels (story 025)', () => {
     await page.getByLabelText('Size: Assignments').fill('30')
     await page.getByLabelText('Font for all sections').selectOptions('lora')
     await userEvent.click(page.getByRole('button', { name: 'Apply font to all sections' }))
-    expect(latest.type.tasks).toMatchObject({ font: 'lora', size: 30 })
-    expect(latest.type.goalText.font).toBe('lora')
+    expect(seen.current.type.tasks).toMatchObject({ font: 'lora', size: 30 })
+    expect(seen.current.type.goalText.font).toBe('lora')
     await page.getByLabelText('Font: Goal', { exact: true }).selectOptions('caveat')
-    expect(latest.type.goalText.font).toBe('caveat')
+    expect(seen.current.type.goalText.font).toBe('caveat')
     await userEvent.click(page.getByRole('button', { name: 'Restore original font everywhere' }))
-    expect(latest.type.tasks).toMatchObject({ font: 'default', size: 30 })
+    expect(seen.current.type.tasks).toMatchObject({ font: 'default', size: 30 })
     await userEvent.click(page.getByRole('button', { name: 'Reset all typography' }))
-    expect(latest.type.tasks.size).toBe(14)
+    expect(seen.current.type.tasks.size).toBe(14)
   })
 
   test('4. the font list has 30+ families in three groups', async () => {

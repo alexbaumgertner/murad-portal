@@ -342,3 +342,8 @@ A pause begins today (that day is paused too) and ends yesterday on resume, so t
 The planner offers 34 Latin + Cyrillic families. `src/features/planner/fonts.ts` declares each one with `next/font/google` (`preload: false`, weights 400/700): Next downloads and self-hosts them at build time, so the CSP is unchanged (`font-src 'self'`) and visitors never contact Google. The browser fetches a face only when a section uses it, but all `@font-face` rules ship in the planner's CSS.
 Options must be literals in each `const x = Font({...})` call (no shared variables); `font-list.ts` holds the pure list so unit tests and the schema never import `next/font`.
 Cost: the build needs network access to fonts.googleapis.com. Revisit if the build moves offline or the CSS weight matters (then load a family on demand from `public/`).
+
+## Planner background image is stored inside the appearance JSON (story 026)
+
+The uploaded photo is resized in the browser (long side ≤ 1600 px, JPEG) and kept as a `data:` URL in `planners.appearance.background.image` (limit 1.2 M characters), not in the Media collection. One value to read, save, back up and delete; no Blob/Media access rules for students; `img-src` already allows `data:`. The image travels with every appearance save (debounced) and with the page payload.
+Revisit if: images need to be larger or shared between planners (then a private upload collection).

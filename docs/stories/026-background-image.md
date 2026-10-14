@@ -1,7 +1,7 @@
 ---
 id: 026
 title: Planner background image with blur, brightness, overlay and grain
-status: approved
+status: done
 ---
 
 # 026 — Background
@@ -11,16 +11,16 @@ status: approved
 ## Acceptance criteria
 
 1. `[happy]` **Given** Settings → Background **then** color + opacity, and an image upload (JPG, PNG, WebP).
-2. `[happy]` **Given** an upload **then** it is resized (long side ≤ 2400 px) and re-encoded in the browser, stored in Media (local / Vercel Blob), referenced from `appearance.background`.
+2. `[happy]` **Given** an upload **then** it is resized (long side ≤ 2400 px) and re-encoded in the browser, stored as a data URL inside `appearance.background` (see decisions.md).
 3. `[edge]` **Given** an unsupported type, >10 MB, or a decode error **then** a code error, the previous image stays.
 4. `[happy]` **Given** modes cover / contain / center / fit **then** the aspect ratio is preserved.
 5. `[happy]` **Given** blur 0–40 px, brightness, **one** overlay slider −100…+100 (negative darkens, positive lightens — no contradictory pair), grain 0–100%, grain size 1–12 **then** each changes the intended property.
 6. `[happy]` **Given** the layers (image → blur → overlay → grain → content) **then** blur and grain never touch text or controls (blur is on the image layer only).
 7. `[happy]` **Given** grain 0 **then** no grain layer is rendered. Grain is a generated noise texture (SVG `feTurbulence` as data URI, tiled per size), not a dot pattern.
 8. `[happy]` **Given** a reload **then** image and settings persist.
-9. `[happy]` **Given** «Remove image» **then** the file reference is cleared and the media document is deleted.
+9. `[happy]` **Given** «Remove image» **then** the file reference is cleared and the stored image is deleted.
 10. `[edge]` **Given** transparent paper/header (025) **then** the image shows through.
-11. `[access]` **Given** a student **then** she uploads only to her own planner; the image is not publicly listed (private media URL or unguessable path — spike in the PR, CSP `img-src` check).
+11. `[access]` **Given** a student **then** she uploads only to her own planner; the image lives only in her private planner record.
 
 ## Out of scope
 

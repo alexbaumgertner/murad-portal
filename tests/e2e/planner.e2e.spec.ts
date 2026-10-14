@@ -77,6 +77,39 @@ test.describe('Weekly planner (story 022)', () => {
       await expect
         .poll(() => page.evaluate(() => document.fonts.check('14px Lora', 'Привет')))
         .toBe(true)
+      // 026: upload a photo, blur + grain it; the text stays sharp; it survives a reload
+      await page.getByRole('button', { name: 'Настройки' }).click()
+      await drawer.getByText('Фон', { exact: true }).click()
+      await drawer.getByLabel('Фоновая картинка').setInputFiles({
+        name: 'bg.png',
+        mimeType: 'image/png',
+        buffer: Buffer.from(
+          'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+          'base64',
+        ),
+      })
+      await expect(page.getByTestId('planner-bg-image')).toBeAttached()
+      await drawer.getByLabel('Размытие картинки').fill('10')
+      await drawer.getByLabel('Сила зерна').fill('30')
+      const bgSaved = page.waitForResponse(
+        (r) => r.request().method() === 'POST' && r.url().includes('/study/planner'),
+      )
+      await expect(page.getByTestId('planner-bg-grain')).toBeAttached()
+      await bgSaved
+      await drawer.getByRole('button', { name: 'Закрыть настройки' }).click()
+      const textFilters = await page
+        .getByText('PODCAST')
+        .first()
+        .evaluate((el) => {
+          const filters: string[] = []
+          for (let node: Element | null = el; node; node = node.parentElement)
+            filters.push(getComputedStyle(node).filter)
+          return filters
+        })
+      expect(textFilters.every((f) => f === 'none')).toBe(true)
+      await page.reload()
+      await expect(page.getByTestId('planner-bg-image')).toBeAttached()
+      await expect(page.getByTestId('planner-bg-grain')).toBeAttached()
       // 7. print: tools are hidden, the sheet stays
       await expect(page.getByRole('button', { name: 'Печать' })).toBeVisible()
       await page.emulateMedia({ media: 'print' })

@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from 'react'
 
+import { PlannerBackground } from '@/components/PlannerBackground/PlannerBackground'
 import { PlannerContext } from '@/components/PlannerShell/planner-context'
 import { PlannerSettings } from '@/components/PlannerSettings/PlannerSettings'
 import { saveAppearanceAction } from '@/features/planner/actions'
@@ -79,6 +80,7 @@ export function PlannerShell({
 
   return (
     <PlannerContext.Provider value={value}>
+      <PlannerBackground background={appearance.background} />
       <div style={style}>{children}</div>
       <PlannerSettings open={open} onClose={() => setOpen(false)}>
         {ownerPanels}

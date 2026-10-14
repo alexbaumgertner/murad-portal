@@ -12,7 +12,10 @@ import {
   restoreOriginalFonts,
   rgba,
   DEFAULT_COLORS,
+  GRAIN_DATA_URI,
   TYPE_SECTIONS,
+  fitWithin,
+  grainTilePx,
 } from '@/features/planner/appearance'
 import { FONTS } from '@/features/planner/font-list'
 
@@ -89,5 +92,76 @@ describe('story 025 · appearance', () => {
     a.colors.text = { color: '#eeeeee', opacity: 100 }
     a.colors.textMuted = { color: '#6b7280', opacity: 20 }
     expect(contrastWarnings(a.colors)).toEqual(['text', 'textMuted'])
+  })
+})
+
+describe('story 026 · background', () => {
+  const png = 'data:image/png;base64,iVBORw0KGgo='
+
+  it('9/8. keeps a valid image and drops anything else', () => {
+    expect(parseAppearance({ background: { image: png } }).background.image).toBe(png)
+    for (const bad of [
+      'http://x/y.png',
+      'data:text/html;base64,AAAA',
+      'data:image/svg+xml;base64,AAAA',
+      42,
+      null,
+    ])
+      expect(parseAppearance({ background: { image: bad } }).background.image).toBeNull()
+    const huge = `data:image/jpeg;base64,${'A'.repeat(1_300_000)}`
+    expect(parseAppearance({ background: { image: huge } }).background.image).toBeNull()
+  })
+
+  it('5. clamps each effect to its range, independently', () => {
+    const bg = parseAppearance({
+      background: {
+        blur: 99,
+        brightness: 5,
+        overlay: -250,
+        grain: 50,
+        grainSize: 12,
+        mode: 'zoom',
+      },
+    }).background
+    expect(bg).toMatchObject({
+      blur: 0,
+      brightness: 100,
+      overlay: 0,
+      grain: 50,
+      grainSize: 12,
+      mode: 'cover',
+    })
+    expect(
+      parseAppearance({ background: { blur: 40, overlay: -100, brightness: 20 } }).background,
+    ).toMatchObject({
+      blur: 40,
+      overlay: -100,
+      brightness: 20,
+    })
+  })
+
+  it('2. downscales on the long side, keeps the aspect ratio, never enlarges', () => {
+    expect(fitWithin(4000, 3000, 1600)).toEqual({ width: 1600, height: 1200 })
+    expect(fitWithin(3000, 4000, 1600)).toEqual({ width: 1200, height: 1600 })
+    expect(fitWithin(800, 600, 1600)).toEqual({ width: 800, height: 600 })
+  })
+
+  it('7. grain tile grows with the size setting', () => {
+    expect(grainTilePx(1)).toBeLessThan(grainTilePx(12))
+    expect(GRAIN_DATA_URI).toContain('feTurbulence')
+  })
+
+  it('defaults: transparent-capable color, no image, no grain, neutral effects', () => {
+    expect(defaultAppearance().background).toEqual({
+      color: '#ffffff',
+      opacity: 100,
+      image: null,
+      mode: 'cover',
+      blur: 0,
+      brightness: 100,
+      overlay: 0,
+      grain: 0,
+      grainSize: 3,
+    })
   })
 })

@@ -376,6 +376,24 @@ describe('story 022 · planner core', () => {
     ).toEqual({ ok: false, error: 'not_found' })
   })
 
+  it('026 8/9. a background image and its effects persist and can be removed', async () => {
+    const { planner } = await weeksOf(anna)
+    const image = 'data:image/jpeg;base64,/9j/4AAQSkZJRg=='
+    await saveAppearance(payload, anna, {
+      plannerId: planner.id,
+      appearance: { background: { image, blur: 12, overlay: -30, grain: 40, grainSize: 5 } },
+    })
+    let bg = parseAppearance((await weeksOf(anna)).planner.appearance).background
+    expect(bg).toMatchObject({ image, blur: 12, overlay: -30, grain: 40, grainSize: 5 })
+    await saveAppearance(payload, anna, {
+      plannerId: planner.id,
+      appearance: { background: { ...bg, image: null } },
+    })
+    bg = parseAppearance((await weeksOf(anna)).planner.appearance).background
+    expect(bg.image).toBeNull()
+    expect(bg.blur).toBe(12)
+  })
+
   it('deleting the student deletes her planner', async () => {
     expect(
       await createPlanner(payload, owner, { studentId: Number(boris.id), baseDate: '2026-10-12' }),

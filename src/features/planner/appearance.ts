@@ -104,6 +104,88 @@ const typeSchema = (section: TypeSection) => {
     .catch({ ...base })
 }
 
+// ---- background (story 026) ----
+
+export const BACKGROUND_MODES = ['cover', 'contain', 'center', 'fit'] as const
+export type BackgroundMode = (typeof BACKGROUND_MODES)[number]
+/** Largest stored image, as a data URL. Server Actions accept 3 MB, and this is sent on every save. */
+export const MAX_IMAGE_CHARS = 1_200_000
+export const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const
+
+export type Background = {
+  color: string
+  opacity: number
+  /** `data:image/(jpeg|png|webp);base64,…` or null. */
+  image: string | null
+  mode: BackgroundMode
+  /** px, 0–40 */
+  blur: number
+  /** percent, 20–150 (100 = unchanged) */
+  brightness: number
+  /** −100 (darkest) … +100 (lightest): ONE control, so darkening and lightening never contradict. */
+  overlay: number
+  /** 0–100; 0 renders no grain layer at all. */
+  grain: number
+  /** 1–12 */
+  grainSize: number
+}
+
+export const DEFAULT_BACKGROUND: Background = {
+  color: '#ffffff',
+  opacity: 100,
+  image: null,
+  mode: 'cover',
+  blur: 0,
+  brightness: 100,
+  overlay: 0,
+  grain: 0,
+  grainSize: 3,
+}
+
+const IMAGE_PATTERN = /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/
+
+export const isStoredImage = (value: unknown): value is string =>
+  typeof value === 'string' && value.length <= MAX_IMAGE_CHARS && IMAGE_PATTERN.test(value)
+
+const num = (min: number, max: number, fallback: number) =>
+  z.number().min(min).max(max).catch(fallback)
+
+const backgroundSchema = z
+  .object({
+    color: hex.catch(DEFAULT_BACKGROUND.color),
+    opacity: num(0, 100, DEFAULT_BACKGROUND.opacity),
+    image: z
+      .unknown()
+      .transform((value) => (isStoredImage(value) ? value : null))
+      .catch(null),
+    mode: z.enum(BACKGROUND_MODES).catch(DEFAULT_BACKGROUND.mode),
+    blur: num(0, 40, DEFAULT_BACKGROUND.blur),
+    brightness: num(20, 150, DEFAULT_BACKGROUND.brightness),
+    overlay: num(-100, 100, DEFAULT_BACKGROUND.overlay),
+    grain: num(0, 100, DEFAULT_BACKGROUND.grain),
+    grainSize: num(1, 12, DEFAULT_BACKGROUND.grainSize),
+  })
+  .catch(() => ({ ...DEFAULT_BACKGROUND }))
+
+/** Width/height that fit inside `max` on the long side, never enlarging. */
+export function fitWithin(width: number, height: number, max: number) {
+  const scale = Math.min(1, max / Math.max(width, height))
+  return {
+    width: Math.max(1, Math.round(width * scale)),
+    height: Math.max(1, Math.round(height * scale)),
+  }
+}
+
+/**
+ * A tileable film-grain texture (SVG turbulence, gray, fully opaque). Meant for `mix-blend-mode:
+ * overlay`, where mid-gray changes nothing and the noise adds fine light and dark speckle.
+ */
+export const GRAIN_DATA_URI =
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>\")"
+
+/** Grain tile size in px: size 1 is the native 200 px tile, 12 stretches it to 2400 px (coarse). */
+export const grainTilePx = (size: number) => Math.round(200 * size)
+
 // ---- whole appearance ----
 
 const colorsShape = Object.fromEntries(COLOR_KEYS.map((key) => [key, colorSchema(key)])) as {
@@ -117,12 +199,14 @@ export const appearanceSchema = z.object({
   v: z.literal(APPEARANCE_VERSION).catch(APPEARANCE_VERSION),
   colors: z.object(colorsShape).catch(() => defaultColors()),
   type: z.object(typeShape).catch(() => defaultType()),
+  background: backgroundSchema,
 })
 export type ColorSetting = { color: string; opacity: number }
 export type Appearance = {
   v: typeof APPEARANCE_VERSION
   colors: Record<ColorKey, ColorSetting>
   type: Record<TypeSection, TypeSetting>
+  background: Background
 }
 
 function defaultColors(): Record<ColorKey, ColorSetting> {
@@ -141,6 +225,7 @@ export const defaultAppearance = (): Appearance => ({
   v: APPEARANCE_VERSION,
   colors: defaultColors(),
   type: defaultType(),
+  background: { ...DEFAULT_BACKGROUND },
 })
 
 /** Reads whatever is stored: anything unknown or damaged becomes the default for that field. */
@@ -167,6 +252,11 @@ export const restoreOriginalFonts = (appearance: Appearance): Appearance =>
 export const resetTypography = (appearance: Appearance): Appearance => ({
   ...appearance,
   type: defaultType(),
+})
+
+export const removeBackgroundImage = (appearance: Appearance): Appearance => ({
+  ...appearance,
+  background: { ...appearance.background, image: null },
 })
 
 export const resetColors = (appearance: Appearance): Appearance => ({
