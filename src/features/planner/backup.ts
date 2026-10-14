@@ -25,6 +25,8 @@ import {
   MAX_ROWS,
   MAX_SUBTITLE,
   MAX_TASK_TEXT,
+  MAX_TASK_TYPE,
+  MAX_TASK_TYPES,
   NOTE_KINDS,
   isAssignedTask,
   isIsoDate,
@@ -58,6 +60,8 @@ export type PlannerData = {
   goal: string
   subtitle: string
   labels: Labels
+  /** The owner's task types a student picks from (story 029). */
+  taskTypes: string[]
   settings: BackupSettings
   appearance: Appearance
   weeks: BackupWeek[]
@@ -172,9 +176,19 @@ function cleanWeek(raw: unknown, fallbackIndex: number): BackupWeek {
   return { index: int(r.index, 0, MAX_WEEKS - 1, fallbackIndex), rowCount, cells, notes }
 }
 
+function cleanTaskTypes(raw: unknown): string[] {
+  const types = list(raw)
+    .filter((item): item is string => typeof item === 'string')
+    .map((item) => item.trim().slice(0, MAX_TASK_TYPE))
+    .filter(Boolean)
+  return [...new Set(types)].slice(0, MAX_TASK_TYPES)
+}
+
 function cleanPlanner(raw: unknown): PlannerData | null {
   const r = record(raw)
   if (typeof r.baseDate !== 'string' || !isIsoDate(r.baseDate)) return null
+  // A wrong-typed container must not silently become a blank planner that replaces the real one.
+  if (!Array.isArray(r.weeks)) return null
   const weeks: BackupWeek[] = []
   const used = new Set<number>()
   list(r.weeks)
@@ -193,6 +207,7 @@ function cleanPlanner(raw: unknown): PlannerData | null {
     goal: text(r.goal, MAX_HEADER_TEXT).trim(),
     subtitle: text(r.subtitle, MAX_SUBTITLE).trim(),
     labels: cleanLabels(r.labels),
+    taskTypes: cleanTaskTypes(r.taskTypes),
     settings: cleanSettings(r.settings),
     appearance: parseAppearance(r.appearance),
     weeks,

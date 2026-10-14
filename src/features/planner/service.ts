@@ -434,6 +434,7 @@ export async function exportPlanner(
     goal: planner.goal ?? '',
     subtitle: planner.subtitle ?? '',
     labels: (planner.labels as PlannerData['labels'] | null) ?? {},
+    taskTypes: readTaskTypes(planner.taskTypes),
     settings: {
       showWeekProgress: planner.showWeekProgress ?? true,
       showFourWeekProgress: Boolean(planner.showFourWeekProgress),
@@ -490,6 +491,7 @@ async function replaceContent(
         goal: data.goal,
         subtitle: data.subtitle,
         labels: Object.keys(data.labels).length ? data.labels : null,
+        taskTypes: data.taskTypes,
         appearance: data.appearance,
         ...data.settings,
         deadlineDate: data.settings.deadlineDate || null,
@@ -564,6 +566,7 @@ export async function resetPlanner(
     goal: '',
     subtitle: '',
     labels: {},
+    taskTypes: [],
     settings: blankSettings(),
     appearance: parseAppearance(null),
     weeks: [blankWeek(0)],

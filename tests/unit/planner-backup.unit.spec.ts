@@ -24,6 +24,7 @@ const sample = (): PlannerData => {
     studentName: 'Анна',
     goal: 'IELTS 7.5',
     subtitle: 'ACADEMIC',
+    taskTypes: ['ANKI', 'PODCAST'],
     labels: { exercises: 'HOMEWORK', days: ['Пн', '', '', '', '', '', ''] },
     settings: {
       showWeekProgress: false,
@@ -237,6 +238,31 @@ describe('story 028 · backup', () => {
         JSON.stringify({ app: 'murad-portal-planner', schemaVersion: 'one', planner: {} }),
       ),
     ).toEqual({ ok: false, error: 'invalid_format' })
+  })
+
+  it('4. a planner whose weeks are not a list is refused, never turned into a blank planner', () => {
+    for (const weeks of ['oops', { a: 1 }, null]) {
+      const file = {
+        app: 'murad-portal-planner',
+        schemaVersion: 1,
+        planner: { baseDate: '2026-10-12', weeks },
+      }
+      expect(parseBackup(JSON.stringify(file))).toEqual({ ok: false, error: 'invalid_format' })
+    }
+  })
+
+  it('029. task types are kept, trimmed and deduplicated', () => {
+    const file = {
+      app: 'murad-portal-planner',
+      schemaVersion: 1,
+      planner: {
+        baseDate: '2026-10-12',
+        weeks: [],
+        taskTypes: [' ANKI ', 'ANKI', 3, '', 'PODCAST'],
+      },
+    }
+    const parsed = parseBackup(JSON.stringify(file))
+    expect(parsed.ok && parsed.data.taskTypes).toEqual(['ANKI', 'PODCAST'])
   })
 
   it('4. clamps and drops bad values instead of failing', () => {
