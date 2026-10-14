@@ -15,7 +15,7 @@ status: done
 2. `[happy]` **Given** a base date that is not a Monday **then** it is normalized to that week's Monday and the real Monday is shown.
 3. `[happy]` **Given** week N **then** its columns show Monday…Sunday dates = base + 7N + d days, correct over month, year and leap-year boundaries and DST changes (e.g. base 2026-12-28 → week 2 starts 2027-01-04).
 4. `[happy]` **Given** the owner clicks «Add week» **then** a new week gets exactly one empty row, whatever the other weeks have; weeks keep independent rows, tasks, ticks.
-5. `[happy]` **Given** «+ Add priority» **then** one blank row is appended to the current week only; labels are Roman numerals, correct for 1…40 (IV, IX, XL…).
+5. `[happy]` **Given** «+ Add priority» (owner or student) **then** one blank row is appended to the current week only; labels are Roman numerals, correct for 1…40 (IV, IX, XL…).
 6. `[happy]` **Given** «− Remove priority» **when** confirmed **then** the last row and its tasks and ticks are deleted; cancelled → nothing changes.
 7. `[edge]` **Given** a week with one row **then** «Remove priority» is disabled (min 1) and the server refuses too.
 8. `[happy]` **Given** the owner deletes a week after a confirmation naming the data loss **then** it is removed; other weeks keep their index and dates (a gap remains; the week list skips it; «Add week» appends after the highest index; 4-week groups use `floor(index/4)`).

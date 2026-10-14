@@ -120,9 +120,9 @@ export async function deleteWeek(
   return ok
 }
 
-export async function addRow(payload: Payload, owner: TypedUser, weekId: number): Promise<Result> {
-  if (!isOwner(owner)) return fail('forbidden')
-  const week = await weekOf(payload, owner, weekId)
+/** The owner or the student of this planner adds a priority row (the week is read as the user). */
+export async function addRow(payload: Payload, user: TypedUser, weekId: number): Promise<Result> {
+  const week = await weekOf(payload, user, weekId)
   if (!week) return fail('not_found')
   if (week.rowCount >= MAX_ROWS) return fail('max_rows')
   await payload.update({
@@ -134,14 +134,13 @@ export async function addRow(payload: Payload, owner: TypedUser, weekId: number)
   return ok
 }
 
-/** Removes the last row of this week and the tasks and ticks in it. */
+/** Owner or student removes the last row of this week and the tasks and ticks in it. */
 export async function removeRow(
   payload: Payload,
-  owner: TypedUser,
+  user: TypedUser,
   weekId: number,
 ): Promise<Result> {
-  if (!isOwner(owner)) return fail('forbidden')
-  const week = await weekOf(payload, owner, weekId)
+  const week = await weekOf(payload, user, weekId)
   if (!week) return fail('not_found')
   if (week.rowCount <= 1) return fail('min_rows')
   await payload.delete({

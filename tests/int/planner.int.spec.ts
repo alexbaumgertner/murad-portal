@@ -211,7 +211,8 @@ describe('story 022 · planner core', () => {
       ok: false,
       error: 'forbidden',
     })
-    expect(await addRow(payload, anna, week.id)).toEqual({ ok: false, error: 'forbidden' })
+    expect(await addRow(payload, anna, week.id)).toEqual({ ok: true })
+    expect(await removeRow(payload, anna, week.id)).toEqual({ ok: true })
     expect(await deleteWeek(payload, anna, week.id)).toEqual({ ok: false, error: 'forbidden' })
     await expect(
       payload.create({

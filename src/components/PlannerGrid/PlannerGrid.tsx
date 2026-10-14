@@ -23,7 +23,7 @@ type Props = {
   /** Seven `YYYY-MM-DD` dates, Monday first. */
   dates: string[]
   cells: Record<string, CellView>
-  /** The owner edits text and rows; a student only ticks. */
+  /** The owner edits task text; a student only ticks. Both add and remove priority rows. */
   canEdit: boolean
   /** Seven weekday names (defaults or the owner's overrides). */
   dayNames: string[]
@@ -170,26 +170,24 @@ export function PlannerGrid({
           ))}
         </div>
       </div>
-      {canEdit ? (
-        <div className={styles.controls}>
-          <button
-            type="button"
-            className={styles.control}
-            disabled={pending}
-            onClick={() => changeRows('add')}
-          >
-            + {t('addPriority')}
-          </button>
-          <button
-            type="button"
-            className={styles.control}
-            disabled={pending || rowCount <= 1}
-            onClick={() => changeRows('remove')}
-          >
-            − {t('removePriority')}
-          </button>
-        </div>
-      ) : null}
+      <div className={styles.controls}>
+        <button
+          type="button"
+          className={styles.control}
+          disabled={pending}
+          onClick={() => changeRows('add')}
+        >
+          + {t('addPriority')}
+        </button>
+        <button
+          type="button"
+          className={styles.control}
+          disabled={pending || rowCount <= 1}
+          onClick={() => changeRows('remove')}
+        >
+          − {t('removePriority')}
+        </button>
+      </div>
       <p role="status" className={styles.error}>
         {error ? t(`errors.${error}`) : ''}
       </p>

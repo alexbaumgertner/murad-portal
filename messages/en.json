@@ -777,7 +777,7 @@
         "resetConfirm": "Reset the entire planner? Every week, task, tick, note and setting will be deleted for good. This cannot be undone."
       }
     },
-    "slot": "Slot",
-    "slotHint": "Priority slot: row I, II, III… of the day’s exercises"
+    "slot": "Priority",
+    "slotHint": "Type of task for the day, like I, II, III. You can add or remove rows below the grid."
   }
 }

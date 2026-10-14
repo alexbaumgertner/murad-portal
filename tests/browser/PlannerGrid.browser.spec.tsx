@@ -83,10 +83,10 @@ describe('PlannerGrid (story 022)', () => {
     expect(page.getByRole('button', { name: /Mark as done/ }).query()).toBeNull()
   })
 
-  test('3 (student). a student sees text and ticks but has no editor or row controls', async () => {
+  test('3 (student). a student sees text and ticks, has no text editor, and can add or remove priorities', async () => {
     await renderGrid({ canEdit: false })
     expect(page.getByRole('textbox').query()).toBeNull()
-    expect(page.getByRole('button', { name: /Add priority/ }).query()).toBeNull()
+    expect(page.getByRole('button', { name: /Add priority/ }).query()).not.toBeNull()
     await userEvent.click(page.getByRole('button', { name: /Mark as done: ANKI/ }))
     expect(actions.setDoneAction).toHaveBeenCalled()
   })
