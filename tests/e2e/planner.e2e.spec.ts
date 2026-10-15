@@ -79,7 +79,7 @@ test.describe('Weekly planner (story 022)', () => {
           page.evaluate(async (family) => {
             const faces = await document.fonts.load(`14px ${family}`, 'Привет Ёё')
             return faces.length > 0 && faces.every((face) => face.status === 'loaded')
-          }, family),
+          }, family.split(',')[0]!.trim()),
         )
         .toBe(true)
       // 026: grain the background; the text stays sharp; it survives a reload
