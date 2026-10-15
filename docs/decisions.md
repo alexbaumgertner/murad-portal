@@ -337,11 +337,21 @@ Revisit if: Murad wants a custom sound (then host a file ≤ 50 KB in `public/` 
 A student has no write access to `enrollments.status` or `enrollments.pauses`. «Пауза» and «Продолжить» are Server Actions that derive the enrollment from the session and write with the Local API and the `pauseTransition` context, which the collection hooks accept only for `status` + `pauses` and only active ⇄ paused (a request over HTTP cannot set a context).
 A pause begins today (that day is paused too) and ends yesterday on resume, so the program day stands still. Known limit: work logged on the day a pause begins is counted toward that program day, while the timer on the resume day starts from 0.
 
-## Planner fonts: next/font with 34 families, nothing from Google at runtime (story 025)
+## Local fonts: no Google Fonts requests during builds or visits (story 025)
 
-The planner offers 34 Latin + Cyrillic families. `src/features/planner/fonts.ts` declares each one with `next/font/google` (`preload: false`, weights 400/700): Next downloads and self-hosts them at build time, so the CSP is unchanged (`font-src 'self'`) and visitors never contact Google. The browser fetches a face only when a section uses it, but all `@font-face` rules ship in the planner's CSS.
-Options must be literals in each `const x = Font({...})` call (no shared variables); `font-list.ts` holds the pure list so unit tests and the schema never import `next/font`.
-Cost: the build needs network access to fonts.googleapis.com. Revisit if the build moves offline or the CSS weight matters (then load a family on demand from `public/`).
+The planner keeps its 34 Latin + Cyrillic families with `next/font/local` and
+`preload: false`. The site and challenge tracker also use local fonts. WOFF2 files,
+upstream licenses and pinned source details live in `src/fonts/`; CSS variables,
+font choices and on-demand planner loading are preserved.
+
+Google Fonts can return extensionless URLs that break Next's loader
+([Next.js #99114](https://github.com/vercel/next.js/issues/99114)). This failed both
+the dependency-update Preview and a local production build on 2026-10-15.
+Vendoring the files removes that external build input; no new dependency, CSP
+origin or runtime request is needed. Updating the fonts now requires explicitly
+refreshing the files and their licenses from the pinned upstream source.
+Options remain literal in each `localFont({...})` call. `font-list.ts` stays pure
+so schemas and unit tests never import a Next font loader.
 
 ## Planner background photo: upload removed until it goes to Blob (story 026)
 

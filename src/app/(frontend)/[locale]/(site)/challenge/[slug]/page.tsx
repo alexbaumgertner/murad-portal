@@ -1,7 +1,7 @@
 import { hasText } from '@payloadcms/richtext-lexical/shared'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { Metadata } from 'next'
-import { IBM_Plex_Sans, Newsreader } from 'next/font/google'
+import { trackerSans as sans, trackerSerif as serif } from '@/fonts/tracker'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { hasLocale } from 'next-intl'
@@ -17,12 +17,6 @@ import { routing } from '@/i18n/routing'
 import { getPayloadClient } from '@/lib/payload'
 import styles from './page.module.css'
 
-const sans = IBM_Plex_Sans({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600'],
-  variable: '--font-tracker-sans',
-})
-const serif = Newsreader({ subsets: ['latin'], weight: ['500'], variable: '--font-tracker-serif' })
 // Fresh reads on every reload, including changes made in the admin and local-midnight rollover.
 export const dynamic = 'force-dynamic'
 type Props = { params: Promise<{ locale: string; slug: string }> }

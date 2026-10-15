@@ -18,3 +18,5 @@ What every product built from this template gets out of the box. Update this tab
 
 Features are specified in `docs/stories/` — each acceptance criterion maps to a named test.
 Agent safety: shell + MCP guards with tests; known gaps (cloud agents skip MCP hooks) in `docs/decisions.md`.
+
+Fonts: all 37 site/tracker/planner families are vendored as WOFF2 with licenses in `src/fonts/`; `next/font/local` removes Google Fonts requests during builds. Planner faces load on demand.
