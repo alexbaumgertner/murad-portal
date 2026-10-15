@@ -1,7 +1,7 @@
 import type { CollectionBeforeDeleteHook, CollectionConfig } from 'payload'
 
 import { owner } from '@/access'
-import { MAX_ROWS, MAX_WEEK_INDEX } from '@/features/planner/shape'
+import { MAX_ROWS } from '@/features/planner/shape'
 
 import { ownPlannerOrOwner } from './Planners'
 
@@ -29,7 +29,7 @@ export const PlannerWeeks: CollectionConfig = {
   hooks: { beforeDelete: [deleteCells] },
   fields: [
     { name: 'planner', type: 'relationship', relationTo: 'planners', required: true, index: true },
-    { name: 'index', type: 'number', required: true, min: 0, max: MAX_WEEK_INDEX },
+    { name: 'index', type: 'number', required: true, min: 0, max: 520 },
     { name: 'rowCount', type: 'number', required: true, defaultValue: 1, min: 1, max: MAX_ROWS },
   ],
   indexes: [{ fields: ['planner', 'index'], unique: true }],

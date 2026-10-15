@@ -135,6 +135,8 @@ export async function copyWeek(
     limit: 1,
     depth: 0,
     pagination: false,
+    overrideAccess: false,
+    user: owner,
   })
   const index = (last.docs[0]?.index ?? -1) + 1
   if (index > MAX_WEEK_INDEX) return fail('too_many_weeks')
@@ -144,7 +146,8 @@ export async function copyWeek(
     pagination: false,
     depth: 0,
     select: { row: true, day: true, text: true },
-    overrideAccess: true,
+    overrideAccess: false,
+    user: owner,
   })
   const copy = await payload.create({
     collection: 'planner-weeks',
