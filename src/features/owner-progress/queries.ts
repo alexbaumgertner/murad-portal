@@ -88,6 +88,30 @@ export async function listStudentSummaries(
   locale: 'ru' | 'en',
   now: Date = new Date(),
 ): Promise<StudentSummary[]> {
+  return (await loadSummaries(payload, user, locale, now)).map(({ summary }) => summary)
+}
+
+/** Story 030: the same summaries keyed by student, so the dashboard can join them to planners. */
+export async function listProgramSummariesByStudent(
+  payload: Payload,
+  user: TypedUser,
+  locale: 'ru' | 'en',
+  now: Date = new Date(),
+): Promise<Map<number, StudentSummary>> {
+  const byStudent = new Map<number, StudentSummary>()
+  // Sorted by status already: the first enrollment of a student is the one that matters most.
+  for (const { studentId, summary } of await loadSummaries(payload, user, locale, now)) {
+    if (!byStudent.has(studentId)) byStudent.set(studentId, summary)
+  }
+  return byStudent
+}
+
+async function loadSummaries(
+  payload: Payload,
+  user: TypedUser,
+  locale: 'ru' | 'en',
+  now: Date,
+): Promise<{ studentId: number; summary: StudentSummary }[]> {
   requireOwner(user)
   const { docs } = await payload.find({
     collection: 'enrollments',
@@ -116,12 +140,18 @@ export async function listStudentSummaries(
   }
 
   return enrollments
-    .map((enrollment) =>
-      summarize({ ...facts(enrollment), logs: byEnrollment.get(enrollment.id) ?? [], now }),
-    )
+    .map((enrollment) => ({
+      studentId: (enrollment.student as User).id,
+      summary: summarize({
+        ...facts(enrollment),
+        logs: byEnrollment.get(enrollment.id) ?? [],
+        now,
+      }),
+    }))
     .sort(
       (a, b) =>
-        STATUS_ORDER[a.status] - STATUS_ORDER[b.status] || a.name.localeCompare(b.name, locale),
+        STATUS_ORDER[a.summary.status] - STATUS_ORDER[b.summary.status] ||
+        a.summary.name.localeCompare(b.summary.name, locale),
     )
 }
 
