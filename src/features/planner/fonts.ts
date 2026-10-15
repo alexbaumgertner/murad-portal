@@ -1,246 +1,197 @@
-import {
-  Bad_Script,
-  Caveat,
-  Comfortaa,
-  Cormorant_Garamond,
-  Fira_Sans,
-  Golos_Text,
-  IBM_Plex_Sans,
-  Inter,
-  Jost,
-  Literata,
-  Lobster,
-  Lora,
-  Manrope,
-  Marck_Script,
-  Merriweather,
-  Montserrat,
-  Neucha,
-  Noto_Serif,
-  Nunito_Sans,
-  Onest,
-  Open_Sans,
-  PT_Sans,
-  PT_Serif,
-  Pacifico,
-  Playfair_Display,
-  Poiret_One,
-  Prata,
-  Raleway,
-  Roboto,
-  Rubik,
-  Ubuntu,
-  Unbounded,
-  Vollkorn,
-  Yeseva_One,
-} from 'next/font/google'
+import localFont from 'next/font/local'
 
 import type { FontId } from './font-list'
 
-// next/font needs `const x = Font({ literal options })` at module scope. `preload: false`: the
-// browser fetches a face only when a section really uses it. Latin + Cyrillic everywhere,
-// because the teacher writes Russian. Single-weight display fonts only have 400.
-const inter = Inter({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+// Files include Latin and Cyrillic. Keep preload off: only the selected faces are fetched.
+const inter = localFont({
+  src: [{ path: '../../fonts/files/inter.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const manrope = Manrope({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const manrope = localFont({
+  src: [{ path: '../../fonts/files/manrope.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const montserrat = Montserrat({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const montserrat = localFont({
+  src: [{ path: '../../fonts/files/montserrat.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const unbounded = Unbounded({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const unbounded = localFont({
+  src: [{ path: '../../fonts/files/unbounded.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const roboto = Roboto({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const roboto = localFont({
+  src: [{ path: '../../fonts/files/roboto.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const open_sans = Open_Sans({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const open_sans = localFont({
+  src: [{ path: '../../fonts/files/open-sans.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const pt_sans = PT_Sans({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const pt_sans = localFont({
+  src: [
+    { path: '../../fonts/files/pt-sans-400.woff2', weight: '400', style: 'normal' },
+    { path: '../../fonts/files/pt-sans-700.woff2', weight: '700', style: 'normal' },
+  ],
   display: 'swap',
   preload: false,
 })
-const rubik = Rubik({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const rubik = localFont({
+  src: [{ path: '../../fonts/files/rubik.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const raleway = Raleway({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const raleway = localFont({
+  src: [{ path: '../../fonts/files/raleway.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const ibm_plex_sans = IBM_Plex_Sans({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const ibm_plex_sans = localFont({
+  src: [{ path: '../../fonts/files/ibm-plex-sans.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const jost = Jost({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const jost = localFont({
+  src: [{ path: '../../fonts/files/jost.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const nunito_sans = Nunito_Sans({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const nunito_sans = localFont({
+  src: [{ path: '../../fonts/files/nunito-sans.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const ubuntu = Ubuntu({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const ubuntu = localFont({
+  src: [
+    { path: '../../fonts/files/ubuntu-400.woff2', weight: '400', style: 'normal' },
+    { path: '../../fonts/files/ubuntu-700.woff2', weight: '700', style: 'normal' },
+  ],
   display: 'swap',
   preload: false,
 })
-const onest = Onest({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const onest = localFont({
+  src: [{ path: '../../fonts/files/onest.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const golos_text = Golos_Text({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const golos_text = localFont({
+  src: [{ path: '../../fonts/files/golos-text.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const fira_sans = Fira_Sans({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const fira_sans = localFont({
+  src: [
+    { path: '../../fonts/files/fira-sans-400.woff2', weight: '400', style: 'normal' },
+    { path: '../../fonts/files/fira-sans-700.woff2', weight: '700', style: 'normal' },
+  ],
   display: 'swap',
   preload: false,
 })
-const cormorant_garamond = Cormorant_Garamond({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const cormorant_garamond = localFont({
+  src: [{ path: '../../fonts/files/cormorant-garamond.woff2', weight: '400 700', style: 'normal' }],
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Times New Roman',
+})
+const playfair_display = localFont({
+  src: [{ path: '../../fonts/files/playfair-display.woff2', weight: '400 700', style: 'normal' }],
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Times New Roman',
+})
+const pt_serif = localFont({
+  src: [
+    { path: '../../fonts/files/pt-serif-400.woff2', weight: '400', style: 'normal' },
+    { path: '../../fonts/files/pt-serif-700.woff2', weight: '700', style: 'normal' },
+  ],
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Times New Roman',
+})
+const noto_serif = localFont({
+  src: [{ path: '../../fonts/files/noto-serif.woff2', weight: '400 700', style: 'normal' }],
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Times New Roman',
+})
+const literata = localFont({
+  src: [{ path: '../../fonts/files/literata.woff2', weight: '400 700', style: 'normal' }],
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Times New Roman',
+})
+const vollkorn = localFont({
+  src: [{ path: '../../fonts/files/vollkorn.woff2', weight: '400 700', style: 'normal' }],
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Times New Roman',
+})
+const prata = localFont({
+  src: [{ path: '../../fonts/files/prata-400.woff2', weight: '400', style: 'normal' }],
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Times New Roman',
+})
+const yeseva_one = localFont({
+  src: [{ path: '../../fonts/files/yeseva-one-400.woff2', weight: '400', style: 'normal' }],
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Times New Roman',
+})
+const lora = localFont({
+  src: [{ path: '../../fonts/files/lora.woff2', weight: '400 700', style: 'normal' }],
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Times New Roman',
+})
+const merriweather = localFont({
+  src: [{ path: '../../fonts/files/merriweather.woff2', weight: '400 700', style: 'normal' }],
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Times New Roman',
+})
+const caveat = localFont({
+  src: [{ path: '../../fonts/files/caveat.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const playfair_display = Playfair_Display({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const marck_script = localFont({
+  src: [{ path: '../../fonts/files/marck-script-400.woff2', weight: '400', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const pt_serif = PT_Serif({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const bad_script = localFont({
+  src: [{ path: '../../fonts/files/bad-script-400.woff2', weight: '400', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const noto_serif = Noto_Serif({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const pacifico = localFont({
+  src: [{ path: '../../fonts/files/pacifico-400.woff2', weight: '400', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const literata = Literata({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const lobster = localFont({
+  src: [{ path: '../../fonts/files/lobster-400.woff2', weight: '400', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const vollkorn = Vollkorn({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
+const neucha = localFont({
+  src: [{ path: '../../fonts/files/neucha-400.woff2', weight: '400', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const prata = Prata({
-  subsets: ['latin', 'cyrillic'],
-  weight: '400',
+const comfortaa = localFont({
+  src: [{ path: '../../fonts/files/comfortaa.woff2', weight: '400 700', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
-const yeseva_one = Yeseva_One({
-  subsets: ['latin', 'cyrillic'],
-  weight: '400',
-  display: 'swap',
-  preload: false,
-})
-const lora = Lora({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
-  display: 'swap',
-  preload: false,
-})
-const merriweather = Merriweather({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
-  display: 'swap',
-  preload: false,
-})
-const caveat = Caveat({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
-  display: 'swap',
-  preload: false,
-})
-const marck_script = Marck_Script({
-  subsets: ['latin', 'cyrillic'],
-  weight: '400',
-  display: 'swap',
-  preload: false,
-})
-const bad_script = Bad_Script({
-  subsets: ['latin', 'cyrillic'],
-  weight: '400',
-  display: 'swap',
-  preload: false,
-})
-const pacifico = Pacifico({
-  subsets: ['latin', 'cyrillic'],
-  weight: '400',
-  display: 'swap',
-  preload: false,
-})
-const lobster = Lobster({
-  subsets: ['latin', 'cyrillic'],
-  weight: '400',
-  display: 'swap',
-  preload: false,
-})
-const neucha = Neucha({
-  subsets: ['latin', 'cyrillic'],
-  weight: '400',
-  display: 'swap',
-  preload: false,
-})
-const comfortaa = Comfortaa({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '700'],
-  display: 'swap',
-  preload: false,
-})
-const poiret_one = Poiret_One({
-  subsets: ['latin', 'cyrillic'],
-  weight: '400',
+const poiret_one = localFont({
+  src: [{ path: '../../fonts/files/poiret-one-400.woff2', weight: '400', style: 'normal' }],
   display: 'swap',
   preload: false,
 })
