@@ -347,3 +347,9 @@ Cost: the build needs network access to fonts.googleapis.com. Revisit if the bui
 
 A first version kept the resized photo as a `data:` URL inside `planners.appearance.background.image`. It was removed: base64 in the JSON is sent on every save, bloats the row and the page payload, and shows up in the admin. Today `image` accepts only an `https://` or `/` URL and drops everything else (`data:` included), and Settings has no upload control; color, opacity, overlay and grain remain. The mock's embedded picture is not imported from a backup.
 Revisit: a private upload collection on Vercel Blob (like `avatars`, one file per planner) that sets `background.image` to its URL; blur, brightness and mode show up in Settings once an image is set.
+
+## Owner dashboard signals: thresholds and what is approximate (story 030)
+
+«Needs help» is computed on read from the planner's current week (UTC calendar days): no written task (`noTasks`), tasks already due and no tick for `IDLE_DAYS = 3` days (`idle`), a non-empty «Questions» diary note (`questions`). The constants live in `features/owner-progress/dashboard-shape.ts`.
+Known limits: «last tick» is the `updatedAt` of the newest `done` cell within the last 5 weeks (the read stays small), so the owner editing the text of a ticked cell moves it; `questions` stays on all week because a note has no «answered» state. A student without a planner is not «needs help» (nothing was given to her yet): she has the `noPlanner` chip and filter.
+Revisit: a «read» mark on questions, a per-student tick timestamp, time-zone-aware «today».

@@ -554,8 +554,8 @@
   "OwnerProgress": {
     "title": "Students",
     "description": "Student progress and their day comments.",
-    "lead": "Who is on track, who is behind and what was hard. Read-only: plans are edited in the admin.",
-    "empty": "No students with an assigned program yet.",
+    "lead": "Who has a planner, how far each student is and who needs help. Open a planner to edit it.",
+    "empty": "No students yet.",
     "status": {
       "assigned": "Assigned",
       "active": "In progress",
@@ -577,7 +577,33 @@
     "commentsTitle": "Day comments",
     "noComments": "No comments yet.",
     "commentMeta": "{date} · day {day}",
-    "commentMetaNoDay": "{date}"
+    "commentMetaNoDay": "{date}",
+    "filtersLabel": "Filter students",
+    "filter": {
+      "all": "All",
+      "help": "Need help",
+      "noPlanner": "Without planner",
+      "active": "Active"
+    },
+    "noMatch": "Nobody matches this filter.",
+    "showAll": "Show everyone",
+    "signalsLabel": "Needs attention",
+    "signal": {
+      "noPlanner": "No planner",
+      "noTasks": "No tasks this week",
+      "idle": "No ticks for 3+ days",
+      "questions": "Has questions"
+    },
+    "plannerNone": "No planner yet.",
+    "weekOf": "Week {week} · from {date}",
+    "noCurrentWeek": "No week for today",
+    "weekProgress": "Tasks done this week",
+    "tasksDone": "{done} of {total} tasks",
+    "noWeekTasks": "No tasks this week",
+    "lastTick": "Last tick: {date}",
+    "noTick": "No ticks yet",
+    "openPlanner": "Planner: {name}",
+    "openPlannerShort": "Open planner"
   },
   "Planner": {
     "title": "Weekly planner",
