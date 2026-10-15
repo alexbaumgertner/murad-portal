@@ -3,6 +3,8 @@
   margin: 0 auto;
   padding: clamp(2.5rem, 7vw, 4.5rem) var(--space-page) 3rem;
   display: grid;
+  /* A grid item never grows past the screen: the week pills scroll inside their own row. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
 }
 

@@ -111,4 +111,67 @@ test.describe('The owner dashboard (story 030)', () => {
       await cleanupTestUser(ownerSuffix)
     }
   })
+
+  test('1/3/7. create a planner from the list, then copy a week', async ({ page }, testInfo) => {
+    const suffix = `own-create-${testInfo.project.name}`
+    const ownerSuffix = `${suffix}-owner`
+    const email = await seedTestUser(`${suffix}-a`, 'student')
+    await seedTestUser(ownerSuffix, 'owner')
+    const payload = await getPayload({ config })
+    const student = (
+      await payload.update({
+        collection: 'users',
+        where: { email: { equals: email } },
+        data: { name: `Вера ${suffix}` },
+        context,
+      })
+    ).docs[0]!
+    try {
+      await login({ page, email: testUserEmail(ownerSuffix) })
+      await page.goto('/study/students')
+      const row = page
+        .getByRole('listitem')
+        .filter({ has: page.getByRole('heading', { name: `Вера ${suffix}` }) })
+        .first()
+      await expect(row).toContainText('Планнера ещё нет.')
+      await row.getByRole('button', { name: 'Создать планер' }).click()
+      // the row refreshes: the button is gone and the planner state is shown
+      await expect(row.getByRole('button', { name: 'Создать планер' })).toHaveCount(0)
+      await expect(row).toContainText('Неделя 1')
+
+      // copy the week from the planner page
+      await page.getByRole('link', { name: `Планнер: Вера ${suffix}` }).click()
+      const copy = page.getByRole('button', { name: 'Копировать неделю' })
+      await copy.click()
+      await expect
+        .poll(
+          async () =>
+            (
+              await payload.count({
+                collection: 'planner-weeks',
+                where: { 'planner.student': { equals: student.id } },
+              })
+            ).totalDocs,
+        )
+        .toBe(2)
+
+      // 360 px: the bar does not overflow
+      await page.setViewportSize({ width: 360, height: 740 })
+      await page.reload()
+      await expect(copy).toBeVisible()
+      // (the planner header itself is wider than 360 px for an empty planner: out of scope here)
+      for (const name of ['Добавить неделю', 'Копировать неделю', 'Удалить неделю']) {
+        const box = await page.getByRole('button', { name: new RegExp(name) }).boundingBox()
+        expect(box!.x + box!.width).toBeLessThanOrEqual(360)
+      }
+    } finally {
+      await payload.delete({
+        collection: 'planners',
+        where: { student: { equals: student.id } },
+        context,
+      })
+      await cleanupTestUser(`${suffix}-a`)
+      await cleanupTestUser(ownerSuffix)
+    }
+  })
 })

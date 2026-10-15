@@ -4,6 +4,8 @@
 export const MAX_ROWS = 40
 export const MAX_TASK_TEXT = 500
 export const DAYS = 7
+/** The highest 0-based week index a planner may hold (about ten years of weeks). */
+export const MAX_WEEK_INDEX = 520
 export const MAX_DEADLINE_TITLE = 80
 export const MAX_HEADER_TEXT = 80
 export const MAX_SUBTITLE = 120

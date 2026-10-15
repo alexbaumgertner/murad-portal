@@ -100,6 +100,7 @@ export type PlannerError =
   | 'too_long'
   | 'min_rows'
   | 'max_rows'
+  | 'too_many_weeks'
   | 'empty_task'
   | 'server'
   | 'too_big'
