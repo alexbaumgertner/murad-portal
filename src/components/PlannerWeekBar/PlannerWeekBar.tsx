@@ -3,7 +3,12 @@
 import { useTranslations } from 'next-intl'
 import { useState, useTransition } from 'react'
 
-import { addWeekAction, createPlannerAction, deleteWeekAction } from '@/features/planner/actions'
+import {
+  addWeekAction,
+  copyWeekAction,
+  createPlannerAction,
+  deleteWeekAction,
+} from '@/features/planner/actions'
 import type { PlannerError } from '@/features/planner/schema'
 import { useRouter } from '@/i18n/navigation'
 
@@ -13,7 +18,7 @@ type Props =
   | { kind: 'create'; studentId: number; today: string }
   | { kind: 'owner'; plannerId: number; weekId: number; lastWeek: boolean }
 
-/** Owner-only controls: create a planner, add a week, delete this week (with a warning). */
+/** Owner-only controls: create a planner, add or copy a week, delete this week (with a warning). */
 export function PlannerWeekBar(props: Props) {
   const t = useTranslations('Planner')
   const router = useRouter()
@@ -53,6 +58,14 @@ export function PlannerWeekBar(props: Props) {
             onClick={() => run(() => addWeekAction({ plannerId: props.plannerId }))}
           >
             + {t('addWeek')}
+          </button>
+          <button
+            type="button"
+            className={styles.button}
+            disabled={pending}
+            onClick={() => run(() => copyWeekAction({ weekId: props.weekId }))}
+          >
+            {t('copyWeek')}
           </button>
           <button
             type="button"

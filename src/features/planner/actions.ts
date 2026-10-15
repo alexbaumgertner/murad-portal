@@ -68,6 +68,10 @@ export async function addWeekAction(input: unknown): Promise<PlannerActionState>
   )
 }
 
+export async function copyWeekAction(input: unknown): Promise<PlannerActionState> {
+  return run('copyWeekAction', weekIdSchema, input, (p, u, i) => service.copyWeek(p, u, i.weekId))
+}
+
 export async function deleteWeekAction(input: unknown): Promise<PlannerActionState> {
   return run('deleteWeekAction', weekIdSchema, input, (p, u, i) =>
     service.deleteWeek(p, u, i.weekId),

@@ -14,6 +14,8 @@ import {
 } from '@/features/owner-progress/dashboard-shape'
 import { formatCalendarDate } from '@/features/study-today/shape'
 import { messagesFor } from '@/i18n/address-form'
+import { PlannerWeekBar } from '@/components/PlannerWeekBar/PlannerWeekBar'
+import { mondayOf } from '@/features/planner/shape'
 import { Link } from '@/i18n/navigation'
 import { signInUrl } from '@/features/owner-progress/sign-in'
 import { routing } from '@/i18n/routing'
@@ -63,6 +65,7 @@ export default async function StudentsPage({ params, searchParams }: PageProps) 
   const filter = parseFilter((await searchParams).filter)
   const all = await listStudentDashboard(payload, user, locale)
   const rows = applyFilter(all, filter)
+  const thisMonday = mondayOf(new Date().toISOString().slice(0, 10))
 
   return (
     <div className={styles.page}>
@@ -149,7 +152,10 @@ export default async function StudentsPage({ params, searchParams }: PageProps) 
                       </span>
                     </div>
                   ) : (
-                    <p className={styles.muted}>{t('plannerNone')}</p>
+                    <>
+                      <p className={styles.muted}>{t('plannerNone')}</p>
+                      <PlannerWeekBar kind="create" studentId={row.studentId} today={thisMonday} />
+                    </>
                   )}
 
                   <Link

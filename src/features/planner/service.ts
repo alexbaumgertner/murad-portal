@@ -22,7 +22,14 @@ import type {
 } from './schema'
 import { parseAppearance } from './appearance'
 import { blankSettings, blankWeek, buildBackup, type Backup, type PlannerData } from './backup'
-import { MAX_ROWS, effectiveTaskTypes, isAssignedTask, mondayOf, readTaskTypes } from './shape'
+import {
+  MAX_ROWS,
+  MAX_WEEK_INDEX,
+  effectiveTaskTypes,
+  isAssignedTask,
+  mondayOf,
+  readTaskTypes,
+} from './shape'
 
 /**
  * Planner writes (story 022). Callers name ids; every call first reads the week AS the user
@@ -105,6 +112,56 @@ export async function addWeek(
     data: { planner: plannerId, index: (last.docs[0]?.index ?? -1) + 1, rowCount: 1 },
     overrideAccess: true,
   })
+  return ok
+}
+
+/**
+ * Story 031: a copy of the week goes after the highest index (gaps stay). It keeps the number of
+ * rows and the task texts; ticks and diary notes are not copied, the source is untouched.
+ */
+export async function copyWeek(
+  payload: Payload,
+  owner: TypedUser,
+  weekId: number,
+): Promise<Result> {
+  if (!isOwner(owner)) return fail('forbidden')
+  const source = await weekOf(payload, owner, weekId)
+  if (!source) return fail('not_found')
+  const plannerId = typeof source.planner === 'object' ? source.planner.id : source.planner
+  const last = await payload.find({
+    collection: 'planner-weeks',
+    where: { planner: { equals: plannerId } },
+    sort: '-index',
+    limit: 1,
+    depth: 0,
+    pagination: false,
+    overrideAccess: false,
+    user: owner,
+  })
+  const index = (last.docs[0]?.index ?? -1) + 1
+  if (index > MAX_WEEK_INDEX) return fail('too_many_weeks')
+  const { docs } = await payload.find({
+    collection: 'planner-cells',
+    where: { week: { equals: weekId } },
+    pagination: false,
+    depth: 0,
+    select: { row: true, day: true, text: true },
+    overrideAccess: false,
+    user: owner,
+  })
+  const copy = await payload.create({
+    collection: 'planner-weeks',
+    data: { planner: plannerId, index, rowCount: source.rowCount },
+    overrideAccess: true,
+  })
+  for (const cell of docs) {
+    if (!isAssignedTask(cell.text)) continue
+    await payload.create({
+      collection: 'planner-cells',
+      data: { week: copy.id, row: cell.row, day: cell.day, text: cell.text, done: false },
+      overrideAccess: true,
+    })
+  }
   return ok
 }
 
