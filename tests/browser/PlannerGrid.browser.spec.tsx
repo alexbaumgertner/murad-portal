@@ -132,4 +132,112 @@ describe('PlannerGrid (story 022)', () => {
     await expect.element(tick).toHaveAttribute('aria-pressed', 'false')
     await expect.element(page.getByText('Something went wrong. Try again')).toBeVisible()
   })
+
+  describe('server snapshot + local overlay (story 032)', () => {
+    const grid = (props: Partial<Parameters<typeof PlannerGrid>[0]> = {}) => (
+      <NextIntlClientProvider locale="en" messages={messagesFor('en', 'ty')}>
+        <PlannerGrid
+          weekId={1}
+          rowCount={2}
+          dates={dates}
+          cells={{ '0-0': { text: 'ANKI', done: false } }}
+          canEdit
+          dayNames={DAY_NAMES}
+          {...props}
+        />
+      </NextIntlClientProvider>
+    )
+
+    test('a new snapshot is applied at once to fields that are not in focus', async () => {
+      const onCellsChange = vi.fn()
+      const { rerender } = await render(grid({ onCellsChange }))
+      await rerender(
+        grid({
+          onCellsChange,
+          cells: { '0-0': { text: 'ANKI', done: true }, '1-2': { text: 'PODCAST', done: false } },
+        }),
+      )
+      await expect
+        .element(page.getByRole('textbox', { name: /priority II, Oct 14/ }))
+        .toHaveValue('PODCAST')
+      await expect
+        .element(page.getByRole('button', { name: /Mark as done: ANKI/ }))
+        .toHaveAttribute('aria-pressed', 'true')
+      await vi.waitFor(() =>
+        expect(onCellsChange).toHaveBeenLastCalledWith(
+          expect.objectContaining({ '1-2': { text: 'PODCAST', done: false } }),
+        ),
+      )
+    })
+
+    test('keeps focus, caret and typed text of the field in focus; the remote value comes after blur', async () => {
+      const { rerender } = await render(grid())
+      const field = page.getByRole('textbox', { name: /priority I, Oct 12/ })
+      await userEvent.click(field)
+      await userEvent.keyboard('{End} 20 min')
+      const element = field.element() as HTMLTextAreaElement
+      element.setSelectionRange(2, 2)
+      await rerender(grid({ cells: { '0-0': { text: 'REMOTE', done: false } } }))
+      expect(document.activeElement).toBe(element)
+      expect(element.value).toBe('ANKI 20 min')
+      expect(element.selectionStart).toBe(2)
+      await userEvent.tab()
+      expect(actions.setCellTextAction).toHaveBeenCalledWith({
+        weekId: 1,
+        row: 0,
+        day: 0,
+        text: 'ANKI 20 min',
+      })
+      await expect.element(field).toHaveValue('ANKI 20 min')
+    })
+
+    test('a focused field the user did not change takes the remote value after blur, without saving', async () => {
+      const { rerender } = await render(grid())
+      const field = page.getByRole('textbox', { name: /priority I, Oct 12/ })
+      await userEvent.click(field)
+      await rerender(grid({ cells: { '0-0': { text: 'REMOTE', done: false } } }))
+      await expect.element(field).toHaveValue('ANKI')
+      await userEvent.tab()
+      await expect.element(field).toHaveValue('REMOTE')
+      expect(actions.setCellTextAction).not.toHaveBeenCalled()
+    })
+
+    test('an emptied cell on the server is shown empty', async () => {
+      const { rerender } = await render(grid())
+      await rerender(grid({ cells: {} }))
+      await expect
+        .element(page.getByRole('textbox', { name: /priority I, Oct 12/ }))
+        .toHaveValue('')
+      expect(page.getByRole('button', { name: /Mark as done/ }).query()).toBeNull()
+    })
+
+    test('our own saved value stays until the server catches up, then the snapshot wins', async () => {
+      const { rerender } = await render(grid())
+      const field = page.getByRole('textbox', { name: /priority I, Oct 12/ })
+      await userEvent.fill(field, 'MINE')
+      await userEvent.tab()
+      await rerender(grid({ cells: { '0-0': { text: 'ANKI', done: false } } }))
+      await expect.element(field).toHaveValue('MINE')
+      await rerender(grid({ cells: { '0-0': { text: 'MINE', done: false } } }))
+      await expect.element(field).toHaveValue('MINE')
+      await rerender(grid({ cells: { '0-0': { text: 'LATER', done: false } } }))
+      await expect.element(field).toHaveValue('LATER')
+    })
+
+    test('a row removed by someone else: no crash, and saving into it shows a message', async () => {
+      const { rerender } = await render(grid())
+      const second = page.getByRole('textbox', { name: /priority II, Oct 12/ })
+      await userEvent.click(second)
+      await rerender(grid({ rowCount: 1 }))
+      await vi.waitFor(() => expect(page.getByRole('rowheader', { name: 'II' }).query()).toBeNull())
+      await rerender(grid({ rowCount: 2 }))
+      actions.setCellTextAction.mockResolvedValue({ status: 'error', error: 'not_found' })
+      await userEvent.fill(page.getByRole('textbox', { name: /priority II, Oct 12/ }), 'LOST')
+      await userEvent.tab()
+      await expect.element(page.getByText('Not found')).toBeVisible()
+      await expect
+        .element(page.getByRole('textbox', { name: /priority II, Oct 12/ }))
+        .toHaveValue('')
+    })
+  })
 })

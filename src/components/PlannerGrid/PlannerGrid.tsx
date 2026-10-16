@@ -1,7 +1,7 @@
 'use client'
 
 import { useLocale, useTranslations } from 'next-intl'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 
 import {
   addRowAction,
@@ -29,22 +29,36 @@ type Props = {
   canEdit: boolean
   /** Seven weekday names (defaults or the owner's overrides). */
   dayNames: string[]
-  /** Owner renames a weekday; resolves false when saving failed. */
-  onDayName?: (day: number, value: string) => Promise<boolean>
+  /** Owner renames a weekday; resolves the error code when saving failed, else null. */
+  onDayName?: (day: number, value: string) => Promise<PlannerError | null>
   /** Called with the live cells after every change, so siblings can show progress. */
   onCellsChange?: (cells: Record<string, CellView>) => void
 }
 
+type Entry = {
+  /** What the cell shows while the entry is kept. */
+  cell: CellView
+  /** The server cell the edit started from; once the server moves on, the snapshot wins again. */
+  base: CellView | undefined
+  /** The last value we know the server accepted (or the start value). */
+  saved: CellView
+}
+
+const EMPTY: CellView = { text: '', done: false }
+const same = (a: CellView | undefined, b: CellView | undefined) =>
+  (a?.text ?? '') === (b?.text ?? '') && Boolean(a?.done) === Boolean(b?.done)
+
 /**
  * The weekly grid (story 022): priority rows × Monday…Sunday. Typing and ticking are separate
- * controls, so editing text never toggles a task. State is local and optimistic; a failed save
- * puts the previous value back and says why.
+ * controls, so editing text never toggles a task. The server snapshot (`cells`) is the truth; a
+ * local overlay holds only the cell in focus, cells being saved, and our own saves the server
+ * has not reflected yet. A failed save puts the previous value back and says why.
  */
 export function PlannerGrid({
   weekId,
   rowCount,
   dates,
-  cells: initial,
+  cells: server,
   taskTypes = [],
   canEdit,
   dayNames,
@@ -54,11 +68,52 @@ export function PlannerGrid({
   const t = useTranslations('Planner')
   const locale = useLocale()
   const router = useRouter()
-  const [cells, setCells] = useState(initial)
+  const [overlay, setOverlay] = useState<Record<string, Entry>>({})
+  const [focusKey, setFocusKey] = useState<string | null>(null)
+  const [inflight, setInflight] = useState<string[]>([])
   const [error, setError] = useState<PlannerError | null>(null)
   const [pending, startTransition] = useTransition()
 
+  const cells = useMemo(() => {
+    const merged = { ...server }
+    for (const [key, entry] of Object.entries(overlay))
+      if (key === focusKey || inflight.includes(key) || same(server[key], entry.base))
+        merged[key] = entry.cell
+    return merged
+  }, [server, overlay, focusKey, inflight])
+
   useEffect(() => onCellsChange?.(cells), [cells, onCellsChange])
+
+  // Drop entries the snapshot has overtaken, and everything on rows that no longer exist.
+  // Adjusting state while rendering (guarded) re-renders at once, before anything is painted.
+  const gone = (key: string) => Number(key.split('-')[0]) >= rowCount
+  if (focusKey && gone(focusKey)) setFocusKey(null)
+  const kept = Object.entries(overlay).filter(
+    ([key, entry]) =>
+      !gone(key) && (key === focusKey || inflight.includes(key) || same(server[key], entry.base)),
+  )
+  if (kept.length !== Object.keys(overlay).length) setOverlay(Object.fromEntries(kept))
+
+  /** Starts or updates the overlay entry for a cell, remembering where the edit began. */
+  const put = (key: string, cell: CellView, saved?: CellView) =>
+    setOverlay((all) => ({
+      ...all,
+      [key]: {
+        cell,
+        // A save re-bases the entry: our value stays until the server moves on from what it shows now.
+        base: saved || !all[key] ? server[key] : all[key].base,
+        saved: saved ?? all[key]?.saved ?? server[key] ?? EMPTY,
+      },
+    }))
+
+  async function persist<T extends { status: string }>(key: string, send: () => Promise<T>) {
+    setInflight((all) => [...all, key])
+    try {
+      return await send()
+    } finally {
+      setInflight((all) => all.filter((k) => k !== key))
+    }
+  }
 
   const dateLabel = (iso: string) =>
     new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(
@@ -67,16 +122,14 @@ export function PlannerGrid({
 
   async function saveText(row: number, day: number, text: string) {
     const key = `${row}-${day}`
-    const before = cells[key]
+    const before = overlay[key]?.saved ?? server[key]
     if ((before?.text ?? '') === text) return
-    setCells((all) => ({
-      ...all,
-      [key]: { text, done: isAssignedTask(text) ? Boolean(before?.done) : false },
-    }))
-    const result = await setCellTextAction({ weekId, row, day, text })
+    const next = { text, done: isAssignedTask(text) ? Boolean(before?.done) : false }
+    put(key, next, next)
+    const result = await persist(key, () => setCellTextAction({ weekId, row, day, text }))
     if (result.status === 'error') {
       setError(result.error)
-      setCells((all) => ({ ...all, [key]: before ?? { text: '', done: false } }))
+      put(key, before ?? EMPTY, before ?? EMPTY)
     } else setError(null)
   }
 
@@ -84,12 +137,12 @@ export function PlannerGrid({
     const key = `${row}-${day}`
     const before = cells[key]
     if (!before || !isAssignedTask(before.text)) return
-    const done = !before.done
-    setCells((all) => ({ ...all, [key]: { ...before, done } }))
-    const result = await setDoneAction({ weekId, row, day, done })
+    const next = { ...before, done: !before.done }
+    put(key, next, next)
+    const result = await persist(key, () => setDoneAction({ weekId, row, day, done: next.done }))
     if (result.status === 'error') {
       setError(result.error)
-      setCells((all) => ({ ...all, [key]: before }))
+      put(key, before, before)
     } else setError(null)
   }
 
@@ -140,7 +193,11 @@ export function PlannerGrid({
                     label={t('dayNameLabel', { n: day + 1 })}
                     canEdit={canEdit && Boolean(onDayName)}
                     maxLength={MAX_LABEL}
-                    onSave={(value) => onDayName!(day, value)}
+                    onSave={async (value) => {
+                      const code = await onDayName!(day, value)
+                      setError(code)
+                      return code === null
+                    }}
                   />
                 </span>
               </span>
@@ -165,10 +222,20 @@ export function PlannerGrid({
                       <textarea
                         className={styles.text}
                         aria-label={label}
-                        defaultValue={cell?.text ?? ''}
+                        value={cell?.text ?? ''}
                         maxLength={MAX_TASK_TEXT}
                         rows={2}
-                        onBlur={(event) => void saveText(row, day, event.currentTarget.value)}
+                        onFocus={() => {
+                          setFocusKey(`${row}-${day}`)
+                          put(`${row}-${day}`, cell ?? EMPTY)
+                        }}
+                        onChange={(event) =>
+                          put(`${row}-${day}`, { ...(cell ?? EMPTY), text: event.target.value })
+                        }
+                        onBlur={(event) => {
+                          setFocusKey((current) => (current === `${row}-${day}` ? null : current))
+                          void saveText(row, day, event.currentTarget.value)
+                        }}
                       />
                     ) : taskTypes.length > 0 ? (
                       <select
