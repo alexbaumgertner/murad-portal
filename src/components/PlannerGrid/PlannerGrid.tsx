@@ -1,7 +1,7 @@
 'use client'
 
 import { useLocale, useTranslations } from 'next-intl'
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import {
   addRowAction,
@@ -73,6 +73,8 @@ export function PlannerGrid({
   const [inflight, setInflight] = useState<string[]>([])
   const [error, setError] = useState<PlannerError | null>(null)
   const [pending, startTransition] = useTransition()
+  /** Bumped on every change to a cell, so a failed save can tell whether it is still the latest word. */
+  const touched = useRef<Record<string, number>>({})
 
   const cells = useMemo(() => {
     const merged = { ...server }
@@ -95,7 +97,8 @@ export function PlannerGrid({
   if (kept.length !== Object.keys(overlay).length) setOverlay(Object.fromEntries(kept))
 
   /** Starts or updates the overlay entry for a cell, remembering where the edit began. */
-  const put = (key: string, cell: CellView, saved?: CellView) =>
+  const put = (key: string, cell: CellView, saved?: CellView) => {
+    touched.current[key] = (touched.current[key] ?? 0) + 1
     setOverlay((all) => ({
       ...all,
       [key]: {
@@ -105,6 +108,13 @@ export function PlannerGrid({
         saved: saved ?? all[key]?.saved ?? server[key] ?? EMPTY,
       },
     }))
+  }
+
+  /** Puts `before` back after a failed save, unless the cell was edited again meanwhile. */
+  const rollBack = (key: string, before: CellView, stamp: number) => {
+    if (touched.current[key] === stamp) put(key, before, before)
+    else setOverlay((all) => (all[key] ? { ...all, [key]: { ...all[key], saved: before } } : all))
+  }
 
   async function persist<T extends { status: string }>(key: string, send: () => Promise<T>) {
     setInflight((all) => [...all, key])
@@ -126,10 +136,11 @@ export function PlannerGrid({
     if ((before?.text ?? '') === text) return
     const next = { text, done: isAssignedTask(text) ? Boolean(before?.done) : false }
     put(key, next, next)
+    const stamp = touched.current[key]!
     const result = await persist(key, () => setCellTextAction({ weekId, row, day, text }))
     if (result.status === 'error') {
       setError(result.error)
-      put(key, before ?? EMPTY, before ?? EMPTY)
+      rollBack(key, before ?? EMPTY, stamp)
     } else setError(null)
   }
 
@@ -139,10 +150,11 @@ export function PlannerGrid({
     if (!before || !isAssignedTask(before.text)) return
     const next = { ...before, done: !before.done }
     put(key, next, next)
+    const stamp = touched.current[key]!
     const result = await persist(key, () => setDoneAction({ weekId, row, day, done: next.done }))
     if (result.status === 'error') {
       setError(result.error)
-      put(key, before, before)
+      rollBack(key, before, stamp)
     } else setError(null)
   }
 

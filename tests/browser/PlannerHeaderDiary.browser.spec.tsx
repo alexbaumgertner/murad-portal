@@ -5,6 +5,7 @@ import { render } from 'vitest-browser-react'
 
 import { PlannerBoard } from '@/components/PlannerBoard/PlannerBoard'
 import { messagesFor } from '@/i18n/address-form'
+import type { PlannerActionState } from '@/features/planner/schema'
 
 const actions = vi.hoisted(() => ({
   addRowAction: vi.fn(),
@@ -165,5 +166,27 @@ describe('PlannerHeader and PlannerDiary (story 023)', () => {
     await userEvent.fill(page.getByRole('textbox', { name: 'EXERCISES, Monday' }), 'text')
     await userEvent.tab()
     await expect.element(page.getByText('Not found')).toBeVisible()
+  })
+
+  test('an older failed save does not erase text typed after refocusing', async () => {
+    let fail: (state: PlannerActionState) => void = () => {}
+    actions.saveHeaderAction.mockImplementationOnce(
+      () => new Promise<PlannerActionState>((resolve) => (fail = resolve)),
+    )
+    await renderBoard(true)
+    const name = page.getByLabelText('Student name')
+    await userEvent.fill(name, 'Anna')
+    await userEvent.tab()
+    await userEvent.click(name)
+    await userEvent.fill(name, 'Boris')
+    fail({ status: 'error', error: 'server' })
+    await expect.element(name).toHaveValue('Boris')
+    await userEvent.tab()
+    await vi.waitFor(() =>
+      expect(actions.saveHeaderAction).toHaveBeenLastCalledWith({
+        plannerId: 7,
+        studentName: 'Boris',
+      }),
+    )
   })
 })

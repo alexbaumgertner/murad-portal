@@ -240,4 +240,29 @@ describe('PlannerGrid (story 022)', () => {
         .toHaveValue('')
     })
   })
+
+  test('an older failed save does not erase a newer edit of the same cell', async () => {
+    let fail: (state: PlannerActionState) => void = () => {}
+    actions.setCellTextAction.mockImplementationOnce(
+      () => new Promise<PlannerActionState>((resolve) => (fail = resolve)),
+    )
+    await renderGrid()
+    const cell = page.getByRole('textbox', { name: /priority I, Oct 13/ })
+    await userEvent.fill(cell, 'first')
+    await userEvent.tab()
+    await userEvent.click(cell)
+    await userEvent.fill(cell, 'second')
+    fail({ status: 'error', error: 'server' })
+    await expect.element(cell).toHaveValue('second')
+    await userEvent.tab()
+    await vi.waitFor(() =>
+      expect(actions.setCellTextAction).toHaveBeenLastCalledWith({
+        weekId: 1,
+        row: 0,
+        day: 1,
+        text: 'second',
+      }),
+    )
+    await expect.element(cell).toHaveValue('second')
+  })
 })

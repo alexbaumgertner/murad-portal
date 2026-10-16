@@ -49,7 +49,7 @@ export function EditableText({
   const edit = (next: string) =>
     setDraft({ value: next, base: draft?.base ?? value, saved: draft?.saved ?? text })
 
-  async function commit() {
+  async function commit(field: HTMLElement) {
     const next = text.trim()
     const saved = draft?.saved ?? value
     if (next === saved) {
@@ -61,8 +61,13 @@ export function EditableText({
     const base = value
     setDraft({ value: next, base, saved: next })
     const ok = await onSave(next)
-    if (!ok) setDraft({ value: saved, base, saved })
-    setHeld(false)
+    // Typing since the blur is a newer draft: keep it, the next blur saves it.
+    if (!ok)
+      setDraft((now) =>
+        now && now.value !== next ? { ...now, saved } : { value: saved, base, saved },
+      )
+    // The field may have been refocused while the save was in flight.
+    setHeld(field.ownerDocument.activeElement === field)
   }
 
   const revert = () => setDraft(draft && { ...draft, value: draft.saved })
@@ -79,7 +84,7 @@ export function EditableText({
       setHeld(true)
     },
     onChange: (event: { target: { value: string } }) => edit(event.target.value),
-    onBlur: () => void commit(),
+    onBlur: (event: { currentTarget: HTMLElement }) => void commit(event.currentTarget),
   }
   return multiline ? (
     <textarea
