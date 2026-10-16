@@ -132,8 +132,8 @@ export function PlannerBoard({
           onDayName={(day, value) => {
             const days = Array.from({ length: 7 }, (_, i) => header.labels.days?.[i] ?? '')
             days[day] = value
-            return saveHeaderAction({ plannerId, labels: { days } }).then(
-              (result) => result.status === 'success',
+            return saveHeaderAction({ plannerId, labels: { days } }).then((result) =>
+              result.status === 'error' ? result.error : null,
             )
           }}
           onCellsChange={setLive}
