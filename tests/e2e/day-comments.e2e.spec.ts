@@ -134,7 +134,13 @@ test.describe('Day comments (story 016)', () => {
       )
 
       // 3. saving again replaces the text
-      await page.getByLabel('Комментарий к дню').fill('Теперь понял')
+      // (retry: filling the server-rendered field before hydration gets overwritten by React)
+      await expect(async () => {
+        await page.getByLabel('Комментарий к дню').fill('Теперь понял')
+        await expect(page.getByLabel('Комментарий к дню')).toHaveValue('Теперь понял', {
+          timeout: 1_000,
+        })
+      }).toPass({ timeout: 20_000 })
       await page.getByRole('button', { name: 'Сохранить' }).click()
       await expect(
         page.getByRole('status').filter({ hasText: /Сохранено|Комментарий удалён/ }),
@@ -158,7 +164,12 @@ test.describe('Day comments (story 016)', () => {
 
       // a past day of this week has its own comment
       await page.goto('/study?day=9')
-      await page.getByLabel('Комментарий к дню').fill('Вчера было тяжело')
+      await expect(async () => {
+        await page.getByLabel('Комментарий к дню').fill('Вчера было тяжело')
+        await expect(page.getByLabel('Комментарий к дню')).toHaveValue('Вчера было тяжело', {
+          timeout: 1_000,
+        })
+      }).toPass({ timeout: 20_000 })
       await page.getByRole('button', { name: 'Сохранить' }).click()
       await expect(
         page.getByRole('status').filter({ hasText: /Сохранено|Комментарий удалён/ }),
