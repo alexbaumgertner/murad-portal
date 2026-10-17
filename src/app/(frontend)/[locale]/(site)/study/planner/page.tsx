@@ -75,6 +75,7 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
       ) : (
         <PlannerShell
           plannerId={view.plannerId}
+          revision={view.revision}
           initial={view.appearance}
           isOwner={owner}
           ownerPanels={

@@ -606,6 +606,11 @@
     "openPlannerShort": "Open planner"
   },
   "Planner": {
+    "sync": {
+      "ok": "Up to date",
+      "offline": "No connection, retrying",
+      "label": "Live sync status"
+    },
     "title": "Weekly planner",
     "back": "Back",
     "none": "Your planner has not been set up yet.",
