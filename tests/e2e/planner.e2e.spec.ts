@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { isPlannerSave } from '../helpers/planner'
 import { clearTestLoginCodes, E2E_CODE, issueKnownCode } from '../helpers/login'
 import { cleanupTestUser, seedTestUser } from '../helpers/seedUser'
 
@@ -50,9 +51,7 @@ test.describe('Weekly planner (story 022)', () => {
       await expect(page.getByRole('columnheader', { name: /1 янв\.?.*Пятница/ })).toBeVisible()
       const tick = page.getByRole('button', { name: /Отметить выполненным: PODCAST/ })
       await expect(tick).toHaveAttribute('aria-pressed', 'false')
-      const saved = page.waitForResponse(
-        (r) => r.request().method() === 'POST' && r.url().includes('/study/planner'),
-      )
+      const saved = page.waitForResponse(isPlannerSave)
       await tick.click()
       await saved
       await expect(tick).toHaveAttribute('aria-pressed', 'true')
@@ -86,9 +85,7 @@ test.describe('Weekly planner (story 022)', () => {
       await page.getByRole('button', { name: 'Настройки' }).click()
       await drawer.getByText('Фон', { exact: true }).click()
       await drawer.getByLabel('Сила зерна').fill('30')
-      const bgSaved = page.waitForResponse(
-        (r) => r.request().method() === 'POST' && r.url().includes('/study/planner'),
-      )
+      const bgSaved = page.waitForResponse(isPlannerSave)
       await expect(page.getByTestId('planner-bg-grain')).toBeAttached()
       await bgSaved
       await drawer.getByRole('button', { name: 'Закрыть настройки' }).click()

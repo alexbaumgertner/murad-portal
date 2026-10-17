@@ -29,6 +29,8 @@ export type HeaderView = {
 
 export type PlannerView = {
   plannerId: number
+  /** `getPlannerRevision` read before the rest, so it is never newer than what the view shows. */
+  revision: string
   studentId: number
   baseDate: string
   weeks: { id: number; index: number }[]
@@ -64,6 +66,7 @@ export async function getPlannerView(
   })
   const planner = found.docs[0]
   if (!planner) return null
+  const revision = (await getPlannerRevision(payload, user, planner.id)) ?? ''
   const { docs: weeks } = await payload.find({
     collection: 'planner-weeks',
     where: { planner: { equals: planner.id } },
@@ -111,6 +114,7 @@ export async function getPlannerView(
   const idOf = (rel: number | { id: number }) => (typeof rel === 'object' ? rel.id : rel)
   return {
     plannerId: planner.id,
+    revision,
     header: {
       studentName: planner.studentName ?? '',
       goal: planner.goal ?? '',

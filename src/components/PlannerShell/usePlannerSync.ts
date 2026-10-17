@@ -11,14 +11,20 @@ export const SLOW_POLL_MS = 30_000
 export type SyncState = 'ok' | 'offline'
 
 /**
- * Story 032: while the tab is visible, ask the server for the planner's revision every few
+ * Story 032: `revision` is the signature the server read *before* it rendered this page, so a change
+ * landing between render and the first poll is still caught. While the tab is visible, ask the server for the planner's revision every few
  * seconds (at once on focus / when the tab becomes visible) and `router.refresh()` when it changed.
  * Failures slow the poll to ~30 s and flag `offline`; the next success recovers by itself.
  */
-export function usePlannerSync(plannerId: number): SyncState {
+export function usePlannerSync(plannerId: number, revision: string): SyncState {
   const router = useRouter()
   const [state, setState] = useState<SyncState>('ok')
-  const known = useRef<string | null>(null)
+  const rendered = useRef(revision)
+  const requested = useRef<string | null>(null)
+
+  useEffect(() => {
+    rendered.current = revision
+  }, [revision])
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null
@@ -42,8 +48,11 @@ export function usePlannerSync(plannerId: number): SyncState {
         if (result.status === 'success') {
           failing = false
           setState('ok')
-          if (known.current !== null && known.current !== result.signature) router.refresh()
-          known.current = result.signature
+          // Refresh once per new signature; the page then renders with it as `revision`.
+          if (result.signature !== rendered.current && result.signature !== requested.current) {
+            requested.current = result.signature
+            router.refresh()
+          }
         } else {
           failing = true
           setState('offline')

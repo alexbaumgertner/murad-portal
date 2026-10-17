@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
-import { clearTestLoginCodes, E2E_CODE, issueKnownCode } from '../helpers/login'
+import { clearTestLoginCodes, E2E_CODE, issueKnownCode, login } from '../helpers/login'
 import { cleanupTestUser, seedTestUser } from '../helpers/seedUser'
 
 async function signIn(page: Page, email: string) {
@@ -15,7 +15,7 @@ async function signIn(page: Page, email: string) {
   await issueKnownCode(email)
   await page.getByLabel('Код из письма').fill(E2E_CODE)
   await page.getByRole('button', { name: 'Войти' }).click()
-  await page.waitForURL(/\/study$/)
+  await page.waitForURL(/\/study$/, { timeout: 15_000 })
 }
 
 test.describe('Planner live sync (story 032)', () => {
@@ -55,11 +55,13 @@ test.describe('Planner live sync (story 032)', () => {
 
       const ownerPage = await ownerContext.newPage()
       const studentPage = await studentContext.newPage()
-      await signIn(ownerPage, ownerEmail)
+      await login({ page: ownerPage, email: ownerEmail }) // owners land on /admin
       await signIn(studentPage, studentEmail)
       await ownerPage.goto(`/study/planner?student=${student.id}`)
       await studentPage.goto('/study/planner')
-      await expect(studentPage.getByText('PODCAST').first()).toBeVisible()
+      await expect(
+        studentPage.getByRole('button', { name: /Отметить выполненным: PODCAST/ }),
+      ).toBeVisible()
       await expect(studentPage.getByRole('status', { name: 'Статус синхронизации' })).toHaveText(
         'Обновлено',
       )
@@ -70,7 +72,9 @@ test.describe('Planner live sync (story 032)', () => {
         data: { week: week.id, row: 1, day: 1, text: 'SERIES' },
         context: { disableRevalidate: true },
       })
-      await expect(studentPage.getByText('SERIES').first()).toBeVisible({ timeout: 15_000 })
+      await expect(
+        studentPage.getByRole('button', { name: /Отметить выполненным: SERIES/ }),
+      ).toBeVisible({ timeout: 15_000 })
 
       // 2: the student ticks → the owner's progress updates by itself.
       const progress = ownerPage.getByText('Эта неделя').locator('..')
