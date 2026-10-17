@@ -1,0 +1,17 @@
+.status {
+  margin: 0.25rem 0;
+  font-size: 0.75rem;
+  opacity: 0.7;
+  text-align: right;
+}
+
+.offline {
+  opacity: 1;
+  color: #b3261e;
+}
+
+@media print {
+  .status {
+    display: none;
+  }
+}

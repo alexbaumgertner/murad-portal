@@ -12,6 +12,8 @@ import {
 
 import { PlannerBackground } from '@/components/PlannerBackground/PlannerBackground'
 import { PlannerContext } from '@/components/PlannerShell/planner-context'
+import { PlannerSyncStatus } from '@/components/PlannerSyncStatus/PlannerSyncStatus'
+import { usePlannerSync } from '@/components/PlannerShell/usePlannerSync'
 import { PlannerSettings } from '@/components/PlannerSettings/PlannerSettings'
 import { saveAppearanceAction } from '@/features/planner/actions'
 import { appearanceVars, type Appearance } from '@/features/planner/appearance'
@@ -37,6 +39,7 @@ export function PlannerShell({
   ownerPanels?: ReactNode
   children: ReactNode
 }) {
+  const sync = usePlannerSync(plannerId)
   const [appearance, setAppearance] = useState(initial)
   const [open, setOpen] = useState(false)
   const [saveFailed, setSaveFailed] = useState(false)
@@ -83,7 +86,10 @@ export function PlannerShell({
   return (
     <PlannerContext.Provider value={value}>
       <PlannerBackground background={appearance.background} />
-      <div style={style}>{children}</div>
+      <div style={style}>
+        <PlannerSyncStatus state={sync} />
+        {children}
+      </div>
       <PlannerSettings
         open={open}
         onClose={() => setOpen(false)}

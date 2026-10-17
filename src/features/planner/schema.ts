@@ -112,3 +112,6 @@ export type PlannerActionState = { status: 'success' } | { status: 'error'; erro
 
 export type ExportState =
   { status: 'success'; json: string; filename: string } | { status: 'error'; error: PlannerError }
+
+export type RevisionState =
+  { status: 'success'; signature: string } | { status: 'error'; error: PlannerError }

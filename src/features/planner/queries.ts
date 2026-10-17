@@ -148,3 +148,46 @@ export async function getPlannerView(
     },
   }
 }
+
+/**
+ * A light fingerprint of everything on a planner the viewer may read: per collection the newest
+ * `updatedAt` plus `totalDocs` (an emptied cell is deleted, which `updatedAt` alone cannot show).
+ * Reads as `user` with `overrideAccess: false`; null when the planner is not readable.
+ */
+export async function getPlannerRevision(
+  payload: Payload,
+  user: TypedUser,
+  plannerId: number,
+): Promise<string | null> {
+  const light = {
+    limit: 1,
+    depth: 0,
+    sort: '-updatedAt',
+    select: { updatedAt: true },
+    overrideAccess: false,
+    user,
+  } as const
+  const stamp = (r: { totalDocs: number; docs: { updatedAt?: string }[] }) =>
+    `${r.docs[0]?.updatedAt ?? ''}#${r.totalDocs}`
+  const planners = await payload.find({
+    collection: 'planners',
+    where: { id: { equals: plannerId } },
+    ...light,
+  })
+  if (!planners.docs[0]) return null
+  // A planner has a handful of weeks: their ids scope the cell and note reads.
+  const weeks = await payload.find({
+    collection: 'planner-weeks',
+    where: { planner: { equals: plannerId } },
+    ...light,
+    limit: 0,
+    pagination: false,
+  })
+  const newestWeek = weeks.docs.reduce((max, w) => (w.updatedAt > max ? w.updatedAt : max), '')
+  const inWeeks = { week: { in: weeks.docs.map((w) => w.id) } }
+  const cells = await payload.find({ collection: 'planner-cells', where: inWeeks, ...light })
+  const notes = await payload.find({ collection: 'planner-notes', where: inWeeks, ...light })
+  return [stamp(planners), `${newestWeek}#${weeks.docs.length}`, stamp(cells), stamp(notes)].join(
+    '|',
+  )
+}
