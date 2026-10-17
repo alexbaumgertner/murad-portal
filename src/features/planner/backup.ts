@@ -39,7 +39,7 @@ export const MAX_WEEKS = 520
 /** A backup file is refused above this many characters (an image is up to 1.2 M of it). */
 export const MAX_BACKUP_CHARS = 3_500_000
 
-export type BackupCell = { row: number; day: number; text: string; done: boolean }
+export type BackupCell = { row: number; day: number; text: string; done: boolean; own?: boolean }
 export type BackupNote = { kind: (typeof NOTE_KINDS)[number]; day: number; text: string }
 export type BackupWeek = {
   index: number
@@ -157,7 +157,13 @@ function cleanWeek(raw: unknown, fallbackIndex: number): BackupWeek {
     const body = text(c.text, MAX_TASK_TEXT)
     if (row < 0 || day < 0 || seen.has(`${row}-${day}`) || !isAssignedTask(body)) continue
     seen.add(`${row}-${day}`)
-    cells.push({ row, day, text: body, done: isAssignedTask(body) && c.done === true })
+    cells.push({
+      row,
+      day,
+      text: body,
+      done: isAssignedTask(body) && c.done === true,
+      ...(c.own === true ? { own: true } : {}),
+    })
   }
   const notes: BackupNote[] = []
   const seenNotes = new Set<string>()

@@ -18,6 +18,7 @@ import {
   saveTaskTypesSchema,
   saveNoteSchema,
   setDoneSchema,
+  setOwnTaskSchema,
   setTextSchema,
   weekIdSchema,
   type ExportState,
@@ -90,6 +91,10 @@ export async function removeRowAction(input: unknown): Promise<PlannerActionStat
 
 export async function setCellTextAction(input: unknown): Promise<PlannerActionState> {
   return run('setCellTextAction', setTextSchema, input, (p, u, i) => service.setCellText(p, u, i))
+}
+
+export async function setOwnTaskAction(input: unknown): Promise<PlannerActionState> {
+  return run('setOwnTaskAction', setOwnTaskSchema, input, (p, u, i) => service.setOwnTask(p, u, i))
 }
 
 export async function setDoneAction(input: unknown): Promise<PlannerActionState> {

@@ -24,6 +24,7 @@ import { parseAppearance } from './appearance'
 import { blankSettings, blankWeek, buildBackup, type Backup, type PlannerData } from './backup'
 import {
   MAX_ROWS,
+  MAX_TASK_TEXT,
   MAX_WEEK_INDEX,
   effectiveTaskTypes,
   isAssignedTask,
@@ -145,7 +146,7 @@ export async function copyWeek(
     where: { week: { equals: weekId } },
     pagination: false,
     depth: 0,
-    select: { row: true, day: true, text: true },
+    select: { row: true, day: true, text: true, own: true },
     overrideAccess: false,
     user: owner,
   })
@@ -158,7 +159,14 @@ export async function copyWeek(
     if (!isAssignedTask(cell.text)) continue
     await payload.create({
       collection: 'planner-cells',
-      data: { week: copy.id, row: cell.row, day: cell.day, text: cell.text, done: false },
+      data: {
+        week: copy.id,
+        row: cell.row,
+        day: cell.day,
+        text: cell.text,
+        done: false,
+        own: Boolean(cell.own),
+      },
       overrideAccess: true,
     })
   }
@@ -247,7 +255,7 @@ export async function setCellText(
     if (!planner) return fail('not_found')
     const { docs } = await payload.find({
       collection: 'planner-cells',
-      where: { 'week.planner': { equals: planner.id } },
+      where: { 'week.planner': { equals: planner.id }, own: { not_equals: true } },
       pagination: false,
       depth: 0,
       select: { text: true },
@@ -268,13 +276,47 @@ export async function setCellText(
       await payload.delete({ collection: 'planner-cells', id: cell.id, overrideAccess: true })
     return ok
   }
-  const data = { text: typed, done: assigned ? Boolean(cell?.done) : false }
+  const data = { text: typed, done: assigned ? Boolean(cell?.done) : false, own: false }
   if (cell)
     await payload.update({ collection: 'planner-cells', id: cell.id, data, overrideAccess: true })
   else
     await payload.create({
       collection: 'planner-cells',
       data: { week: input.weekId, row: input.row, day: input.day, ...data },
+      overrideAccess: true,
+    })
+  return ok
+}
+
+/**
+ * A student writes her own task in a free cell, or rewrites one of hers (story 034). The owner's
+ * and picked tasks stay untouched; clearing goes through `setCellText` with an empty text.
+ */
+export async function setOwnTask(
+  payload: Payload,
+  user: TypedUser,
+  input: { weekId: number; row: number; day: number; text: string },
+): Promise<Result> {
+  if (isOwner(user)) return fail('forbidden')
+  const week = await weekOf(payload, user, input.weekId)
+  if (!week) return fail('not_found')
+  if (input.row >= week.rowCount) return fail('invalid_input')
+  const text = input.text.trim()
+  if (text.length > MAX_TASK_TEXT) return fail('too_long')
+  if (!isAssignedTask(text)) return fail('empty_task')
+  const cell = await findCell(payload, input.weekId, input.row, input.day)
+  if (cell && isAssignedTask(cell.text) && !cell.own) return fail('forbidden')
+  if (cell)
+    await payload.update({
+      collection: 'planner-cells',
+      id: cell.id,
+      data: { text, own: true },
+      overrideAccess: true,
+    })
+  else
+    await payload.create({
+      collection: 'planner-cells',
+      data: { week: input.weekId, row: input.row, day: input.day, text, done: false, own: true },
       overrideAccess: true,
     })
   return ok
@@ -506,7 +548,13 @@ export async function exportPlanner(
         rowCount: week.rowCount,
         cells: cells.docs
           .filter((c) => weekOf(c.week) === week.id)
-          .map((c) => ({ row: c.row, day: c.day, text: c.text ?? '', done: Boolean(c.done) })),
+          .map((c) => ({
+            row: c.row,
+            day: c.day,
+            text: c.text ?? '',
+            done: Boolean(c.done),
+            ...(c.own ? { own: true } : {}),
+          })),
         notes: notes.docs
           .filter((n) => weekOf(n.week) === week.id)
           .map((n) => ({ kind: n.kind, day: n.day, text: n.text })),

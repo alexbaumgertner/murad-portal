@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl'
 
+import { FooterPlannerNav } from '@/components/FooterPlannerNav/FooterPlannerNav'
 import { Link } from '@/i18n/navigation'
 
 import styles from './SiteFooter.module.css'
@@ -13,6 +14,7 @@ export function SiteFooter() {
         <p>
           {t('title')} · © {new Date().getFullYear()}
         </p>
+        <FooterPlannerNav />
         <Link href="/changelog" className={styles.muted}>
           {t('changelog')}
         </Link>

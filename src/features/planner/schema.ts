@@ -39,6 +39,7 @@ export const setTextSchema = z.strictObject({
   day,
   text: z.string().max(MAX_TASK_TEXT),
 })
+export const setOwnTaskSchema = setTextSchema
 export const setDoneSchema = z.strictObject({ weekId: id, row, day, done: z.boolean() })
 
 export const progressSettingsSchema = z.strictObject({

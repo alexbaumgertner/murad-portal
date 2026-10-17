@@ -13,3 +13,4 @@ Applies to `src/components/`, `src/app/(frontend)/` and `messages/`.
 - Copy: no inline strings. Add keys to `messages/en.json` and `messages/ru.json`; read them with
   `useTranslations` (client) or `getTranslations({ locale, namespace })` (server). Internal links use `Link` from `@/i18n/navigation`;
   `/admin` stays a plain `<a>`. Check the Russian layout at 360px — it runs ~20% longer.
+- Text that repeats in every cell or row (e.g. «own», «add») is an icon with an `aria-label`/`<title>`, not a visible word; the word stays in `messages/*` for assistive tech.

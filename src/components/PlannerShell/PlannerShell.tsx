@@ -90,8 +90,8 @@ export function PlannerShell({
     <PlannerContext.Provider value={value}>
       <PlannerBackground background={appearance.background} />
       <div style={style}>
-        <PlannerSyncStatus state={sync} />
         {children}
+        <PlannerSyncStatus state={sync} />
       </div>
       <PlannerSettings
         open={open}

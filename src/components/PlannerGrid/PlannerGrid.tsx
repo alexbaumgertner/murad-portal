@@ -7,6 +7,7 @@ import {
   addRowAction,
   removeRowAction,
   setCellTextAction,
+  setOwnTaskAction,
   setDoneAction,
 } from '@/features/planner/actions'
 import type { CellView } from '@/features/planner/queries'
@@ -44,6 +45,17 @@ type Entry = {
   saved: CellView
 }
 
+/** Shared attributes of the small line icons (story 034: repeated words in cells become icons). */
+const ICON = {
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 2,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+  'aria-hidden': true,
+} as const
+
 const EMPTY: CellView = { text: '', done: false }
 const same = (a: CellView | undefined, b: CellView | undefined) =>
   (a?.text ?? '') === (b?.text ?? '') && Boolean(a?.done) === Boolean(b?.done)
@@ -72,6 +84,8 @@ export function PlannerGrid({
   const [focusKey, setFocusKey] = useState<string | null>(null)
   const [inflight, setInflight] = useState<string[]>([])
   const [error, setError] = useState<PlannerError | null>(null)
+  /** Cells where a student has pressed «+ own» and is typing (story 034). */
+  const [ownOpen, setOwnOpen] = useState<string[]>([])
   const [pending, startTransition] = useTransition()
   /** Bumped on every change to a cell, so a failed save can tell whether it is still the latest word. */
   const touched = useRef<Record<string, number>>({})
@@ -134,10 +148,28 @@ export function PlannerGrid({
     const key = `${row}-${day}`
     const before = overlay[key]?.saved ?? server[key]
     if ((before?.text ?? '') === text) return
-    const next = { text, done: isAssignedTask(text) ? Boolean(before?.done) : false }
+    const next: CellView = { text, done: isAssignedTask(text) ? Boolean(before?.done) : false }
     put(key, next, next)
     const stamp = touched.current[key]!
     const result = await persist(key, () => setCellTextAction({ weekId, row, day, text }))
+    if (result.status === 'error') {
+      setError(result.error)
+      rollBack(key, before ?? EMPTY, stamp)
+    } else setError(null)
+  }
+
+  /** A student's own task (story 034); an emptied one is cleared like any other text. */
+  async function saveOwn(row: number, day: number, raw: string) {
+    const key = `${row}-${day}`
+    const text = raw.trim()
+    setOwnOpen((all) => all.filter((k) => k !== key))
+    if (!isAssignedTask(text)) return saveText(row, day, '')
+    const before = overlay[key]?.saved ?? server[key]
+    if ((before?.text ?? '') === text && before?.own) return
+    const next = { text, done: Boolean(before?.done), own: true }
+    put(key, next, next)
+    const stamp = touched.current[key]!
+    const result = await persist(key, () => setOwnTaskAction({ weekId, row, day, text }))
     if (result.status === 'error') {
       setError(result.error)
       rollBack(key, before ?? EMPTY, stamp)
@@ -249,6 +281,30 @@ export function PlannerGrid({
                           void saveText(row, day, event.currentTarget.value)
                         }}
                       />
+                    ) : cell?.own || ownOpen.includes(`${row}-${day}`) ? (
+                      <textarea
+                        className={styles.text}
+                        aria-label={label}
+                        value={cell?.text ?? ''}
+                        maxLength={MAX_TASK_TEXT}
+                        rows={2}
+                        autoFocus={!cell?.own}
+                        onFocus={() => {
+                          setFocusKey(`${row}-${day}`)
+                          put(`${row}-${day}`, cell ?? EMPTY)
+                        }}
+                        onChange={(event) =>
+                          put(`${row}-${day}`, {
+                            ...(cell ?? EMPTY),
+                            text: event.target.value,
+                            own: true,
+                          })
+                        }
+                        onBlur={(event) => {
+                          setFocusKey((current) => (current === `${row}-${day}` ? null : current))
+                          void saveOwn(row, day, event.currentTarget.value)
+                        }}
+                      />
                     ) : taskTypes.length > 0 ? (
                       <select
                         className={cell?.text ? styles.pick : styles.pickEmpty}
@@ -270,6 +326,34 @@ export function PlannerGrid({
                     ) : (
                       <span className={styles.readText}>{cell?.text}</span>
                     )}
+                    {!canEdit && !assigned && !ownOpen.includes(`${row}-${day}`) ? (
+                      <button
+                        type="button"
+                        className={styles.addOwn}
+                        aria-label={t('addOwnLabel', { cell: label })}
+                        onClick={() => setOwnOpen((all) => [...all, `${row}-${day}`])}
+                      >
+                        <svg {...ICON} width="14" height="14">
+                          <path d="M12 20h9" />
+                          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                        </svg>
+                      </button>
+                    ) : null}
+                    {cell?.own && assigned ? (
+                      <svg
+                        {...ICON}
+                        width="12"
+                        height="12"
+                        className={styles.ownMark}
+                        role="img"
+                        aria-hidden={false}
+                        aria-label={t('own')}
+                      >
+                        <title>{t('own')}</title>
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                      </svg>
+                    ) : null}
                     {assigned ? (
                       <button
                         type="button"
