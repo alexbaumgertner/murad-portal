@@ -75,6 +75,7 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
       ) : (
         <PlannerShell
           plannerId={view.plannerId}
+          revision={view.revision}
           initial={view.appearance}
           isOwner={owner}
           ownerPanels={
@@ -103,7 +104,7 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
             />
           </div>
           <PlannerBoard
-            key={`${view.active.id}-${view.active.rowCount}`}
+            key={view.active.id}
             plannerId={view.plannerId}
             header={view.header}
             notes={view.active.notes}

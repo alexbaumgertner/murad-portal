@@ -2,6 +2,28 @@
 
 Short log of choices that shape the codebase. Newest first. One entry = what we chose, why, and what would make us revisit it.
 
+## 2026-10-16 — ACCEPTED: planner live sync by polling a revision, not WebSocket
+
+**Context.** Murad wants the planner of a student and of the teacher to sync without a page reload, as the old Google
+Sheet did. Load is tiny (20–35 students, two viewers per planner, rare edits). Full analysis:
+`docs/spikes/002-planner-realtime-sync.md`.
+
+**Options.** (A) poll a light revision and `router.refresh()`; (B) managed pub/sub signal (Pusher/Ably); (C) own
+WebSocket/SSE on Vercel Functions; (D) Postgres `LISTEN/NOTIFY`; (E) Neon Realtime.
+
+**Decision.** (A); the owner accepted a delay of up to ~5 s, the project is on Vercel Hobby, scope is `/study/planner`
+only. Presence ("the other person is here now") needs B and is a separate story (033). A revision is the max `updatedAt` plus `totalDocs` of
+`planners`, `planner-weeks`, `planner-cells` and `planner-notes`, read with `overrideAccess: false` through a Server
+Action; polled every ~5 s only while the tab is visible. The count is needed because emptying a cell deletes its record.
+No Payload change, no migration, no env, no CSP change. C is beta on Vercel and drops at `maxDuration`; D keeps Neon
+awake and fails on the pooler; E is beta and reads outside Payload access control.
+
+**Consequences.** The real cost is in the client: `PlannerGrid`, `EditableText`, `PlannerBoard` and `PlannerDiary` keep
+state from props at mount and must become "server snapshot + local overlay" (story 032, two PRs, ~2–3 days). Last write
+wins. B stays possible later with the same client code (the signal replaces the poll).
+Revisit if: Murad needs sub-second updates or presence, edits come more than once every few seconds, viewers exceed
+~100, or Vercel WebSockets reach GA with a shared store in place.
+
 ## 2026-10-07 — Multi-agent workflow: Claude plans, Codex implements, both review
 
 **Context.** Claude Pro limits are shared between chat and Claude Code; ChatGPT Plus includes Codex with more room for

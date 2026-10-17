@@ -21,9 +21,11 @@ import {
   setTextSchema,
   weekIdSchema,
   type ExportState,
+  type RevisionState,
   type PlannerActionState,
 } from './schema'
 import { parseBackup } from './backup'
+import { getPlannerRevision } from './queries'
 import * as service from './service'
 
 type Run<S extends z.ZodType> = (
@@ -149,6 +151,27 @@ export async function exportPlannerAction(input: unknown): Promise<ExportState> 
       }
     } catch (error) {
       console.error('[planner] export failed', error)
+      await captureServerError(error, 'planner')
+      return { status: 'error', error: 'server' }
+    }
+  })
+}
+
+/** The revision signature of a planner the signed-in user may read; the poll compares it with the last one. */
+export async function getPlannerRevisionAction(input: unknown): Promise<RevisionState> {
+  return monitorAction('getPlannerRevisionAction', async () => {
+    const parsed = plannerIdSchema.safeParse(input)
+    if (!parsed.success) return { status: 'error', error: 'invalid_input' }
+    const payload = await getPayloadClient()
+    const user = await currentUser(payload, await headers())
+    if (!user) return { status: 'error', error: 'unauthorized' }
+    try {
+      const signature = await getPlannerRevision(payload, user, parsed.data.plannerId)
+      return signature === null
+        ? { status: 'error', error: 'not_found' }
+        : { status: 'success', signature }
+    } catch (error) {
+      console.error('[planner] revision failed', error)
       await captureServerError(error, 'planner')
       return { status: 'error', error: 'server' }
     }

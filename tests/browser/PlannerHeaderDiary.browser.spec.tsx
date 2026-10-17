@@ -5,6 +5,7 @@ import { render } from 'vitest-browser-react'
 
 import { PlannerBoard } from '@/components/PlannerBoard/PlannerBoard'
 import { messagesFor } from '@/i18n/address-form'
+import type { PlannerActionState } from '@/features/planner/schema'
 
 const actions = vi.hoisted(() => ({
   addRowAction: vi.fn(),
@@ -27,33 +28,35 @@ const dates = [
   '2026-10-18',
 ]
 
+const boardFor = (canEdit: boolean, notes: Record<string, string> = {}) => (
+  <NextIntlClientProvider locale="en" messages={messagesFor('en', 'ty')}>
+    <PlannerBoard
+      plannerId={7}
+      header={{ studentName: '', goal: '', subtitle: '', labels: {} }}
+      notes={notes}
+      weekId={1}
+      weekIndex={0}
+      rowCount={1}
+      dates={dates}
+      cells={{}}
+      canEdit={canEdit}
+      baseDate="2026-10-12"
+      weekIndexes={[0]}
+      otherTasks={[]}
+      settings={{
+        showWeekProgress: true,
+        showFourWeekProgress: false,
+        showDeadlineProgress: false,
+        deadlineTitle: '',
+        deadlineDate: '',
+      }}
+      today="2026-10-14"
+    />
+  </NextIntlClientProvider>
+)
+
 const renderBoard = (canEdit: boolean, notes: Record<string, string> = {}) =>
-  render(
-    <NextIntlClientProvider locale="en" messages={messagesFor('en', 'ty')}>
-      <PlannerBoard
-        plannerId={7}
-        header={{ studentName: '', goal: '', subtitle: '', labels: {} }}
-        notes={notes}
-        weekId={1}
-        weekIndex={0}
-        rowCount={1}
-        dates={dates}
-        cells={{}}
-        canEdit={canEdit}
-        baseDate="2026-10-12"
-        weekIndexes={[0]}
-        otherTasks={[]}
-        settings={{
-          showWeekProgress: true,
-          showFourWeekProgress: false,
-          showDeadlineProgress: false,
-          deadlineTitle: '',
-          deadlineDate: '',
-        }}
-        today="2026-10-14"
-      />
-    </NextIntlClientProvider>,
-  )
+  render(boardFor(canEdit, notes))
 
 describe('PlannerHeader and PlannerDiary (story 023)', () => {
   beforeEach(() => {
@@ -138,5 +141,52 @@ describe('PlannerHeader and PlannerDiary (story 023)', () => {
     await userEvent.fill(entry, 'new')
     await userEvent.tab()
     await expect.element(entry).toHaveValue('old')
+  })
+
+  test('032. a remote diary entry shows up unless the field is in focus', async () => {
+    const { rerender } = await renderBoard(false, { 'exercises-0': 'old' })
+    const entry = page.getByRole('textbox', { name: 'EXERCISES, Monday' })
+    await userEvent.click(entry)
+    await userEvent.keyboard(' mine')
+    await rerender(boardFor(false, { 'exercises-0': 'remote' }))
+    await expect.element(entry).toHaveValue('old mine')
+    await userEvent.tab()
+    await expect.element(entry).toHaveValue('old mine')
+    await rerender(boardFor(false, { 'exercises-0': 'old mine' }))
+    await rerender(boardFor(false, { 'exercises-2': 'wednesday', 'exercises-0': 'newer' }))
+    await expect.element(entry).toHaveValue('newer')
+    await expect
+      .element(page.getByRole('textbox', { name: 'EXERCISES, Wednesday' }))
+      .toHaveValue('wednesday')
+  })
+
+  test('032. saving into a deleted week shows a translated message', async () => {
+    actions.saveNoteAction.mockResolvedValue({ status: 'error', error: 'not_found' })
+    await renderBoard(false)
+    await userEvent.fill(page.getByRole('textbox', { name: 'EXERCISES, Monday' }), 'text')
+    await userEvent.tab()
+    await expect.element(page.getByText('Not found')).toBeVisible()
+  })
+
+  test('an older failed save does not erase text typed after refocusing', async () => {
+    let fail: (state: PlannerActionState) => void = () => {}
+    actions.saveHeaderAction.mockImplementationOnce(
+      () => new Promise<PlannerActionState>((resolve) => (fail = resolve)),
+    )
+    await renderBoard(true)
+    const name = page.getByLabelText('Student name')
+    await userEvent.fill(name, 'Anna')
+    await userEvent.tab()
+    await userEvent.click(name)
+    await userEvent.fill(name, 'Boris')
+    fail({ status: 'error', error: 'server' })
+    await expect.element(name).toHaveValue('Boris')
+    await userEvent.tab()
+    await vi.waitFor(() =>
+      expect(actions.saveHeaderAction).toHaveBeenLastCalledWith({
+        plannerId: 7,
+        studentName: 'Boris',
+      }),
+    )
   })
 })

@@ -12,6 +12,8 @@ import {
 
 import { PlannerBackground } from '@/components/PlannerBackground/PlannerBackground'
 import { PlannerContext } from '@/components/PlannerShell/planner-context'
+import { PlannerSyncStatus } from '@/components/PlannerSyncStatus/PlannerSyncStatus'
+import { usePlannerSync } from '@/components/PlannerShell/usePlannerSync'
 import { PlannerSettings } from '@/components/PlannerSettings/PlannerSettings'
 import { saveAppearanceAction } from '@/features/planner/actions'
 import { appearanceVars, type Appearance } from '@/features/planner/appearance'
@@ -25,18 +27,22 @@ const SAVE_DELAY_MS = 600
  */
 export function PlannerShell({
   plannerId,
+  revision,
   initial,
   isOwner,
   ownerPanels,
   children,
 }: {
   plannerId: number
+  /** Signature of the planner read before the page was rendered (see `usePlannerSync`). */
+  revision: string
   isOwner: boolean
   initial: Appearance
   /** Owner-only settings sections rendered inside the drawer. */
   ownerPanels?: ReactNode
   children: ReactNode
 }) {
+  const sync = usePlannerSync(plannerId, revision)
   const [appearance, setAppearance] = useState(initial)
   const [open, setOpen] = useState(false)
   const [saveFailed, setSaveFailed] = useState(false)
@@ -83,7 +89,10 @@ export function PlannerShell({
   return (
     <PlannerContext.Provider value={value}>
       <PlannerBackground background={appearance.background} />
-      <div style={style}>{children}</div>
+      <div style={style}>
+        <PlannerSyncStatus state={sync} />
+        {children}
+      </div>
       <PlannerSettings
         open={open}
         onClose={() => setOpen(false)}

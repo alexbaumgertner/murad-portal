@@ -51,3 +51,13 @@
     break-inside: avoid;
   }
 }
+
+.error {
+  margin: 0.5rem 0 0;
+  color: var(--color-danger);
+  font-size: 0.875rem;
+}
+
+.error:empty {
+  display: none;
+}
