@@ -681,6 +681,7 @@ export interface PlannerCell {
   day: number;
   text?: string | null;
   done?: boolean | null;
+  own?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1185,6 +1186,7 @@ export interface PlannerCellsSelect<T extends boolean = true> {
   day?: T;
   text?: T;
   done?: T;
+  own?: T;
   updatedAt?: T;
   createdAt?: T;
 }

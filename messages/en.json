@@ -25,7 +25,9 @@
   },
   "Footer": {
     "title": "Murad Uzhakhov · English teacher",
-    "changelog": "Site updates"
+    "changelog": "Site updates",
+    "plannerNav": "Planner navigation",
+    "toStudy": "Back to study"
   },
   "Home": {
     "hero": {
@@ -621,6 +623,9 @@
     "copyWeek": "Copy week",
     "deleteWeek": "Delete week",
     "deleteWeekConfirm": "Delete this week? Its tasks and checkmarks will be lost for good.",
+    "addOwn": "own",
+    "addOwnLabel": "Add own task: {cell}",
+    "own": "own",
     "addPriority": "Add priority",
     "removePriority": "Remove priority",
     "removeConfirm": "Remove the last priority row? Its tasks and checkmarks will be deleted for good.",

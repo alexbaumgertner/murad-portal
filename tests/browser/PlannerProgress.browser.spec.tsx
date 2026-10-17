@@ -11,6 +11,7 @@ const actions = vi.hoisted(() => ({
   addRowAction: vi.fn(),
   removeRowAction: vi.fn(),
   setCellTextAction: vi.fn(),
+  setOwnTaskAction: vi.fn(),
   setDoneAction: vi.fn(),
   saveHeaderAction: vi.fn(),
   saveNoteAction: vi.fn(),

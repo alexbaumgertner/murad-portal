@@ -28,6 +28,8 @@ export const PlannerCells: CollectionConfig = {
     { name: 'day', type: 'number', required: true, min: 0, max: DAYS - 1 },
     { name: 'text', type: 'textarea', maxLength: MAX_TASK_TEXT, defaultValue: '' },
     { name: 'done', type: 'checkbox', defaultValue: false },
+    // The student wrote this task herself (story 034); the owner's edit clears it.
+    { name: 'own', type: 'checkbox', defaultValue: false },
   ],
   indexes: [{ fields: ['week', 'row', 'day'], unique: true }],
 }

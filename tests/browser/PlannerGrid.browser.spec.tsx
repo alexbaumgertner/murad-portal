@@ -11,6 +11,7 @@ const actions = vi.hoisted(() => ({
   addRowAction: vi.fn<(input: unknown) => Promise<PlannerActionState>>(),
   removeRowAction: vi.fn<(input: unknown) => Promise<PlannerActionState>>(),
   setCellTextAction: vi.fn<(input: unknown) => Promise<PlannerActionState>>(),
+  setOwnTaskAction: vi.fn<(input: unknown) => Promise<PlannerActionState>>(),
   setDoneAction: vi.fn<(input: unknown) => Promise<PlannerActionState>>(),
 }))
 vi.mock('@/features/planner/actions', () => actions)
@@ -106,6 +107,63 @@ describe('PlannerGrid (story 022)', () => {
         text: 'PODCAST',
       }),
     )
+  })
+
+  test('034 7. a student adds her own task with «+ own» and it is saved on blur', async () => {
+    await renderGrid({ canEdit: false, taskTypes: ['ANKI'], cells: {} })
+    await userEvent.click(page.getByRole('button', { name: /Add own task.*priority I, Oct 13/ }))
+    await userEvent.fill(page.getByRole('textbox', { name: /priority I, Oct 13/ }), 'read a book')
+    await userEvent.tab()
+    await vi.waitFor(() =>
+      expect(actions.setOwnTaskAction).toHaveBeenCalledWith({
+        weekId: 1,
+        row: 0,
+        day: 1,
+        text: 'read a book',
+      }),
+    )
+  })
+
+  test('034 7/8. an own task is marked, can be ticked, edited, and cleared', async () => {
+    await renderGrid({
+      canEdit: false,
+      taskTypes: ['ANKI'],
+      cells: { '0-0': { text: 'read a book', done: false, own: true } },
+    })
+    await expect.element(page.getByRole('img', { name: 'own' })).toBeVisible()
+    await expect
+      .element(page.getByRole('button', { name: /Mark as done: read a book/ }))
+      .toBeVisible()
+    await userEvent.fill(page.getByRole('textbox', { name: /priority I, Oct 12/ }), '')
+    await userEvent.tab()
+    await vi.waitFor(() =>
+      expect(actions.setCellTextAction).toHaveBeenCalledWith({
+        weekId: 1,
+        row: 0,
+        day: 0,
+        text: '',
+      }),
+    )
+  })
+
+  test("034 9. no «+ own» on a cell with the owner's task", async () => {
+    await renderGrid({
+      canEdit: false,
+      taskTypes: ['ANKI'],
+      cells: { '0-0': { text: 'ANKI', done: false } },
+    })
+    expect(
+      page.getByRole('button', { name: /Add own task.*priority I, Oct 12/ }).query(),
+    ).toBeNull()
+  })
+
+  test('034 10. a refused own task rolls back and shows the error', async () => {
+    actions.setOwnTaskAction.mockResolvedValue({ status: 'error', error: 'too_long' })
+    await renderGrid({ canEdit: false, taskTypes: ['ANKI'], cells: {} })
+    await userEvent.click(page.getByRole('button', { name: /Add own task.*priority I, Oct 13/ }))
+    await userEvent.fill(page.getByRole('textbox', { name: /priority I, Oct 13/ }), 'x')
+    await userEvent.tab()
+    await expect.element(page.getByText('Text is too long')).toBeVisible()
   })
 
   test('6. removing a priority asks first; cancel changes nothing', async () => {

@@ -14,7 +14,7 @@ import { currentUser } from '@/features/auth/current-user'
 import { getPlannerView } from '@/features/planner/queries'
 import { mondayOf, weekDates } from '@/features/planner/shape'
 import { messagesFor, parseAddressForm } from '@/i18n/address-form'
-import { Link, redirect } from '@/i18n/navigation'
+import { redirect } from '@/i18n/navigation'
 import { routing } from '@/i18n/routing'
 import { getPayloadClient } from '@/lib/payload'
 
@@ -59,9 +59,6 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
 
   return (
     <div className={styles.page}>
-      <Link href="/study" className={`${shared.back} ${styles.noPrint}`}>
-        {t('back')}
-      </Link>
       {!view ? (
         owner ? (
           <PlannerWeekBar
@@ -87,23 +84,23 @@ export default async function PlannerPage({ params, searchParams }: PageProps) {
             ) : null
           }
         >
-          <div className={styles.noPrint}>
-            <PlannerWeekNav
-              weeks={view.weeks.map((week) => {
-                const dates = weekDates(view.baseDate, week.index)
-                return {
-                  id: week.id,
-                  index: week.index,
-                  label: t('header.week', { n: String(week.index + 1).padStart(2, '0') }),
-                  from: dates[0]!,
-                  to: dates[6]!,
-                }
-              })}
-              activeId={view.active.id}
-              studentId={owner ? studentId : undefined}
-            />
-          </div>
           <PlannerBoard
+            weekNav={
+              <PlannerWeekNav
+                weeks={view.weeks.map((week) => {
+                  const dates = weekDates(view.baseDate, week.index)
+                  return {
+                    id: week.id,
+                    index: week.index,
+                    label: t('header.week', { n: String(week.index + 1).padStart(2, '0') }),
+                    from: dates[0]!,
+                    to: dates[6]!,
+                  }
+                })}
+                activeId={view.active.id}
+                studentId={owner ? studentId : undefined}
+              />
+            }
             key={view.active.id}
             plannerId={view.plannerId}
             header={view.header}

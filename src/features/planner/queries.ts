@@ -8,7 +8,7 @@ import { parseAppearance, type Appearance } from './appearance'
 import type { Labels } from './schema'
 import { effectiveTaskTypes, isAssignedTask, readTaskTypes, weekDates } from './shape'
 
-export type CellView = { text: string; done: boolean }
+export type CellView = { text: string; done: boolean; own?: boolean }
 export type ProgressSettings = {
   showWeekProgress: boolean
   showFourWeekProgress: boolean
@@ -104,7 +104,7 @@ export async function getPlannerView(
           where: { week: { in: others.map((w) => w.id) } },
           pagination: false,
           depth: 0,
-          select: { week: true, day: true, text: true, done: true },
+          select: { week: true, day: true, text: true, done: true, own: true },
           overrideAccess: false,
           user,
         })
@@ -123,8 +123,9 @@ export async function getPlannerView(
     },
     appearance: parseAppearance(planner.appearance),
     taskTypes: effectiveTaskTypes(readTaskTypes(planner.taskTypes), [
-      ...docs.map((c) => c.text ?? ''),
-      ...otherCells.map((c) => c.text ?? ''),
+      // A student's own tasks are not task types the others pick from.
+      ...docs.filter((c) => !c.own).map((c) => c.text ?? ''),
+      ...otherCells.filter((c) => !c.own).map((c) => c.text ?? ''),
     ]),
     settings: {
       showWeekProgress: planner.showWeekProgress ?? true,
@@ -147,7 +148,10 @@ export async function getPlannerView(
       dates: weekDates(planner.baseDate, week.index),
       notes: Object.fromEntries(noteDocs.map((n) => [`${n.kind}-${n.day}`, n.text])),
       cells: Object.fromEntries(
-        docs.map((c) => [`${c.row}-${c.day}`, { text: c.text ?? '', done: Boolean(c.done) }]),
+        docs.map((c) => [
+          `${c.row}-${c.day}`,
+          { text: c.text ?? '', done: Boolean(c.done), own: Boolean(c.own) },
+        ]),
       ),
     },
   }

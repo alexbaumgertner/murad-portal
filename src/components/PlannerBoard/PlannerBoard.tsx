@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 
 import { PlannerDiary } from '@/components/PlannerDiary/PlannerDiary'
 import { PlannerGrid } from '@/components/PlannerGrid/PlannerGrid'
@@ -32,6 +32,8 @@ type Props = {
   header: HeaderView
   settings: ProgressSettings
   today: string
+  /** Week pills: shown right under the header, hidden in print. */
+  weekNav?: ReactNode
 }
 
 /** One printable sheet: header, grid, diary and progress share the live cells. */
@@ -45,6 +47,7 @@ export function PlannerBoard({
   settings,
   today,
   notes,
+  weekNav,
   ...grid
 }: Props) {
   const t = useTranslations('Planner')
@@ -125,6 +128,7 @@ export function PlannerBoard({
           </>
         }
       />
+      {weekNav ? <div className={styles.weekNav}>{weekNav}</div> : null}
       <div className={styles.body}>
         <PlannerGrid
           {...grid}

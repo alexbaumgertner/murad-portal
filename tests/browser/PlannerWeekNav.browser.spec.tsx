@@ -53,4 +53,13 @@ describe('PlannerWeekNav (week switching)', () => {
     expect(page.getByRole('link', { name: 'Previous week' }).query()).toBeNull()
     await expect.element(page.getByRole('link', { name: 'Next week' })).toBeVisible()
   })
+
+  test('034 5. the current week is not on a black background', async () => {
+    await show(2)
+    const current = page.getByRole('link', { name: /WEEK 02/ }).element()
+    const { backgroundColor, fontWeight } = getComputedStyle(current)
+    expect(backgroundColor).not.toBe('rgb(26, 24, 21)')
+    expect(backgroundColor).not.toBe(getComputedStyle(document.body).color)
+    expect(Number(fontWeight)).toBeGreaterThanOrEqual(600)
+  })
 })
